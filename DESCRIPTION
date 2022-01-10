@@ -1,0 +1,40 @@
+Package: EcoEnsemble
+Title: Combine mechanistic models into an Ensemble
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "James A.",
+                family = "Martindale",
+                role = c("aut", "cre"),
+                email = "james.martindale@cefas.co.uk",
+                comment = c(ORCID = "0000-0002-1913-5592")),
+            person(given = "Michael A.",
+                family = "Spence",
+                role = c("aut"),
+                comment = c(ORCID = "0000-0002-3445-7979")))
+Description: Set up, fit and sample from the ensemble model laid out in Spence et. al. (2018). A general framework for combining ecosystem models. <https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Biarch: true
+Depends: 
+    R (>= 3.4.0)
+Imports: 
+    methods,
+    Rcpp (>= 0.12.0),
+	matrixcalc,
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    rstantools (>= 2.1.1)
+LinkingTo: 
+    BH (>= 1.66.0),
+    Rcpp (>= 0.12.0),
+    RcppEigen (>= 0.3.3.3.0),
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    StanHeaders (>= 2.18.0)
+SystemRequirements: GNU make
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
