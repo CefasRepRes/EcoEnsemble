@@ -94,8 +94,10 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 #' @details
 #' As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies
 #' as well as individual long-term discrepancies) are decomposed
-#' into \eqn{\Sigma = \Pi^{1/2} \Lambda \Pi^{1/2}}, where \eqn{\Pi} is a diagonal matrix giving the
-#' variances of each species, and \eqn{\Lambda} is the correlation matrix. The variance terms \eqn{\Pi}
+#' into
+#' \deqn{\Sigma = \sqrt{\mathrm{diag}(\pi_i)} \Lambda \sqrt{\mathrm{diag}(\pi)},}
+#' where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda}
+#' is the correlation matrix. The variance terms \eqn{\pi}
 #' are parameterised by inverse-gamma distributions, and passed through as `ind_st_var_params`,
 #' `ind_lt_var_params`, `sha_st_var_params` parameters.
 #' @section Correlation matrix priors:
@@ -105,12 +107,12 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 #' refer to the LKJ, inverse Wishart, or Beta distributions respectively. In each case,
 #' the associated parameters should be passed through using the relevant `..._cor_params` variable.
 #'  * LKJ - The parameter should be a single scalar value \eqn{\eta} giving the LKJ shape parameter as described in the
-#'  \href{https://mc-stan.org/docs/2_28/functions-reference/lkj-correlation.html}{STAN manual.} The
-#'  density of a correlation matrix is given by \eqn{f(\Sigma | \eta) \alpha det (\Sigma)^{\eta - 1}}
+#'  \href{https://mc-stan.org/docs/2_28/functions-reference/lkj-correlation.html}{Stan manual.} The
+#'  density of a correlation matrix is given by \deqn{f(\Sigma | \eta) \alpha det (\Sigma)^{\eta - 1}}
 #'  * Inverse Wishart - A `list` containing a scalar value \eqn{\nu} (giving the degrees of
 #'  freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale
 #'  matrix). See the
-#'  \href{https://mc-stan.org/docs/2_28/functions-reference/inverse-wishart-distribution.html}{STAN manual}
+#'  \href{https://mc-stan.org/docs/2_28/functions-reference/inverse-wishart-distribution.html}{Stan manual}
 #'  for more information. The dimensions of \eqn{\Sigma} should be the same as the correlation matrix
 #'  it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species)
 #'  * Beta - A `list` containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha}
@@ -119,12 +121,14 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 #'  \eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}}. It is on these
 #'  rescaled parameters that the Beta distribution applies.
 #'
+#' @return A `list` encoding prior information on discrepancies.
+#'
 #' @references Spence et. al. (2018). A general framework for combining ecosystem models. \emph{Fish and Fisheries}, 19(6):1031-1042.
 #' @references Chandler RE. 2013 Exploiting strength, discounting weakness: combining information from multiple climate simulators. \emph{Phil Trans R Soc A} 371: 20120388
 #' @examples
 #' #Basic usage of function for a model with 4 species.
 #' N_species <- 4
-#' priors <- elicit_priors(ind_st_var_params = list(25, 0.25),
+#' priors <- define_priors(ind_st_var_params = list(25, 0.25),
 #'                         ind_st_cor_form = "lkj", #Using an LKJ distribution for individual short-term discrepancies
 #'                         ind_st_cor_params = 30, #The parameter is 30
 #'                         ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
@@ -137,7 +141,7 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 #'                         sha_lt_sd = rep(4,N_species))
 #'
 #' @export
-elicit_priors <- function(ind_st_var_params, ind_st_cor_form, ind_st_cor_params,
+define_priors <- function(ind_st_var_params, ind_st_cor_form, ind_st_cor_params,
                           ind_lt_var_params, ind_lt_cor_form, ind_lt_cor_params,
                           sha_st_var_exp, sha_st_cor_form, sha_st_cor_params, sha_lt_sd){
 
@@ -159,3 +163,4 @@ elicit_priors <- function(ind_st_var_params, ind_st_cor_form, ind_st_cor_params,
        )
     )
   }
+

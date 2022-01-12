@@ -5,7 +5,7 @@
 \alias{SSB_lm}
 \title{LeMans SSB}
 \format{
-A data frame with 65 rows and 4 variables:
+A \code{data.frame} with 65 rows and 4 variables:
 \describe{
 \item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
@@ -17,7 +17,7 @@ A data frame with 65 rows and 4 variables:
 SSB_lm
 }
 \description{
-A \verb{data frame} containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod, and Sole
+A \code{data.frame} containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod, and Sole
 in the North Sea between 1986-2050 under an MSY fishing scenario from the LeMaRns package.
 }
 \references{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_ensemble.R
 \name{get_stan_ensemble_data}
 \alias{get_stan_ensemble_data}
-\title{Validate and generate STAN data from inputs.}
+\title{Validate and generate Stan data from inputs.}
 \usage{
 get_stan_ensemble_data(observations, simulators, priors)
 }
@@ -13,19 +13,19 @@ See details.}
 \item{simulators}{A \code{list} of simulator output and covariance pairs. See details.}
 
 \item{priors}{A \code{list} of data specifying the prior distributions for the ensemble.
-See the \code{elicit_priors} function for the required form.}
+See the \code{define_priors} function for the required form.}
 }
 \value{
-An \code{EnsembleData} object containing the data to be passed through to STAN.
+An \code{EnsembleData} object containing the data to be passed through to Stan
 }
 \description{
-Generates data in the correct form to be passed through to the compiled STAN model.
+Generates data in the correct form to be passed through to the compiled Stan model.
 }
 \details{
 Observation and covariance pairs should be passed through as a \code{list},
 with observations / model outputs as the first element, and the covariance matrix
-as the second. The observations / model outputs should be a matrix / data frame with each
-column giving a different variable / species and each row a different year. Rows should be named with
+as the second. The observations / model outputs should be a \code{matrix} (or \code{data.frame}) with each
+column giving a different species and each row a different year. Rows should be named with
 the years and columns should be named the appropriate variables. It is fine to have missing
 years or species, however for any model output there should be at least one observation in the observation
 data frame.

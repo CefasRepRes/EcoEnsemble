@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_ensemble.R
 \name{get_mcmc_ensemble_model}
 \alias{get_mcmc_ensemble_model}
-\title{Return the compiled ensemble model STAN object.}
+\title{Return the compiled ensemble model Stan object.}
 \usage{
 get_mcmc_ensemble_model()
 }
@@ -10,7 +10,7 @@ get_mcmc_ensemble_model()
 The \code{stanmodel} object encoding the ensemble model.
 }
 \description{
-Gets the unfit, compiled STAN object encoding the ensemble model. This allows for
+Gets the unfit, compiled Stan object encoding the ensemble model. This allows for
 manual fitting of the ensemble model directly using.
 }
 \examples{

@@ -5,12 +5,17 @@
 \alias{Sigma_ewe}
 \title{Ecopath with EcoSim Sigma}
 \format{
-An object of class \code{matrix} (inherits from \code{array}) with 4 rows and 4 columns.
+A 4x4 \code{matrix}.
 }
 \usage{
 Sigma_ewe
 }
 \description{
 A 4x4 covariance matrix quantifying the parameter uncertainty of Ecopath with EcoSim
+}
+\references{
+C Walters, V Christensen and D Pauly (1997) Structuring dynamic
+models of exploited ecosystems from trophic mass-balance assessments
+Rev. Fish Biol. Fish., 7, pp. 139-172
 }
 \keyword{datasets}

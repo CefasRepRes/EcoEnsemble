@@ -5,12 +5,19 @@
 \alias{Sigma_lm}
 \title{LeMans Sigma}
 \format{
-An object of class \code{matrix} (inherits from \code{array}) with 4 rows and 4 columns.
+A 4x4 \code{matrix}.
+A 4x4 covariance matrix quantifying the parameter uncertainty of LeMans
 }
 \usage{
 Sigma_lm
 }
 \description{
-A 4x4 covariance matrix quantifying the parameter uncertainty of LeMans
+LeMans Sigma
+}
+\references{
+Michael A. Spence, Hayley J. Bannister, Johnathan E. Ball, Paul J. Dolder
+and Robert B. Thorpe (2019). LeMaRns: Length-Based Multispecies Analysis
+by Numerical Simulation. R package version 0.1.2.
+\href{https://CRAN.R-project.org/package=LeMaRns}{CRAN}
 }
 \keyword{datasets}

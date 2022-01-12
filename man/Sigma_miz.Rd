@@ -5,12 +5,18 @@
 \alias{Sigma_miz}
 \title{mizer Sigma}
 \format{
-An object of class \code{matrix} (inherits from \code{array}) with 4 rows and 4 columns.
+A 4x4 \code{matrix}.
+A 4x4 covariance matrix quantifying the parameter uncertainty of mizer
 }
 \usage{
 Sigma_miz
 }
 \description{
-A 4x4 covariance matrix quantifying the parameter uncertainty of mizer
+mizer Sigma
+}
+\references{
+F. Scott, J.L. Blanchard and K.H. Andersen. mizer: an R package for
+multispecies, trait-based and community size spectrum ecological
+modelling. Methods in Ecology and Evolution 5(10) 1121-1125 (2014).
 }
 \keyword{datasets}

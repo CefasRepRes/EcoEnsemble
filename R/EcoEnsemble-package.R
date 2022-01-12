@@ -5,13 +5,13 @@
 #'
 #' @details
 #' The ensemble model can be implemented in three main stages:
-#' 1. Eliciting priors on discrepancy terms. This is done by using the
-#'  `elicit_priors` function.
-#' 2. Fitting the ensemble model. Using `fit_ensemble_model` with simulator
+#' 1. Eliciting priors on discrepancy terms: This is done by using the
+#'  `define_priors` function.
+#' 2. Fitting the ensemble model: Using `fit_ensemble_model` with simulator
 #' outputs, observations, and priors, the ensemble model can be fit, obtaining
-#' either the point estimate which maximises the posterior, or running MCMC to
-#' generate a sample from the posterior of the ensemble model.
-#' 3. Sampling from the Kalman filter. Using `generate_sample` with
+#' either the point estimate which maximises the posterior density, or running MCMC to
+#' generate a sample from the posterior denisty of the ensemble model.
+#' 3. Sampling from the Kalman filter: Using `generate_sample` with
 #' the fitted ensemble object, the discrepancy terms and the ensemble's best
 #' guess of the truth can be generated. Similarly to `fit_ensemble_model`, this
 #' can either be a point estimate (the MLE) or a full sample of the Kalman filter.
@@ -21,8 +21,9 @@
 #' @aliases EcoEnsemble
 #' @useDynLib EcoEnsemble, .registration = TRUE
 #' @import methods
+#' @import matrixcalc
 #' @import Rcpp
-#' @importFrom rstan sampling
+#' @importFrom rstan sampling optimizing
 #'
 #' @references
 #' Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org

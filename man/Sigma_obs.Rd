@@ -5,12 +5,19 @@
 \alias{Sigma_obs}
 \title{Stock assessment Sigma}
 \format{
-An object of class \code{matrix} (inherits from \code{array}) with 4 rows and 4 columns.
+A 4x4 \code{matrix}.
 }
 \usage{
 Sigma_obs
 }
 \description{
 A 4x4 covariance matrix quantifying the covariances of the stock assessment estimates of biomass.
+}
+\references{
+Herring Assessment Working Group for the Area South of 62 N (HAWG).Technical report,
+ICES Scientific Reports. ACOM:07. 960 pp, ICES, Copenhagen.
+
+Report of the Working Group on the Assessment of Demersal Stocks inthe North Sea and
+Skagerrak. Technical report, ICES Scientific Reports. ACOM:22.pp, ICES, Copenhagen.
 }
 \keyword{datasets}

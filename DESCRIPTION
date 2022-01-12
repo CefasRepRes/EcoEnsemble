@@ -1,5 +1,5 @@
 Package: EcoEnsemble
-Title: Combine mechanistic models into an Ensemble
+Title: Bayesian ensemble functions for combining ecosystem models
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "James A.",

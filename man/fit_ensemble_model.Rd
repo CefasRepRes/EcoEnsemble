@@ -4,7 +4,7 @@
 \alias{fit_ensemble_model}
 \title{Fits the ensemble model}
 \usage{
-fit_ensemble_model(observations, simulators, priors, full_sample = FALSE, ...)
+fit_ensemble_model(observations, simulators, priors, full_sample = TRUE, ...)
 }
 \arguments{
 \item{observations}{A \code{list} of observations and associated covariances.
@@ -13,26 +13,26 @@ See details.}
 \item{simulators}{A \code{list} of simulator output and covariance pairs. See details.}
 
 \item{priors}{A \code{list} of data specifying the prior distributions for the ensemble.
-See the \code{elicit_priors} function for the required form.}
+See the \code{define_priors} function for the required form.}
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the ensemble model if \code{TRUE},
-and optimises to the MLE if \code{FALSE}.}
+and optimises to the MLE if \code{FALSE}. The default is TRUE.}
 
-\item{...}{Additional STAN parameters.}
+\item{...}{Additional Stan parameters.}
 }
 \value{
-An \code{EnsembleFit} object containing the data passed through to STAN
+An \code{EnsembleFit} object containing the data passed through to Stan
 and the fitted \code{stanfit} object.
 }
 \description{
-\code{fit_ensemble_model} runs an MCMC of the ensemble model through STAN. This process can take a long time depending on
+\code{fit_ensemble_model} runs an MCMC of the ensemble model through Stan This process can take a long time depending on
 the size of the datasets.
 }
 \details{
 Observation and covariance pairs should be passed through as a \code{list},
 with observations / model outputs as the first element, and the covariance matrix
-as the second. The observations / model outputs should be a matrix / data frame with each
-column giving a different variable / species and each row a different year. Rows should be named with
+as the second. The observations / model outputs should be a \code{matrix} (or \code{data.frame}) with each
+column giving a different species and each row a different year. Rows should be named with
 the years and columns should be named the appropriate variables. It is fine to have missing
 years or species, however for any model output there should be at least one observation in the observation
 data frame.
@@ -40,7 +40,7 @@ data frame.
 \examples{
 A basic example
 N_species <- 4
-priors <- elicit_priors(ind_st_var_params = list(25, 0.25),
+priors <- define_priors(ind_st_var_params = list(25, 0.25),
                         ind_st_cor_form = "lkj",
                         ind_st_cor_params = 30,
                         ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
@@ -57,6 +57,5 @@ fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_lm,  Sigma_lm, "LeMans"),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors,
-                         full_sample = FALSE, #Only optimise in this case
-                         control = list(adapt_delta = 0.99))#Additional STAN options
+                         full_sample = FALSE) #Only optimise in this case
 }

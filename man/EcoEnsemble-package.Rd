@@ -12,13 +12,13 @@ ecosystem models laid out in Spence et al (2018) in R.
 \details{
 The ensemble model can be implemented in three main stages:
 \enumerate{
-\item Eliciting priors on discrepancy terms. This is done by using the
-\code{elicit_priors} function.
-\item Fitting the ensemble model. Using \code{fit_ensemble_model} with simulator
+\item Eliciting priors on discrepancy terms: This is done by using the
+\code{define_priors} function.
+\item Fitting the ensemble model: Using \code{fit_ensemble_model} with simulator
 outputs, observations, and priors, the ensemble model can be fit, obtaining
-either the point estimate which maximises the posterior, or running MCMC to
-generate a sample from the posterior of the ensemble model.
-\item Sampling from the Kalman filter. Using \code{generate_sample} with
+either the point estimate which maximises the posterior density, or running MCMC to
+generate a sample from the posterior denisty of the ensemble model.
+\item Sampling from the Kalman filter: Using \code{generate_sample} with
 the fitted ensemble object, the discrepancy terms and the ensemble's best
 guess of the truth can be generated. Similarly to \code{fit_ensemble_model}, this
 can either be a point estimate (the MLE) or a full sample of the Kalman filter.

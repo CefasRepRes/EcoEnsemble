@@ -38,8 +38,7 @@ fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors)
 sample <- generate_sample(fit_sample, num_samples = 2000)
-p <- plot_values(fit_sample, sample, variable = "Cod", quantiles=c(0.2, 0.8))
-p
+plot_values(fit_sample, sample, variable = "Cod", quantiles=c(0.2, 0.8))
 
 fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                               simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),

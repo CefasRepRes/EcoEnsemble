@@ -5,7 +5,7 @@
 \alias{SSB_fs}
 \title{FishSUMS SSB}
 \format{
-A data frame with 67 rows and 3 variables:
+A \code{data.frame} with 67 rows and 3 variables:
 \describe{
 \item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}

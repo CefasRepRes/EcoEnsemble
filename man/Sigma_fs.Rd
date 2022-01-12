@@ -5,12 +5,17 @@
 \alias{Sigma_fs}
 \title{FishSUMS Sigma}
 \format{
-An object of class \code{matrix} (inherits from \code{array}) with 3 rows and 3 columns.
+A 3x3 \code{matrix}.
 }
 \usage{
 Sigma_fs
 }
 \description{
 A 3x3 covariance matrix quantifying the parameter uncertainty of FishSUMS
+}
+\references{
+Speirs, D.C., Guirey, E.J., Gurney, W.S.C. and Heath, M.R. (2010).
+A length structured partial ecosystem model for cod in the North Sea.
+Fisheries Research 106, 474-494.
 }
 \keyword{datasets}

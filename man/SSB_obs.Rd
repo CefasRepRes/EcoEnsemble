@@ -17,7 +17,7 @@ A data frame with 34 rows and 4 variables:
 SSB_obs
 }
 \description{
-A \verb{data frame} containing the single species stock assessment estimates of spawning stock
+A \code{data.frame} containing the single species stock assessment estimates of spawning stock
 biomass of Norway Pout, Herring, Cod, and Sole in the North Sea between 1984-2017.
 }
 \references{

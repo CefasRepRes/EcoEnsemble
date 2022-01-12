@@ -5,7 +5,7 @@
 \alias{SSB_ewe}
 \title{Ecopath with EcoSim SSB}
 \format{
-A \verb{data frame} with 60 rows and 4 variables:
+A \code{data.frame} with 60 rows and 4 variables:
 \describe{
 \item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
