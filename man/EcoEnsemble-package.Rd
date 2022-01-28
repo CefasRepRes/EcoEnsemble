@@ -21,7 +21,7 @@ generate a sample from the posterior denisty of the ensemble model.
 \item Sampling from the Kalman filter: Using \code{generate_sample} with
 the fitted ensemble object, the discrepancy terms and the ensemble's best
 guess of the truth can be generated. Similarly to \code{fit_ensemble_model}, this
-can either be a point estimate (the MLE) or a full sample of the Kalman filter.
+can either be a point estimate or a full sample of the Kalman filter.
 }
 }
 \references{

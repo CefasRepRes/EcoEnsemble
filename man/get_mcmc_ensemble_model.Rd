@@ -14,13 +14,12 @@ Gets the unfit, compiled Stan object encoding the ensemble model. This allows fo
 manual fitting of the ensemble model directly using.
 }
 \examples{
-#A minimal example fitting manually
 mod <- get_mcmc_ensemble_model()
-stan_data <- get_stan_ensemble_data(observations = list(SSB_obs, Sigma_obs),
-                                   simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                     list(SSB_fs,  Sigma_fs),
-                                                     list(SSB_lm,  Sigma_lm),
-                                                     list(SSB_miz, Sigma_miz)),
-                                   priors = priors)
-out <- rstan::sampling(mod, stan_data, chains=(parallel::detectCores()-1))
+ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
+                             simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                           list(SSB_fs,  Sigma_fs, "FishSUMS"),
+                                           list(SSB_lm,  Sigma_lm, "LeMans"),
+                                           list(SSB_miz, Sigma_miz, "mizer")),
+                              priors = priors)
+out <- rstan::sampling(mod, ensemble_data@stan_input, chains=(parallel::detectCores()-1))
 }

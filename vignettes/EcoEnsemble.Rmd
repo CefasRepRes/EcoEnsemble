@@ -1,0 +1,258 @@
+---
+title: "EcoEnsemble"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EcoEnsemble}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(EcoEnsemble)
+```
+# Introduction
+
+# Model description
+At time $t$, the true quantity of interest for $d$ variables, $\mathbf{y}^{(t)}=(y_1^{(t)},\ldots,y_d^{(t)})'$, is described by $m$ simulators, $\mathbf{\hat{x}}_{k}^{(t)}=(\hat{x}_{k,1}^{(t)},\ldots,\hat{x}_{k,n_k}^{(t)})'$, with $n_k$ outputs each relating to one of the variables of interest, for $k=1,\ldots,m$, and noisy observations of the variables of interest, $\hat{\mathbf{y}}^{(t)}=(\hat{y}_1^{(t)},\ldots,\hat{y}_d^{(t)})'$.
+%In the ensemble model, uncertainty is separated into parameter, structural, and observation uncertainty.
+
+Not all of the simulators output all the variables over the whole time period. 
+To accommodate these differences, \citet{spence_ff} introduced a latent variable, known as the `best guess', $\mathbf{x}_{k}^{(t)}=({x}_{1}^{(t)},\ldots,{x}_{d}^{(t)})'$, which represents simulator $k$'s output if it described all $d$ variables at time $t$ with no parameter uncertainty. In this version of the model, variables are either present or absent in each simulator, therefore if the $k$th simulator was evaluated at time $t$, its output was
+\begin{equation}
+\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(M_k^{(t)}\mathbf{x}_{k}^{(t)},\Sigma_k),
+\label{eq:par_un}
+\end{equation}
+when simulator $k$ outputs the variables of interest,
+where $M_k^{(t)}$ is a $n_k\times{}d$ matrix  and $M_k^{(t)}$ is a $n_k\times{}d$ matrix and $\Sigma_k$ reflects the parameter uncertainty of the $k$th simulator.
+
+The true value of the yield at time $t$ was simulator $k$'s best guess plus a discrepancy term, $\mathbf{\zeta}^{(t)}_k$ \citep{kennedy_ohagan}, i.e. 
+\begin{equation}
+\mathbf{y}^{(t)} =  \mathbf{x}_{k}^{(t)} + \mathbf{\zeta}^{(t)}_k.
+\label{eq:disc}
+\end{equation}
+The discrepancy term, $\mathbf{\zeta}^{(t)}_k$, is split between discrepancies that are shared between all of the simulators, and discrepancies that were specific to the $k$th simulator. These two discrepancies are further split into fixed discrepancies, the long-term shared discrepancy, $\mathbf\delta$, and simulator $k$'s long-term individual discrepancy, $\mathbf\gamma_k$, and dynamic discrepancies, the short-term shared discrepancy, $\mathbf\eta^{(t)}$, and simulator $k$'s short-term individual discrepancy, $\mathbf{z}_k^{(t)}$, i.e.
+\begin{equation}
+\mathbf{\zeta}^{(t)}_k = \mathbf\delta + \mathbf\eta^{(t)} + \mathbf\gamma_k + \mathbf{z}_k^{(t)}.
+\end{equation}
+The long-term individual discrepancy for the $k$th simulator is
+\begin{equation}
+    \mathbf{\gamma}_k\sim{}N(\mathbf{0},C_{\gamma}).
+\end{equation}
+The short-term discrepancy terms, $\mathbf\eta^{(t)}$ and $\mathbf{z}_k^{(t)}$, follow an auto-regressive processes of order one,
+\begin{equation}
+\mathbf{\eta}^{(t)}\sim{}N(R_{\eta}\mathbf{\eta}^{(t-1)},\Lambda_{\eta})
+\end{equation}
+and
+\begin{equation}
+\mathbf{z}_{k}^{(t)}\sim{}N(R_{k}\mathbf{z}_{k}^{(t-1)},\Lambda_{k})
+\end{equation}
+respectively.
+
+
+In the absence of any other information, the true biomass evolves according to a random walk,
+\begin{equation}
+    \mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},\Lambda_y),
+\end{equation}
+with noisy observations of the variables,
+\begin{equation}
+\mathbf{\hat{y}}^{(t)}\sim{}N(\mathbf{y}^{(t)},\Sigma_y),
+\label{eq:obs_uncert}
+\end{equation}
+when there are observations at time $t$.
+%In this study we took the diagonal elements of $\Sigma_y$ to be 0.2, and zero on the off-diagonal elements so that coefficient of variation was approximately 0.5.
+%In this study we took the diagonal elements of $\Sigma_y$ were calculated from uncertainty in the assessment, and zero on the off-diagonal elements.
+
+A summary of the ensemble model can be found in Table \ref{tb:ensemble_mod}. For more details on the model see \citet{spence_ff}.
+
+
+\begin{table}[ht]
+\begin{center}
+\caption{A summary of the variables in the ensemble model. Values of $n_k$ and $M_k$ are simulator specific.}
+\label{tb:ensemble_mod}
+\begin{tabular}{cclp{5cm}l}
+\hline
+Variable&Dimensions& Description & Relationship \\
+\hline
+$\mathbf{y}^{(t)}$&$d$&The truth & $\mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},{\Lambda}_{y})$\\
+$\mathbf{\hat{y}}^{(t)}$&$d$&Noisy observation of $\mathbf{y}^{(t)}$&$\hat{\mathbf{y}}^{(t)}\sim{}N({\mathbf{y}}^{(t)},\Sigma_{y})$\\
+$\mathbf\delta$&$d$&Long-term shared discrepancy&\\
+$\mathbf\eta^{(t)}$&$d$&Short-term shared discrepancy&$\mathbf{\eta}^{(t)}\sim{}N(
+    R_{\eta}\mathbf{\eta}^{(t-1)},\Lambda_{\eta}$)\\
+$\mathbf\mu^{(t)}$&$d$&Simulator consensus&$\mathbf\mu^{(t)}=\mathbf{y}^{(t)} + \mathbf\delta + \mathbf\eta^{(t)}$\\
+$\mathbf{\gamma}_{k}$&$d$&Simulator $k$'s long-term individual discrepancy&$\mathbf\gamma_{k}\sim{}N(\mathbf{0},C_{\gamma})$\\
+$\mathbf{z}_{k}^{(t)}$&$d$&Simulator $k$'s short-term individual discrepancy&$\mathbf{z}_{k}^{(t)}\sim{}N(R_{k}\mathbf{z}_{k}^{(t-1)},\Lambda_{k})$\\
+$\mathbf{x}_{k}^{(t)}$&$d$&Simulator $k$'s best guess&$\mathbf{x}_{k}^{(t)}=\mathbf{\mu}^{(t)} + \mathbf{\gamma}_{k} +\mathbf{z}_{k}^{(t)}$\\
+$\mathbf{\hat{x}}_{k}^{(t)}$&$n_k$& The expectation of simulator $k$'s output $\mathbf{x}_{k}^{(t)}$&$\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(M_k\mathbf{x}_{k}^{(t)},\Sigma_{k})$
+\end{tabular}
+\end{center}
+\end{table}
+
+## Dynamic linear model
+It is possible to write the model described above as a dynamical linear model. If we let
+\begin{equation}
+\mathbf\theta^{(t)}=(\mathbf{y}^{(t)'},\mathbf\eta^{(t)'},\mathbf{z}_1^{(t)'},\ldots,\mathbf{z}_m^{(t)'})',
+\end{equation}
+then
+\begin{equation}
+\mathbf\theta^{(t)}|\mathbf\theta^{(t-1)}\sim{}N(A\mathbf\theta^{(t)},\Lambda),
+\end{equation}
+with
+\begin{equation}
+A= 
+\begin{pmatrix}
+I_d & 0 & 0 & 0 & \ldots & 0\\
+0 & R_\eta & 0 & 0 & \ldots & 0\\
+0  & 0 & R_1  & 0 & \ldots & 0\\
+0  & 0 & 0 & R_2  & \ldots & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0  &  0 & 0 & 0 & \ldots & R_m
+\end{pmatrix},
+\end{equation}
+with $I_d$ being a $d$ dimensional indicator matrix,
+and
+\begin{equation}
+\Lambda=
+\begin{pmatrix}
+\Lambda_y & 0 & 0 & 0 & \ldots & 0\\
+0 & \Lambda_\eta & 0 & 0 & \ldots & 0\\
+0  & 0 & \Lambda_1  & 0 & \ldots & 0\\
+0  & 0 & 0 & \Lambda_2  & \ldots & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0  &  0 & 0 & 0 & \ldots & \Lambda_m
+\end{pmatrix}.
+\end{equation}
+The observations
+\begin{equation}
+\mathbf{w}^{(t)}=(\mathbf{\hat{y}}^{(t)'},\mathbf{\hat{x}}^{(t)'}_1,\ldots,\mathbf{\hat{x}}^{(t)'}_m)'
+\end{equation}
+are then
+\begin{equation}
+S^{(t)}\mathbf{w}^{(t)}\sim{}N(S^{(t)}B(\mathbf{\theta} + \mathbf\zeta),S^{(t)}\Sigma^{(t)}S^{(t)'})
+\label{eq:DLM_obs}
+\end{equation}
+where
+\begin{equation}
+B= 
+\begin{pmatrix}
+I_d & 0 & 0 & 0 & \ldots & 0\\
+M_1 & M_1 & M_1  & 0 & \ldots & 0\\
+M_2  & M_2 & 0 & M_2  & \ldots & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+M_m  &  M_m & 0 & 0 & \ldots & M_m
+\end{pmatrix},
+\end{equation}
+\begin{equation}
+\mathbf\zeta=(\mathbf{0}',\mathbf{\delta}',\mathbf\gamma'_1,\ldots,\mathbf\gamma'_m)',
+\end{equation}
+with
+$\mathbf{0}$ being a $d$ dimensional vector of 0s,
+\begin{equation}
+\Sigma=
+\begin{pmatrix}
+\Sigma_y & 0  & \ldots & 0\\
+0 & \Sigma_1 &   \ldots & 0\\
+\vdots & \vdots  & \ddots & \vdots \\
+0  &  0  & \ldots & \Sigma_m
+\end{pmatrix}
+\end{equation}
+and $S^{(t)}$ is a matrix that is used to describe which variables are observed at time $t$. If all observations and the simulators give an output at time $t$ then $S^{(t)}=I_{d+\sum_{k=1}^{m}n_k}$, however if some outputs are missing then the rows corresponding to that output are removed. For example, if at time $t$ all of the simulators output the variables of interest but there are no observations then $S^{(t)}$ is $I_{d+\sum_{k=1}^{m}n_k}$ with the first $d$ rows removed.
+
+
+## Kalman filter
+
+By considering the ensemble model as a dynamical linear model it is possible to fit it using a Kalman filter. In this package we use the sequential Kalman filter \citep{chui_chen}, which speeds up computation of the Kalman filter as there is no requirement to take the inverse of large matrices. For the sequential Kalman filter the observations, equation \ref{eq:DLM_obs} should be independent of one another, i.e. the off diagonal elements of the covariance matrix being be zero.
+If we perform eigen decomposition on covariance matrix of the observations, then for the $k$th simulator
+\begin{equation}
+\Sigma_k=Q_k\Delta_kQ_k'
+\end{equation}
+where, $Q_k$ is a matrix, the same size as $\Sigma_k$, with the $i$th column being the $i$th eigen vector, and $\Delta_k$ is a diagonal matrix with $\Delta_{i,i}$ being the $i$th eigen value. Equation \ref{eq:par_un} becomes
+\begin{equation}
+Q_k'\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(Q_k'M_k\mathbf{x}_{k}^{(t)},\Delta_k).
+\end{equation}
+Similarly,
+\begin{equation}
+\Sigma_y=Q_y\Delta_yQ_y',
+\end{equation}
+with equation \ref{eq:obs_uncert} becoming
+\begin{equation}
+Q_y'\mathbf{\hat{y}}^{(t)}\sim{}N(Q_y'\mathbf{y}^{(t)},\Delta_y).
+\end{equation}
+This means that the dynamical linear model in equation \ref{eq:DLM_obs} becomes
+\begin{equation}
+    S^{(t)}\mathbf{\tilde{w}}^{(t)}\sim{}N(S^{(t)}\tilde{B}^{(t)}(\mathbf{\theta} + \mathbf\zeta),S^{(t)}\Delta{}S^{(t)'}),
+\end{equation}
+where $\mathbf{\tilde{w}}^{(t)}=Q'\mathbf{w}$ and $\tilde{B}^{(t)}=Q'B$, with
+\begin{equation}
+Q=
+\begin{pmatrix}
+Q_y & 0 &  \ldots & 0\\
+0 & Q_1  &  \ldots & 0\\
+\vdots   & \vdots & \ddots & \vdots \\
+0  &  0  & \ldots & Q_m
+\end{pmatrix}
+\end{equation}
+and
+\begin{equation}
+\Delta=
+\begin{pmatrix}
+\Delta_y& 0  & \ldots & 0\\
+0 &\Delta_1 &   \ldots & 0\\
+\vdots & \vdots  & \ddots & \vdots \\
+0  &  0  & \ldots & \Delta_m
+\end{pmatrix}.
+\end{equation}
+For further details on the Kalman filter see \citet[Chapter 7,][]{chui_chen}.
+
+
+# Example
+We demonstrate the ensemble model by investigating what would happen the the spawning stock biomass (SSB) or four species in the North Sea ($d=4$), [add species names here (and latin)], if we were to stop fishing in 2019. We used four simulators and estimates of SSB from single-species assessments to predict the true SSB from 1984 until 2019, and the SSB from 2020 unitl [last year].
+
+## Simulators
+
+\textbf{EcoPath with EcoSim} (EwE) is an ecosystem model with 60 functional groups for the North Sea \citep{ices_ewe}. It outputs all four species from 1991 until [last year], in the variable [add], meaning that $n_1=4$ and $M_1=I_4$.
+The covariance of the EwE's output, $\Sigma_{1}$ was calculated in \citet{mackinson} and is [add].
+
+\textbf{LeMans} is a discrete time length-based model that describes growth and predation \citep{thorpe15}. It outputs all four species from 1986 until [last year], in the variable [add], meaning that $n_2=4$ and $M_2=I_4$.
+The covariance of the LeMans' output, $\Sigma_{2}$ was calculated in \citet{thorpe15} and is [add].
+
+\textbf{mizer} is a size-based model that describes ontogenetic feeding and growth, mortality, and reproduction driven by size-dependent predation and maturation processes \citep{blanchard}. It outputs all four species from 1984 until [last year], in the variable [add], meaning that $n_3=4$ and $M_3=I_4$.
+The covariance of the mizer's output, $\Sigma_{3}$ was calculated in \citet{spence_ns} and is [add].
+
+\textbf{FishSUMS} is a discrete time length-based model that describes growth, density-dependent mortality, and losses due to fishing and predation by explicitly modelled species, and seasonal reproduction \citep{fishsums}. It outputs [list the species], i.e. it does not output sole, from 1984 until [last year], in the variable [add], meaning that $n_4=4$ and
+\begin{equation}
+    M_4=
+    \begin{pmatrix}
+1 & 0 &  0 & 0\\
+0 & 1  & 0 & 0\\
+0 & 0 & 1 & 0 
+\end{pmatrix}.
+\end{equation}
+%%%%% James -- Im not sure what the last species is you may need to adjust this equation.
+The covariance of the FishSUMS' output, $\Sigma_{4}$ was calculated in \citet{spence_ff} and is [add].
+
+## Observations
+
+## Initial settings
+
+## Results
+
+## Prior sensitivity
+
+\appendix
+# Covariance parameterisation
+The covariance matrix, $\Sigma$, can be decomposed as
+\begin{equation*}
+    \Sigma=DPD'
+\end{equation*}
+where $D$ is a diagonal matrix with the $i$th diagonal being
+\begin{equation*}
+    D_{i,i}=\sqrt{\Sigma_{i,i}},
+\end{equation*}
+and $P$ being a correlation matrix.

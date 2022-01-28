@@ -14,7 +14,7 @@
 #' 3. Sampling from the Kalman filter: Using `generate_sample` with
 #' the fitted ensemble object, the discrepancy terms and the ensemble's best
 #' guess of the truth can be generated. Similarly to `fit_ensemble_model`, this
-#' can either be a point estimate (the MLE) or a full sample of the Kalman filter.
+#' can either be a point estimate or a full sample of the Kalman filter.
 #'
 #' @docType package
 #' @name EcoEnsemble-package

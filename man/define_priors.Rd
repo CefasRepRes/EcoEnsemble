@@ -54,7 +54,7 @@ the shared short-term discrepancies. See details below.}
 element corresponds to the standard deviation of each feature.}
 }
 \value{
-A \code{list} encoding prior information on discrepancies.
+A \code{list} encoding prior information.
 }
 \description{
 Encodes prior information on discrepancies for use in the ensemble model.
@@ -64,11 +64,11 @@ See the supporting information for Spence et. al. (2018) for a worked example of
 As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies
 as well as individual long-term discrepancies) are decomposed
 into
-\deqn{\Sigma = \sqrt{\mathrm{diag}(\pi_i)} \Lambda \sqrt{\mathrm{diag}(\pi)},}
+\deqn{\Sigma = \sqrt{\mathrm{diag}(\pi)}  \Lambda \sqrt{\mathrm{diag}(\pi)},}
 where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda}
 is the correlation matrix. The variance terms \eqn{\pi}
-are parameterised by inverse-gamma distributions, and passed through as \code{ind_st_var_params},
-\code{ind_lt_var_params}, \code{sha_st_var_params} parameters.
+are parameterised by inverse-gamma distributions (passed through as \code{ind_st_var_params},
+\code{ind_lt_var_params}, \code{sha_st_var_params} parameters).
 }
 \section{Correlation matrix priors}{
 
@@ -78,15 +78,19 @@ These can take the value \code{'lkj'}, \code{'inv_wishart'}, or \code{'beta'} to
 refer to the LKJ, inverse Wishart, or Beta distributions respectively. In each case,
 the associated parameters should be passed through using the relevant \code{..._cor_params} variable.
 \itemize{
-\item LKJ - The parameter should be a single scalar value \eqn{\eta} giving the LKJ shape parameter as described in the
-\href{https://mc-stan.org/docs/2_28/functions-reference/lkj-correlation.html}{Stan manual.} The
-density of a correlation matrix is given by \deqn{f(\Sigma | \eta) \alpha det (\Sigma)^{\eta - 1}}
+\item LKJ - The parameter should be a single scalar value \eqn{\eta} giving the LKJ shape parameter, such
+that the probability density is given by
+\deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.}
 \item Inverse Wishart - A \code{list} containing a scalar value \eqn{\nu} (giving the degrees of
 freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale
-matrix). See the
-\href{https://mc-stan.org/docs/2_28/functions-reference/inverse-wishart-distribution.html}{Stan manual}
-for more information. The dimensions of \eqn{\Sigma} should be the same as the correlation matrix
-it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species)
+matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix
+it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species). The density of
+an inverse Wishart is given by
+\deqn{f(W|\eta, S) = \frac{1}{2^{\eta N/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + N + 1)}
+ \exp \left( \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),}
+where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(SW^{-1} \right)}} is the trace of \eqn{SW^{-1}}.
+Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation
+matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered.
 \item Beta - A \code{list} containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha}
 and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the
 correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function
@@ -96,23 +100,20 @@ rescaled parameters that the Beta distribution applies.
 }
 
 \examples{
-#Basic usage of function for a model with 4 species.
+#Defining priors for a model with 4 species.
 N_species <- 4
 priors <- define_priors(ind_st_var_params = list(25, 0.25),
                         ind_st_cor_form = "lkj", #Using an LKJ distribution for individual short-term discrepancies
                         ind_st_cor_params = 30, #The parameter is 30
                         ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
-                        ind_lt_cor_form = "beta", #For long term discrepancies we use a Beta distribution
+                        ind_lt_cor_form = "beta",
                         ind_lt_cor_params = list(matrix(40,N_species, N_species), matrix(40, N_species, N_species)),
 
                         sha_st_var_exp = 3,
                         sha_st_cor_form = "lkj",
                         sha_st_cor_params = 30,
                         sha_lt_sd = rep(4,N_species))
-
 }
 \references{
 Spence et. al. (2018). A general framework for combining ecosystem models. \emph{Fish and Fisheries}, 19(6):1031-1042.
-
-Chandler RE. 2013 Exploiting strength, discounting weakness: combining information from multiple climate simulators. \emph{Phil Trans R Soc A} 371: 20120388
 }

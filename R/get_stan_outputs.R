@@ -1,9 +1,8 @@
 #'Generate samples from a fitted ensemble model.
 #'
 #'Methods to generates samples of the latent variables in the ensemble model by sampling from
-#'the Kalman filter. It is strongly recommended to use the `generate_sample` wrapper function,
-#'but subroutiones are provided to allow finer control if desired.
-#'@param fit An `EnsembleFit` fitted ensemble object, an output from the `fit_ensemble_model` function.
+#'the Kalman filter.
+#'@param fit An `EnsembleFit` object.
 #'@param num_samples The number of samples to generate from the Kalman filter if the `EnsembleFit` object is not a full sampling
 #'of the posterior of the ensemble model. The default is 1. If the `EnsembleFit` object is a full sampling of the posterior, then the
 #'number of samples will be the same as the number of samples in the ensemble MCMC.
@@ -44,46 +43,57 @@
 #'@rdname get_stan_outputs
 #'@export
 #'@examples
-#'# Basic usage of the generate sample function
-#'fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+#'N_species <- 4
+#'priors <- define_priors(ind_st_var_params = list(25, 0.25),
+#'                        ind_st_cor_form = "lkj", #Using an LKJ distribution for individual short-term discrepancie
+#'                        ind_st_cor_params = 30, #The parameter is 30
+#'                        ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
+#'                        ind_lt_cor_form = "beta",
+#'                        ind_lt_cor_params = list(matrix(40,N_species, N_species), matrix(40, N_species, N_species)
+#'                                                 sha_st_var_exp = 3,
+#'                                                 sha_st_cor_form = "lkj",
+#'                                                 sha_st_cor_params = 30,
+#'                                                 sha_lt_sd = rep(4,N_species)))
+#'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
 #'                          priors = priors)
-#'sample <- generate_sample(fit_sample, num_samples = 2000)
+#'sample <- generate_sample(fit, num_samples = 2000)
 #'
 #'# A quicker way to get the MLE for the first sample from the ensemble
-#'transf_data <- get_transformed_data(fit_sample)
-#'ex.fit <- rstan::extract(fit$ex.fit)
+#'transf_data <- get_transformed_data(fit)
+#'ex.fit <- rstan::extract(fit@@ex.fit)
 #'mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
-#'                      time = fit$stan_input$time, simplify = F)
+#'                      time = fit@@ensemble_data@@stan_input$time, simplify = F)
 #'
 generate_sample <- function(fit, num_samples = 1)
 {
 
-  stan_input <- fit$stan_input
+  stan_input <- fit@ensemble_data@stan_input
+
+  # If we have samples, then a full MCMC was run
+  full_sample <- !is.null(fit@samples)
 
   transformed_data <- get_transformed_data(fit)
 
-  ret <- list(mle=c(),sample=c())
-
   rstan::expose_stan_functions(stanmodels$KF_back)
 
-  if (fit$full_sample){
-    ex.fit <- rstan::extract(fit$ex.fit)
+  if (full_sample){
+    ex.fit <- rstan::extract(fit@samples)
     num_samples <- nrow(ex.fit$x_hat)
     #ret$mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, bigM = bigM,
     #                  all_eigenvalues_cov = all_eigenvalues_cov,
     #                  observation_available = observation_available,
     #                  time = stan_input$time, new_data = new_data, simplify = F)
-    ret$mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, transformed_data = transformed_data,
+    mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, transformed_data = transformed_data,
                       time = stan_input$time, simplify = F)
   }else {
-    ex.fit <- fit$ex.fit$par
+    ex.fit <- fit@point_estimate$par
     #ret$mle <- get_mle(x=1, ex.fit, bigM, all_eigenvalues_cov,
     #                   observation_available, time = stan_input$time, new_data)
-    ret$mle <- get_mle(x=1, ex.fit, transformed_data = transformed_data,
+    mle <- get_mle(x=1, ex.fit, transformed_data = transformed_data,
                        time = stan_input$time)
   }
 
@@ -96,33 +106,29 @@ generate_sample <- function(fit, num_samples = 1)
                   time = stan_input$time, simplify = F)
 
 
-  if (fit$full_sample){
+  if (full_sample){
     tmp <- mapply(function(x,y){
       y - x$sam_x_hat + x$sam_x
-    }, y = ret$mle,
+    }, y = mle,
     x = sammy)
     #TODO: CHange the dimnames to be something helpful for the end user....
     #ret$sample <-array(as.numeric(unlist(tmp)),dim=c(nrow(ret$mle[[1]]),ncol(ret$mle[[1]]),num_samples),
     #                   dimnames = list(1:stan_input$time), , 1:num_samples)
-    ret$sample <-array(as.numeric(unlist(tmp)),dim=c(nrow(ret$mle[[1]]),ncol(ret$mle[[1]]),num_samples))
-    ret$mle <-array(as.numeric(unlist(ret$mle)),dim=c(nrow(ret$mle[[1]]),ncol(ret$mle[[1]]),num_samples))
+    sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
+    mle <-array(as.numeric(unlist(mle)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
   }else{
     tmp<-lapply(sammy,function(x,y){
       y - x$sam_x_hat + x$sam_x
-    }, y = ret$mle)
-    ret$sample <-array(as.numeric(unlist(tmp)),dim=c(nrow(ret$mle), ncol(ret$mle), num_samples))
+    }, y = mle)
+    sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle), ncol(mle), num_samples))
   }
 
-  class(ret) <- "EnsembleSample"
-
-  rm("KalmanFilter_back")
-
-  return(ret)
+  return(EnsembleSample(fit, mle, sample_ret))
 }
 
 #'@rdname get_stan_outputs
 get_transformed_data <- function(fit){
-  stan_input <- fit$stan_input
+  stan_input <- fit@ensemble_data@stan_input
 
   N <- stan_input$N
   M <- stan_input$M
@@ -194,7 +200,7 @@ get_transformed_data <- function(fit){
 }
 
 #'@rdname get_stan_outputs
-get_parameters <- function(ex.fit, x=1){
+get_parameters <- function(ex.fit, x = 1){
   ret <- list()
   if (is(ex.fit$x_hat,"matrix")){ ## It's a sample
     ret$x_hat <- ex.fit$x_hat[x,]
@@ -216,7 +222,7 @@ get_parameters <- function(ex.fit, x=1){
 
 
 #'@rdname get_stan_outputs
-get_mle <- function(x=1,ex.fit,transformed_data,time) ## get the MLE from the fit
+get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the fit
 {
   if(!exists("KalmanFilter_back"))
     rstan::expose_stan_functions(stanmodels$KF_back)
@@ -260,43 +266,3 @@ gen_sample <- function(x=1, ex.fit, transformed_data, time)
                                  observation_available)
   return(list(sam_x=sam_x,sam_x_hat=sam_x_hat))
 }
-
-
-
-
-
-
-
-#gen_sample <- function(x=1, ex.fit, # variables
-#                       bigM, all_eigenvalues_cov, observation_available, time) # constants
-#{
-#
-#  params <- get_parameters(ex.fit, x)
-#
-#  sam_y <- matrix(0,time,nrow(bigM))
-#  sam_x <- matrix(0,time,length(params$x_hat))
-#
-#  sam_x[1,] <- as.matrix(params$x_hat) + chol(params$SIGMA_init)%*%rnorm(length(params$x_hat))
-#  sam_y[1,] <- bigM %*% (sam_x[1,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))
-#  ch_sigma <- chol(params$SIGMA)
-#  for (i in 2:time){
-#    sam_x[i,] <- as.matrix(params$AR_params * sam_x[i-1,]) + ch_sigma%*%rnorm(length(params$x_hat))
-#    sam_y[i,] <- bigM %*% (sam_x[i,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))
-#  }
-#  sam_x_hat <- KalmanFilter_back(params$AR_params, params$lt_discrepancies,
-#                                 all_eigenvalues_cov, params$SIGMA,
-#                                 bigM,
-#                                 params$SIGMA_init,
-#                                 params$x_hat, time, sam_y,
-#                                 observation_available)
-#  return(list(sam_x=sam_x,sam_x_hat=sam_x_hat))
-#}
-
-
-#get_mle <- function(x=1,ex.fit,bigM,all_eigenvalues_cov,observation_available,time,new_data) ## get the MLE from the fit
-#{
-#  params <- get_parameters(ex.fit,x)
-#  ret <- KalmanFilter_back(params$AR_params, params$lt_discrepancies, all_eigenvalues_cov,
-#                           params$SIGMA,bigM,params$SIGMA_init,params$x_hat,time,new_data,observation_available)
-#  return(ret)
-#}

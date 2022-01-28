@@ -19,7 +19,7 @@ get_mle(x = 1, ex.fit, transformed_data, time)
 gen_sample(x = 1, ex.fit, transformed_data, time)
 }
 \arguments{
-\item{fit}{An \code{EnsembleFit} fitted ensemble object, an output from the \code{fit_ensemble_model} function.}
+\item{fit}{An \code{EnsembleFit} object.}
 
 \item{num_samples}{The number of samples to generate from the Kalman filter if the \code{EnsembleFit} object is not a full sampling
 of the posterior of the ensemble model. The default is 1. If the \code{EnsembleFit} object is a full sampling of the posterior, then the
@@ -64,14 +64,23 @@ the single point estimate of the ensemble model.
 }
 \description{
 Methods to generates samples of the latent variables in the ensemble model by sampling from
-the Kalman filter. It is strongly recommended to use the \code{generate_sample} wrapper function,
-but subroutiones are provided to allow finer control if desired.
+the Kalman filter.
 }
 \details{
 
 }
 \examples{
-# Basic usage of the generate sample function
+N_species <- 4
+priors <- define_priors(ind_st_var_params = list(25, 0.25),
+                       ind_st_cor_form = "lkj", #Using an LKJ distribution for individual short-term discrepancie
+                       ind_st_cor_params = 30, #The parameter is 30
+                       ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
+                       ind_lt_cor_form = "beta",
+                       ind_lt_cor_params = list(matrix(40,N_species, N_species), matrix(40, N_species, N_species)
+                                                sha_st_var_exp = 3,
+                                                sha_st_cor_form = "lkj",
+                                                sha_st_cor_params = 30,
+                                                sha_lt_sd = rep(4,N_species)))
 fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
@@ -84,6 +93,6 @@ sample <- generate_sample(fit_sample, num_samples = 2000)
 transf_data <- get_transformed_data(fit_sample)
 ex.fit <- rstan::extract(fit$ex.fit)
 mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
-                     time = fit$stan_input$time, simplify = F)
+                     time = fit@ensemble_data@stan_input$time, simplify = F)
 
 }

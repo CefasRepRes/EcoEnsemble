@@ -1,6 +1,6 @@
 Package: EcoEnsemble
-Title: Bayesian ensemble functions for combining ecosystem models
-Version: 0.0.0.9000
+Title: Bayesian ensemble modelling for combining ecosystem models
+Version: 0.0.0.9001
 Authors@R: 
     c(person(given = "James A.",
                 family = "Martindale",
@@ -11,7 +11,7 @@ Authors@R:
                 family = "Spence",
                 role = c("aut"),
                 comment = c(ORCID = "0000-0002-3445-7979")))
-Description: Set up, fit and sample from the ensemble model laid out in Spence et. al. (2018). A general framework for combining ecosystem models. <https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>
+Description: Set up, fit and sample from the ensemble model laid out in Spence et. al. (2018): A general framework for combining ecosystem models. <https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -19,7 +19,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Biarch: true
 Depends: 
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 Imports: 
     methods,
     Rcpp (>= 0.12.0),
@@ -36,5 +36,8 @@ LinkingTo:
     StanHeaders (>= 2.18.0)
 SystemRequirements: GNU make
 Suggests: 
+    rmarkdown,
+    knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr

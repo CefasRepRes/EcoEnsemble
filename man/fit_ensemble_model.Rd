@@ -31,14 +31,14 @@ the size of the datasets.
 \details{
 Observation and covariance pairs should be passed through as a \code{list},
 with observations / model outputs as the first element, and the covariance matrix
-as the second. The observations / model outputs should be a \code{matrix} (or \code{data.frame}) with each
-column giving a different species and each row a different year. Rows should be named with
-the years and columns should be named the appropriate variables. It is fine to have missing
+as the second. The observations / model outputs should be a \code{data.frame} (or a \code{matrix}) with each
+column giving a different species and each row a different time. Rows should be named with
+the times and columns should be named the appropriate variables. It is fine to have missing
 years or species, however for any model output there should be at least one observation in the observation
-data frame.
+data frame. Missing species / years are encoded by simply not including the corresponding row / column in the
+data frame / matrix.
 }
 \examples{
-A basic example
 N_species <- 4
 priors <- define_priors(ind_st_var_params = list(25, 0.25),
                         ind_st_cor_form = "lkj",
@@ -58,4 +58,12 @@ fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors,
                          full_sample = FALSE) #Only optimise in this case
+Run a full sample
+fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+                         simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                     list(SSB_fs,  Sigma_fs, "FishSUMS"),
+                                     list(SSB_lm,  Sigma_lm, "LeMans"),
+                                     list(SSB_miz, Sigma_miz, "Mizer")),
+                         priors = priors,
+                         control=list(adapt_delta = 0.99)) # Additional Stan parameters.
 }
