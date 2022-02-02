@@ -1,7 +1,7 @@
 #' Constructor for the `EnsembleData` class
 #'
 #' A constructor for the `EnsembleData` class. This is used to convert
-#' input data into the required form to fit the ensemble model using Stan.
+#' input data into the required form to fit the ensemble model.
 #'@param observations A `list` of observations and associated covariances.
 #'See details.
 #'@param simulators A `list` of simulator output and covariance pairs. See details.
