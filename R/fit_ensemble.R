@@ -20,17 +20,15 @@ get_mcmc_ensemble_model <- function(){
 
 #'Fits the ensemble model
 #'
-#'`fit_ensemble_model` runs an MCMC of the ensemble model through Stan This process can take a long time depending on
-#'the size of the datasets.
+#'`fit_ensemble_model` runs an MCMC of the ensemble model. This process can take a long time depending on the size of the datasets.
 #'
 #'@inheritParams EnsembleData
-#'@param full_sample A `logical` that runs a full sampling of the ensemble model if `TRUE`,
-#'and optimises to the MLE if `FALSE`. The default is TRUE.
-#'@param ... Additional Stan parameters.
+#'@param full_sample A `logical` that runs a full sampling of the ensemble model if `TRUE` and optimises to the MLE if `FALSE`. The default is TRUE.
+#'@param ... Additional parameters passed to the function \code{rstan::sampling}.
 #'@inherit EnsembleData details
-#'@return An `EnsembleFit` object containing the data passed through to Stan
-#'and the fitted `stanfit` object.
-#'
+#'@return An `EnsembleFit` object containing the data passed through to  and the fitted `stanfit` object.
+#'@references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
+#'@seealso \code{\linkS4class{EnsembleFit}}, \code{\link{EnsembleSample}}
 #'@export
 #'@examples
 #' N_species <- 4

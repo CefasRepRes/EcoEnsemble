@@ -1,11 +1,10 @@
 #' Plot the ensemble output
 #'
-#'Plots the latent truth predicted by the ensemble model, along with simulator outputs and observations.
-#'@param sample An `EnsembleSample` object output from `generate_sample`.
-#'@param variable The name of the variable / species to plot. This can either be a `character` string in the same
-#' form as the observation variable, or an index for the column in the observations data frame.
-#'@param ggplot A `logical` which plots the graphs using ggplot if `TRUE` and base R if `FALSE`.
-#'@param quantiles A `numeric` vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model.
+#'Plots the latent variables predicted by the ensemble model, along with simulator outputs and observations.
+#'@param sample An `EnsembleSample` object.
+#'@param variable The name of the variable to plot. This can either be a `character` string in the same form as the observation variable, or an index for the column in the observations data frame.
+#'@param ggplot A `logical` which plots the graphs using ggplot if `TRUE` and base R if `FALSE`. (James is this needed?)
+#'@param quantiles A `numeric` vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model. The default is `c(0.05,0.95)`.
 #'@return The `ggplot` object.
 #'@export
 #'@examples

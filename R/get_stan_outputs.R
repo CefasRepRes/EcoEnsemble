@@ -1,46 +1,39 @@
 #'Generate samples from a fitted ensemble model.
 #'
-#'Methods to generates samples of the latent variables in the ensemble model by sampling from
-#'the Kalman filter.
+#'Methods to generates samples of the latent variables from a fitted ensemble model.
 #'@param fit An `EnsembleFit` object.
-#'@param num_samples The number of samples to generate from the Kalman filter if the `EnsembleFit` object is not a full sampling
-#'of the posterior of the ensemble model. The default is 1. If the `EnsembleFit` object is a full sampling of the posterior, then the
-#'number of samples will be the same as the number of samples in the ensemble MCMC.
-#'@param time A non-negative integer specifying the time for which the ensemble model was run.
-#'@param ex.fit The extracted samples / point estimate from the `EnsembleFit` object. For samples, this should be the output
-#'of `rstan::extract()` on the `stanfit` object and for point estimate outputs this should be the `par` slot.
-#'@param x The sample of parameters from the ensemble model to use (if the `EnsembleFit` object is a full sampling, otherwise
-#'uses the MLE). The default is 1.
+#'@param num_samples The number of samples generated if the `EnsembleFit` object is not a full sampling of the posterior of the ensemble model. The default is 1. If the `EnsembleFit` object is a full sampling of the posterior, then the number of samples will be the same as the number of samples in the ensemble MCMC. (I don't understand this James)
+#'@param time A non-negative integer specifying the time for which the ensemble model was run. (I don't understand)
+#'@param ex.fit The extracted samples / point estimate from the `EnsembleFit` object. For samples, this should be the output of `rstan::extract()` on the `stanfit` object and for point estimate outputs this should be the `par` slot.
+#'@param x The sample of parameters from the ensemble model to use (if the `EnsembleFit` object is a full sampling, otherwise uses the MLE). The default is 1.
+#'@param transformed_data James?
 #'
-#'@details
+#'@details The samples are created using the methods described in ....
+#'
 #'
 #'@return
-#'`generate_sample` gives a `list` of length 2, with the first element being the MLE of the Kalman filter and
-#'the second element being samples.
+#'`generate_sample` gives a `list` of length 2, with the first element being the MLE of latent variables and the second element being samples of the latent variables.
 #'
 #'* If `fit` is a full MCMC sampling of the ensemble model, then:
-#'    + `mle` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array` (where \eqn{M} is the number of simulators
-#' and \eqn{N_{ens}} is the number of samples from the ensemble model), giving the MLE of the Kalman filter for
-#' each available sample of the ensemble model.
-#'    + `sample` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array`, giving a sample of the Kalman filter for
-#' each available sample of the ensemble model.
+#'    + `mle` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array` (where \eqn{M} is the number of simulators and \eqn{N_{ens}} is the number of samples from the ensemble model), giving the MLE of the latent variables for each available sample from the ensemble model.
+#'    + `sample` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array`, giving a sample of the latent variables for each available sample of the ensemble model.
 #'
 #'* If `fit` is a point estimate of the ensemble model, then:
-#'    + `mle` is a `time`\eqn{\times (3M + 2) \times} 1 `array` giving the MLE of the Kalman filter for the point estimate
+#'    + `mle` is a `time`\eqn{\times (3M + 2) \times} 1 `array` giving the MLE of the latent variables for the point estimate
 #' of the ensemble model.
-#'    + `sample` is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, giving `num_samples` samples of the Kalman filter for
-#' the single point estimate of the ensemble model.
+#'    + `sample` is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, giving `num_samples` samples of the latent variables for the single point estimate of the ensemble model.
 #'
 #'`get_transformed_data` gives a `list` of transformed input data in discrepancy space.
 #'
 #'`get_parameters` gives a `list` of ensemble parameters from the requested sample.
 #'
-#'`get_mle` gives the MLE of the Kalman filter for the the requested sample of ensemble parameter values.
+#'`get_mle` gives the MLE of the latent variables for the the requested sample of ensemble parameter values. (matrix?)
 #'
-#'`gen_sample` gives a sample from the Kalman filter for the the requested sample of ensemble parameter values.
+#'`gen_sample` gives a sample from the latent variables for the the requested sample of ensemble parameter values. (matrix/array?)
 #'
 #'
 #'@rdname get_stan_outputs
+#' @references the one I forgot.
 #'@export
 #'@examples
 #'N_species <- 4

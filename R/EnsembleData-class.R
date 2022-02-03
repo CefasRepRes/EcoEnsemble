@@ -1,21 +1,13 @@
 #' Constructor for the `EnsembleData` class
 #'
-#' A constructor for the `EnsembleData` class. This is used to convert
-#' input data into the required form to fit the ensemble model.
-#'@param observations A `list` of observations and associated covariances.
-#'See details.
-#'@param simulators A `list` of simulator output and covariance pairs. See details.
+#' A constructor for the `EnsembleData` class. This is used to convert input data into the required form to fit the ensemble model.
+#'@param observations A `list` 2 objectes containing observations and a covariance matrix. The first element is a `data.frame` or `matrix` with each column giving a observations of each output of interest and each row a different time. Rows should be named with the times and columns should be named the appropriate variables. The second element is the covariance matrix of the observations.
+#'@param simulators A `list` of length the number of simulators. For each simulator, there is a `list` of 2 objects containing simulator output and covariance matrix. The first element is a `data.frame` or `matrix` with each column giving a simulator outputs of interest and each row a different time. Rows should be named with the times and columns should be named the appropriate variables. The second element is the covariance matrix of the simulator outputs.
 #'@param priors A `list` of data specifying the prior distributions for the ensemble.
 #'See the `define_priors` function for the required form.
-#'@details Observation and covariance pairs should be passed through as a `list`,
-#'with observations / model outputs as the first element, and the covariance matrix
-#'as the second. The observations / model outputs should be a `data.frame` (or a `matrix`) with each
-#'column giving a different species and each row a different time. Rows should be named with
-#'the times and columns should be named the appropriate variables. It is fine to have missing
-#'years or species, however for any model output there should be at least one observation in the observation
-#'data frame. Missing species / years are encoded by simply not including the corresponding row / column in the
-#'data frame / matrix.
-#'@return An object of type \linkS4class{EnsembleData}
+#'@details Rows should be named with the times and columns should be named the appropriate variables. It is fine to have missing years or outputs, however for any simulator output there should be at least one observation in the observation data frame or matrix. Missing outputs and years are encoded by simply not including the corresponding row or column in the data frame or matrix.
+#'@return An object of class \code{\linkS4class{EnsembleData}}
+#'@seealso \code{\linkS4class{EnsembleData}}, \code{\link{define_priors}}
 #'@export
 #'@examples
 #' N_species <- 4
@@ -58,23 +50,13 @@ EnsembleData <- function(observations, simulators, priors) {
 #### Class definition ####
 #' A class to hold the Ensemble data
 #'
-#' A class that holds the observation data, simulator outputs, and prior information
-#' ready to fit the ensemble model in Stan.
-#'
-#' A new `EnsembleData` object can be created with the [EnsembleData()]
-#' constructor, but it is not necessary to do this if using the `fit_ensemble_model`
-#' function, as it will be created automatically.
-#'
-#' There is only one slot for this object, containing a list of data in the required
-#' form to fit the Stan model.
+#' A class that holds the observation data, simulator outputs, and prior information ready to fit the ensemble model in Stan.
 #'
 #' @slot stan_input A list of parameters in the correct form to fit the ensemble
 #' model in Stan.
-#' @slot observations A `list` of observations and associated covariances.
-#' See the `EnsembleData` constructor details.
-#' @slot simulators A `list` of simulator output and covariance pairs. See the `EnsembleData` constructor details.
-#' @slot priors A `list` of data specifying the prior distributions for the ensemble.
-#' See the `EnsembleData` constructor details.
+#' @slot observations A `list` of observations and associated covariances. --- same as above
+#' @slot simulators A `list` of simulator output and covariance pairs --- same as above
+#' @slot priors A `list` of data specifying the prior distributions for the ensemble --- same as above
 #'
 #' @export
 setClass(
