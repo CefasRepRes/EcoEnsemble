@@ -1,6 +1,6 @@
-#' Bayesian ensemble functions for combining ecosystem models
+#' A general framework for combining ecosystem models
 #'
-#' @description The `EcoEnsemble` package implements the framework for combining ecosystem models laid out in Spence et al (2018) in R.
+#' @description The `EcoEnsemble` package implements the framework for combining ecosystem models laid out in Spence et al (2018).
 #'
 #' @details
 #' The ensemble model can be implemented in three main stages:
@@ -17,6 +17,6 @@
 #' @import Rcpp
 #' @importFrom rstan sampling optimizing
 #'
-#' @references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
-#' @references Spence et. al. (2018). A general framework for combining ecosystem models. https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310
+#' @references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. [https://mc-stan.org](https://mc-stan.org)
+#' @references Spence, M. A., J. L. Blanchard, A. G. Rossberg, M. R. Heath, J. J. Heymans, S. Mackinson, N. Serpetti, D. C. Speirs, R. B. Thorpe, and P. G. Blackwell. 2018. "A General Framework for Combining Ecosystem Models." Fish and Fisheries 19: 1013-42. [https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310](https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310)
 NULL

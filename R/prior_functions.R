@@ -92,38 +92,23 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 #' element corresponds to the standard deviation of each feature.
 #'
 #' @details
-#' As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies
-#' as well as individual long-term discrepancies) are decomposed
-#' into
-#' \deqn{\Sigma = \sqrt{\mathrm{diag}(\pi)}  \Lambda \sqrt{\mathrm{diag}(\pi)},}
-#' where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda}
-#' is the correlation matrix. The variance terms \eqn{\pi}
-#' are parameterised by inverse-gamma distributions (passed through as `ind_st_var_params`,
-#' `ind_lt_var_params`, `sha_st_var_params` parameters).
-#' @section Correlation matrix priors:
-#' There are currently 3 supported prior distributions on correlation matrices which are chosen
+#' As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies as well as individual long-term discrepancies) are decomposed into \deqn{\Sigma = \sqrt{\mathrm{diag}(\pi)}  \Lambda \sqrt{\mathrm{diag}(\pi)},} where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda} is the correlation matrix. The variance terms \eqn{\pi}
+#' are parameterised by inverse-gamma distributions (passed through as `ind_st_var_params`, `ind_lt_var_params`, `sha_st_var_params` parameters).
+#'
+#' There are currently 3 supported prior distributions on correlation matrices, which are chosen
 #' via the `ind_st_cor_form`, `ind_lt_cor_form`, and `sha_st_cor_form` options.
 #' These can take the value `'lkj'`, `'inv_wishart'`, or `'beta'` to
-#' refer to the LKJ, inverse Wishart, or Beta distributions respectively. In each case,
-#' the associated parameters should be passed through using the relevant `..._cor_params` variable.
-#'  * LKJ - The parameter should be a single scalar value \eqn{\eta} giving the LKJ shape parameter, such
+#' refer to the LKJ, inverse Wishart, or Beta distributions respectively. The associated parameters should be passed through using the relevant variable:
+#'  * LKJ - If `ind_st_cor_form = 'lkj'`, then `ind_st_cor_params` should be a `numeric` \eqn{\eta} giving the LKJ shape parameter, such
 #'  that the probability density is given by
 #'  \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.}
-#'  * Inverse Wishart - A `list` containing a scalar value \eqn{\nu} (giving the degrees of
-#'  freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale
-#'  matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix
-#'  it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species). The density of
-#'  an inverse Wishart is given by
+#'  * Inverse Wishart - If `ind_st_cor_form = 'inv_wishart'`, then `ind_st_cor_params` should be a `list` containing a scalar value \eqn{\nu} (giving the degrees of freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species). The density of an inverse Wishart is given by
 #'  \deqn{f(W|\eta, S) = \frac{1}{2^{\eta N/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + N + 1)}
 #'  \exp \left( \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),}
-#'  where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(SW^{-1} \right)}} is the trace of \eqn{SW^{-1}}.
+#'  where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(X \right)}} is the trace of \eqn{X}.
 #'  Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation
 #'  matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered.
-#'  * Beta - A `list` containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha}
-#'  and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the
-#'  correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function
-#'  \eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}}. It is on these
-#'  rescaled parameters that the Beta distribution applies.
+#'  * Beta - A `list` containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha} and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function \eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}}. It is on these rescaled parameters that the Beta distribution applies.
 #'
 #' @return A `list` encoding prior information.
 #'
@@ -149,20 +134,54 @@ define_priors <- function(ind_st_var_params, ind_st_cor_form, ind_st_cor_params,
 
   return(
     list(prior_ind_st_var_a = ind_st_var_params[[1]],
-       prior_ind_st_var_b = ind_st_var_params[[2]],
-       prior_ind_lt_var_a = ind_lt_var_params[[1]],
-       prior_ind_lt_var_b = ind_lt_var_params[[2]],
-       prior_sha_st_var_exp = sha_st_var_exp,
-       prior_sha_lt_sd = sha_lt_sd,
-       prior_correlations = list(
-         ind_st_cor_form = ind_st_cor_form,
-         ind_st_cor_params = ind_st_cor_params,
-         ind_lt_cor_form = ind_lt_cor_form,
-         ind_lt_cor_params = ind_lt_cor_params,
-         sha_st_cor_form = sha_st_cor_form,
-         sha_st_cor_params = sha_st_cor_params
+         prior_ind_st_var_b = ind_st_var_params[[2]],
+         prior_ind_lt_var_a = ind_lt_var_params[[1]],
+         prior_ind_lt_var_b = ind_lt_var_params[[2]],
+         prior_sha_st_var_exp = sha_st_var_exp,
+         prior_sha_lt_sd = sha_lt_sd,
+         prior_correlations = list(
+           ind_st_cor_form = ind_st_cor_form,
+           ind_st_cor_params = ind_st_cor_params,
+           ind_lt_cor_form = ind_lt_cor_form,
+           ind_lt_cor_params = ind_lt_cor_params,
+           sha_st_cor_form = sha_st_cor_form,
+           sha_st_cor_params = sha_st_cor_params
          )
-       )
     )
-  }
+  )
+}
+
+
+z <- "inv_wishart(10,diag_matrix(rep_vector(1.0,N)))
+
+define_priors <- function(ind_st_cov, ind_lt_cov, sha_st_cov, sha_lt_cov){
+
+  ind_st_cov <- list(\"lkj_corr\", list(225, 52), 30)
+  ind_lt_cov <- list(\"inv_wishart\", list(225, 52))
+
+  ind_lt_cov <- list(\"inv_wishart_corr\", list(225, 52), list(10, diag(4)))
+  prior_y_init_mean_v  #Normal variance params
+  prior_y_init_var     #Inv gamma param
+  prior_Sigma_t        # Random walk f y
+  return(
+    list(prior_ind_st_var_a = ind_st_var_params[[1]],
+         prior_ind_st_var_b = ind_st_var_params[[2]],
+         prior_ind_lt_var_a = ind_lt_var_params[[1]],
+         prior_ind_lt_var_b = ind_lt_var_params[[2]],
+         prior_sha_st_var_exp = sha_st_var_exp,
+         prior_sha_lt_sd = sha_lt_sd,
+         prior_correlations = list(
+           ind_st_cor_form = ind_st_cor_form,
+           ind_st_cor_params = ind_st_cor_params,
+           ind_lt_cor_form = ind_lt_cor_form,
+           ind_lt_cor_params = ind_lt_cor_params,
+           sha_st_cor_form = sha_st_cor_form,
+           sha_st_cor_params = sha_st_cor_params
+         )
+    )
+  )
+}
+prior_y_init_mean_v  #Normal variance params
+prior_y_init_var     #Inv gamma param
+prior_Sigma_t        # Random walk f y"
 

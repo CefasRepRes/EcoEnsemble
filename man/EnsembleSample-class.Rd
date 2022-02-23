@@ -7,27 +7,24 @@
 \description{
 \code{EnsembleSample} objects are generated using the \code{generate_sample} function.
 }
-\details{
-The \code{mle} and \code{sample} slots are \eqn{T \times (M + 2)\times N_{sample}} arrays where
-\eqn{T} is the time the ensemble model was run for, \eqn{M} is the number of simulators
-and \eqn{N_{sample}} is the number of samples from the Kalman filter. For each time step,
-the \eqn{t}th element of the array \eqn{S[t, ,]} is a matrix where each column is a
-sample and the rows are the variables:
-\deqn{\left( y^{(t)}, \eta^{(t)}, z_1^{(t)}, z_2^{(t)} \ldots, z_M^{(t)}   \right)}
-where \eqn{y^{(t)}} is the ensemble model's prediction of the latent truth value at time \eqn{t},
-\eqn{\eta^{(t)}} is the shared short-term discrepancy at time \eqn{t},
-\eqn{z_i^{(t)}} is the individual short-term discrepancy of simulator \eqn{i} at time \eqn{t}.
-
-Each sample in the \code{sample} slot is a sample from the Kalman filter, while each sample in
-the \code{mle} slot is the MLE for the Kalman filter for every given sample of the ensemble model.
-}
 \section{Slots}{
 
 \describe{
-\item{\code{ensemble_fit}}{The \code{EnsembleFit} object of the fitted ensemble model.}
+\item{\code{ensemble_fit}}{An \code{EnsembleFit} object containing the fitted ensemble model.}
 
-\item{\code{mle}}{The MLE point estimates for the Kalman filter.}
+\item{\code{mle}}{An \code{array} of dimension \eqn{T \times (M + 2)\times N_{sample}} containing MLe point estimates from the \code{ensemble_fit} object, where \eqn{T} is the total time, \eqn{M} is the number of simulators and \eqn{N_{sample}} is the number of samples. For each time step, the \code{t}th element of the array is a \code{matrix} where each column is a sample and the rows are the variables:
+\deqn{\left( y^{(t)}', \eta^{(t)}', z_1^{(t)}', z_2^{(t)}' \ldots, z_M^{(t)}'   \right)'}
+where \eqn{y^{(t)}} is the ensemble model's prediction of the latent truth value at time \eqn{t},
+\eqn{\eta^{(t)}} is the shared short-term discrepancy at time \eqn{t},
+\eqn{z_i^{(t)}} is the individual short-term discrepancy of simulator \eqn{i} at time \eqn{t}.}
 
-\item{\code{sample}}{Sample from the Kalman filter.}
+\item{\code{sample}}{An \code{array} of dimension \eqn{T \times (M + 2)\times N_{sample}} containing samples from the \code{ensemble_fit} object, where \eqn{T} is the total time, \eqn{M} is the number of simulators and \eqn{N_{sample}} is the number of samples. For each time step, the \code{t}th element of the array is a \code{matrix} where each column is a sample and the rows are the variables:
+\deqn{\left( y^{(t)}', \eta^{(t)}', z_1^{(t)}', z_2^{(t)}' \ldots, z_M^{(t)}'   \right)'}
+where \eqn{y^{(t)}} is the ensemble model's prediction of the latent truth value at time \eqn{t},
+\eqn{\eta^{(t)}} is the shared short-term discrepancy at time \eqn{t},
+\eqn{z_i^{(t)}} is the individual short-term discrepancy of simulator \eqn{i} at time \eqn{t}.}
 }}
 
+\seealso{
+\code{\link{EnsembleSample}}, \code{\link{generate_sample}}
+}

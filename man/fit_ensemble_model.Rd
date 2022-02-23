@@ -7,36 +7,22 @@
 fit_ensemble_model(observations, simulators, priors, full_sample = TRUE, ...)
 }
 \arguments{
-\item{observations}{A \code{list} of observations and associated covariances.
-See details.}
+\item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the observations.}
 
-\item{simulators}{A \code{list} of simulator output and covariance pairs. See details.}
+\item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
 
 \item{priors}{A \code{list} of data specifying the prior distributions for the ensemble.
 See the \code{define_priors} function for the required form.}
 
-\item{full_sample}{A \code{logical} that runs a full sampling of the ensemble model if \code{TRUE},
-and optimises to the MLE if \code{FALSE}. The default is TRUE.}
+\item{full_sample}{A \code{logical} that runs a full sampling of the ensemble model if \code{TRUE} and optimises to the MLE if \code{FALSE}. The default is TRUE.}
 
-\item{...}{Additional Stan parameters.}
+\item{...}{Additional parameters passed to the function \code{rstan::sampling}.}
 }
 \value{
-An \code{EnsembleFit} object containing the data passed through to Stan
-and the fitted \code{stanfit} object.
+An \code{EnsembleFit} object containing the data passed through to  and the fitted \code{stanfit} object.
 }
 \description{
-\code{fit_ensemble_model} runs an MCMC of the ensemble model through Stan This process can take a long time depending on
-the size of the datasets.
-}
-\details{
-Observation and covariance pairs should be passed through as a \code{list},
-with observations / model outputs as the first element, and the covariance matrix
-as the second. The observations / model outputs should be a \code{data.frame} (or a \code{matrix}) with each
-column giving a different species and each row a different time. Rows should be named with
-the times and columns should be named the appropriate variables. It is fine to have missing
-years or species, however for any model output there should be at least one observation in the observation
-data frame. Missing species / years are encoded by simply not including the corresponding row / column in the
-data frame / matrix.
+\code{fit_ensemble_model} runs an MCMC of the ensemble model. This process can take a long time depending on the size of the datasets.
 }
 \examples{
 N_species <- 4
@@ -66,4 +52,10 @@ fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors,
                          control=list(adapt_delta = 0.99)) # Additional Stan parameters.
+}
+\references{
+Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
+}
+\seealso{
+\code{\linkS4class{EnsembleFit}}, \code{\link{EnsembleSample}}
 }

@@ -7,30 +7,18 @@
 EnsembleData(observations, simulators, priors)
 }
 \arguments{
-\item{observations}{A \code{list} of observations and associated covariances.
-See details.}
+\item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the observations.}
 
-\item{simulators}{A \code{list} of simulator output and covariance pairs. See details.}
+\item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
 
 \item{priors}{A \code{list} of data specifying the prior distributions for the ensemble.
 See the \code{define_priors} function for the required form.}
 }
 \value{
-An object of type \linkS4class{EnsembleData}
+An object of class \code{EnsembleData}
 }
 \description{
-A constructor for the \code{EnsembleData} class. This is used to convert
-input data into the required form to fit the ensemble model using Stan.
-}
-\details{
-Observation and covariance pairs should be passed through as a \code{list},
-with observations / model outputs as the first element, and the covariance matrix
-as the second. The observations / model outputs should be a \code{data.frame} (or a \code{matrix}) with each
-column giving a different species and each row a different time. Rows should be named with
-the times and columns should be named the appropriate variables. It is fine to have missing
-years or species, however for any model output there should be at least one observation in the observation
-data frame. Missing species / years are encoded by simply not including the corresponding row / column in the
-data frame / matrix.
+A constructor for the \code{EnsembleData} class. This is used to convert input data into the required form for \code{fit_ensemble_model}.
 }
 \examples{
 N_species <- 4
@@ -50,4 +38,7 @@ ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "mizer")),
                               priors = priors)
+}
+\seealso{
+\code{\linkS4class{EnsembleData}}, \code{\link{define_priors}}, \code{\link{fit_ensemble_model}}
 }

@@ -14,13 +14,13 @@ information about a point estimate.
 \section{Slots}{
 
 \describe{
-\item{\code{ensemble_data}}{The \code{EnsembleData} object encapsulating the data initially passed
-through to Stan when fitting the ensemble model.}
+\item{\code{ensemble_data}}{An \code{EnsembleData} object encapsulating the data used to fit the ensemble model.}
 
-\item{\code{samples}}{The \code{stanfit} object representing the samples drawn from the Stan
-model. This is \code{NULL} if only a point estimate is generated.}
+\item{\code{samples}}{A \code{stanfit} object containing the samples drawn from the fitted model. The default value is \code{NULL}.}
 
-\item{\code{point_estimate}}{The \code{list} output of \code{rstan::optimizing} if a full sampling is
-not completed. Otherwise, this is \code{NULL}.}
+\item{\code{point_estimate}}{A \code{list} output of the optimised model. The default value is \code{NULL}.}
 }}
 
+\seealso{
+\code{\link{EnsembleFit}}, \code{\link{fit_ensemble_model}}, \code{\link{generate_sample}}
+}

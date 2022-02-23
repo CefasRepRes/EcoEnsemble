@@ -5,29 +5,21 @@
 \alias{EnsembleData-class}
 \title{A class to hold the Ensemble data}
 \description{
-A class that holds the observation data, simulator outputs, and prior information
-ready to fit the ensemble model in Stan.
-}
-\details{
-A new \code{EnsembleData} object can be created with the \code{\link[=EnsembleData]{EnsembleData()}}
-constructor, but it is not necessary to do this if using the \code{fit_ensemble_model}
-function, as it will be created automatically.
-
-There is only one slot for this object, containing a list of data in the required
-form to fit the Stan model.
+A class that holds the observation data, simulator outputs, and prior information to convert into the required form for \code{fit_ensemble_model}.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{stan_input}}{A list of parameters in the correct form to fit the ensemble
-model in Stan.}
+\item{\code{stan_input}}{A list of parameters in the correct form to fit the ensemble model in Stan.}
 
-\item{\code{observations}}{A \code{list} of observations and associated covariances.
-See the \code{EnsembleData} constructor details.}
+\item{\code{observations}}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the observations.}
 
-\item{\code{simulators}}{A \code{list} of simulator output and covariance pairs. See the \code{EnsembleData} constructor details.}
+\item{\code{simulators}}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
 
 \item{\code{priors}}{A \code{list} of data specifying the prior distributions for the ensemble.
-See the \code{EnsembleData} constructor details.}
+See the \code{define_priors} function for the required form.}
 }}
 
+\seealso{
+\code{\link{EnsembleData}}, \code{\link{define_priors}}, \code{\link{fit_ensemble_model}}
+}

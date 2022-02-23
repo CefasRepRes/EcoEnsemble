@@ -3,17 +3,13 @@ validate_compatibility <- function(name, pair){
 
   if (!is.square.matrix(covar)
       || !is.positive.definite(covar)){
-    msg <- paste(name, " covariance matrix is not a",
-                 " positive definite square matrix.", sep="")
+    msg <- paste0(name, " covariance matrix is not a positive definite square matrix.")
     stop(msg)
   }
 
   df <- as.matrix(pair[[1]])
   if (ncol(df) != ncol(covar)){
-    msg <- paste(name, " data has ", ncol(df),
-                 " columns but the covariance matrix has ", ncol(covar),
-                 " columns. Variables for the covariance matrix should",
-                 " match the observed data.", sep="")
+    msg <- paste0(name, " data has ", ncol(df), "columns but the covariance matrix has ", ncol(covar), "columns. Variables for the covariance matrix should match the observed data.")
     stop(msg)
   }
 
@@ -23,10 +19,7 @@ validate_compatibility <- function(name, pair){
 
   if (length(data_variables) == 0){
 
-    msg <- paste(name, " data frame variables are not",
-                 " named. Each column of the data frame",
-                 " and the covariance matrix should be named",
-                 " appropriately and match each other.", sep="")
+    msg <- paste0(name, " data frame variables are not named. Each column of the data frame and the covariance matrix should be named appropriately and match each other.")
     stop(msg)
   }
 

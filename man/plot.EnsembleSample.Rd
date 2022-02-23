@@ -7,20 +7,19 @@
 \method{plot}{EnsembleSample}(sample, variable = 1, quantiles = c(0.05, 0.95))
 }
 \arguments{
-\item{sample}{An \code{EnsembleSample} object output from \code{generate_sample}.}
+\item{sample}{An \code{EnsembleSample} object.}
 
-\item{variable}{The name of the variable / species to plot. This can either be a \code{character} string in the same
-form as the observation variable, or an index for the column in the observations data frame.}
+\item{variable}{The name of the variable to plot. This can either be a \code{character} string in the same form as the observation variable, or an index for the column in the observations data frame.}
 
-\item{quantiles}{A \code{numeric} vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model.}
+\item{quantiles}{A \code{numeric} vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model. The default is \code{c(0.05,0.95)}.}
 
-\item{ggplot}{A \code{logical} which plots the graphs using ggplot if \code{TRUE} and base R if \code{FALSE}.}
+\item{ggplot}{A \code{logical} which plots the graphs using ggplot if \code{TRUE} and base R if \code{FALSE}. (James is this needed?)}
 }
 \value{
 The \code{ggplot} object.
 }
 \description{
-Plots the latent truth predicted by the ensemble model, along with simulator outputs and observations.
+Plots the latent variables predicted by the ensemble model, along with simulator outputs and observations.
 }
 \examples{
 fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),

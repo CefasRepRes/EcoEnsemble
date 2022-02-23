@@ -61,44 +61,26 @@ Encodes prior information on discrepancies for use in the ensemble model.
 See the supporting information for Spence et. al. (2018) for a worked example of this.
 }
 \details{
-As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies
-as well as individual long-term discrepancies) are decomposed
-into
-\deqn{\Sigma = \sqrt{\mathrm{diag}(\pi)}  \Lambda \sqrt{\mathrm{diag}(\pi)},}
-where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda}
-is the correlation matrix. The variance terms \eqn{\pi}
-are parameterised by inverse-gamma distributions (passed through as \code{ind_st_var_params},
-\code{ind_lt_var_params}, \code{sha_st_var_params} parameters).
-}
-\section{Correlation matrix priors}{
+As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies as well as individual long-term discrepancies) are decomposed into \deqn{\Sigma = \sqrt{\mathrm{diag}(\pi)}  \Lambda \sqrt{\mathrm{diag}(\pi)},} where \eqn{\pi} is the vector of variances of each species, and \eqn{\Lambda} is the correlation matrix. The variance terms \eqn{\pi}
+are parameterised by inverse-gamma distributions (passed through as \code{ind_st_var_params}, \code{ind_lt_var_params}, \code{sha_st_var_params} parameters).
 
-There are currently 3 supported prior distributions on correlation matrices which are chosen
+There are currently 3 supported prior distributions on correlation matrices, which are chosen
 via the \code{ind_st_cor_form}, \code{ind_lt_cor_form}, and \code{sha_st_cor_form} options.
 These can take the value \code{'lkj'}, \code{'inv_wishart'}, or \code{'beta'} to
-refer to the LKJ, inverse Wishart, or Beta distributions respectively. In each case,
-the associated parameters should be passed through using the relevant \code{..._cor_params} variable.
+refer to the LKJ, inverse Wishart, or Beta distributions respectively. The associated parameters should be passed through using the relevant variable:
 \itemize{
-\item LKJ - The parameter should be a single scalar value \eqn{\eta} giving the LKJ shape parameter, such
+\item LKJ - If \code{ind_st_cor_form = 'lkj'}, then \code{ind_st_cor_params} should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such
 that the probability density is given by
 \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.}
-\item Inverse Wishart - A \code{list} containing a scalar value \eqn{\nu} (giving the degrees of
-freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale
-matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix
-it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species). The density of
-an inverse Wishart is given by
+\item Inverse Wishart - If \code{ind_st_cor_form = 'inv_wishart'}, then \code{ind_st_cor_params} should be a \code{list} containing a scalar value \eqn{\nu} (giving the degrees of freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix it produces (i.e \eqn{N \times N} where \eqn{N} is the number of species). The density of an inverse Wishart is given by
 \deqn{f(W|\eta, S) = \frac{1}{2^{\eta N/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + N + 1)}
  \exp \left( \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),}
-where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(SW^{-1} \right)}} is the trace of \eqn{SW^{-1}}.
+where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(X \right)}} is the trace of \eqn{X}.
 Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation
 matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered.
-\item Beta - A \code{list} containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha}
-and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the
-correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function
-\eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}}. It is on these
-rescaled parameters that the Beta distribution applies.
+\item Beta - A \code{list} containing two \eqn{N \times N} matrices (where \eqn{N} is the number of species), giving the prior success parameters \eqn{\alpha} and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function \eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}}. It is on these rescaled parameters that the Beta distribution applies.
 }
 }
-
 \examples{
 #Defining priors for a model with 4 species.
 N_species <- 4
