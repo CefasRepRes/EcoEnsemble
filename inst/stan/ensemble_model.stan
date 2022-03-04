@@ -92,52 +92,61 @@ data{
 
 	/**
 	 * Prior choice paramters:
-	 * These determine the form of the prior that you are choosing
-	 * For correlation matrices, these choices are integars representing different choices:
-	 *      0 - LKJ
-	 *      1 - Inverse Wishart
-	 *      2 - Beta distributions.
+	 * These determine the form of the prior parametrisation using an integar representation.
+	 * Choices 0,1,2 use a decomposition into a diagonal variance matrix and a correlation matrix,
+	 * with inverse-gamma distributions on the variance terms.
+	 *      0 - LKJ correlation matrix
+	 *      1 - Inverse Wishart correlation matrix
+	 *      2 - Beta distributions on correlation matrix entries.
+	 *      NOT IMPLEMENTED: 3 - Inverse Wishart covariance matrix
 	 *
 	 */
-	 int<lower=0, upper=2> form_prior_ind_st_cor;
-	 int<lower=0, upper=2> form_prior_ind_lt_cor;
-	 int<lower=0, upper=2> form_prior_sha_st_cor;
+	 int<lower=0, upper=3> form_prior_ind_st;
+	 int<lower=0, upper=3> form_prior_ind_lt;
+	 int<lower=0, upper=3> form_prior_sha_st;
 
 
   /**
    * Prior parameters
    */
-   //Individual
-  real prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
-	real prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
-	//Short term correlations
-	real prior_ind_st_cor_lkj[form_prior_ind_st_cor == 0 ? 1 : 0]; // LKJ shape parameter
-  matrix[form_prior_ind_st_cor == 1 ? N : 0, form_prior_ind_st_cor == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st_cor == 1 ? 1 : 0]; //inverse wishart
-	matrix [form_prior_ind_st_cor == 2 ? N : 0, form_prior_ind_st_cor == 2 ? N : 0] prior_ind_st_cor_beta_1; // alpha shape parameter for Beta distribution
-  matrix [form_prior_ind_st_cor == 2 ? N : 0, form_prior_ind_st_cor == 2 ? N : 0] prior_ind_st_cor_beta_2; // beta shape parameter for Beta distribution
+  //Individual short-term
+  vector [N] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
+	vector [N] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
+	real prior_ind_st_cor_lkj[form_prior_ind_st == 0 ? 1 : 0]; // LKJ shape parameter
+  matrix[form_prior_ind_st == 1 ? N : 0, form_prior_ind_st == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
+	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st == 1 ? 1 : 0]; //inverse wishart
+	matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_1; // alpha shape parameter for Beta distribution
+  matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_2; // beta shape parameter for Beta distribution
 
+  //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
   vector [N] prior_ind_lt_var_b ; // scale parameter (beta) of inverse gamma
-  //Long term correlations
-  real prior_ind_lt_cor_lkj[form_prior_ind_lt_cor == 0 ? 1 : 0]; // LKJ shape parameter
-  matrix[form_prior_ind_lt_cor == 1 ? N : 0, form_prior_ind_lt_cor == 1 ? N : 0] prior_ind_lt_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_lt_cor_wish_nu[form_prior_ind_lt_cor == 1 ? 1 : 0]; //inverse wishart
-	matrix [form_prior_ind_lt_cor == 2 ? N : 0, form_prior_ind_lt_cor == 2 ? N : 0] prior_ind_lt_cor_beta_1; // alpha shape parameter for Beta distribution
-  matrix [form_prior_ind_lt_cor == 2 ? N : 0, form_prior_ind_lt_cor == 2 ? N : 0] prior_ind_lt_cor_beta_2; // beta shape parameter for Beta distribution
+  real prior_ind_lt_cor_lkj[form_prior_ind_lt == 0 ? 1 : 0]; // LKJ shape parameter
+  matrix[form_prior_ind_lt == 1 ? N : 0, form_prior_ind_lt == 1 ? N : 0] prior_ind_lt_cor_wish_sigma;//inverse wishart
+	real<lower=N-1>	prior_ind_lt_cor_wish_nu[form_prior_ind_lt == 1 ? 1 : 0]; //inverse wishart
+	matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_1; // alpha shape parameter for Beta distribution
+  matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_2; // beta shape parameter for Beta distribution
 
 
-	//Shared
-	real<lower=0> prior_sha_st_var_exp; // Scale parameter of exponential
-	//Short term correlations
-	real prior_sha_st_cor_lkj[form_prior_sha_st_cor == 0 ? 1: 0]; // LKJ shape parameter
-	matrix[form_prior_sha_st_cor == 1 ? N: 0,form_prior_sha_st_cor == 1 ? N: 0] prior_sha_st_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st_cor == 1 ? 1: 0]; //inverse wishart
-	matrix [form_prior_sha_st_cor == 2 ? N: 0,form_prior_sha_st_cor == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
-  matrix [form_prior_sha_st_cor == 2 ? N: 0,form_prior_sha_st_cor == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
+	//Shared short-term
+	//real<lower=0> prior_sha_st_var_exp; // Scale parameter of exponential
+	vector [N] prior_sha_st_var_a ; // shape parameter (alpha) of inverse gamma
+  vector [N] prior_sha_st_var_b ; // scale parameter (beta) of inverse gamma
+	real prior_sha_st_cor_lkj[form_prior_sha_st == 0 ? 1: 0]; // LKJ shape parameter
+	matrix[form_prior_sha_st == 1 ? N: 0,form_prior_sha_st == 1 ? N: 0] prior_sha_st_cor_wish_sigma;//inverse wishart
+	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st == 1 ? 1: 0]; //inverse wishart
+	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
+  matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
 
+ //Shared long-term
 	vector <lower=0> [N] prior_sha_lt_sd; //sd for prior on error
 
+	//Random walk on y
+	vector <lower=0> [N] prior_y_init_mean_sd;
+  vector [N] prior_y_init_var_a;
+  vector [N] prior_y_init_var_b; // Initial variance of y
+  real<lower=N-1>	prior_sigma_t_inv_wish_nu; //inverse wishart
+	matrix[N, N] prior_sigma_t_inv_wish_sigma;//inverse wishart
 
 }
 transformed data{
@@ -187,8 +196,6 @@ transformed data{
 		  }
 	  }
 
-	  //TODO: Get Mike to explain this to me because I do not understand it.
-
 	  new_data[i,] = (all_eigenvectors_cov' * append_row(observations[i],model_outputs[i,]'))';
   }
 
@@ -219,19 +226,25 @@ parameters{
   vector <lower=0> [N] y_init_var;
 }
 transformed parameters{
-  matrix [N,N] ind_lt_covar;
-  matrix [N,N] ind_lt_cov_cholesky;
   matrix [N,N] SIGMA_x[M];
-  vector [N] ind_lt_sd;
   vector [N] ind_st_sd[M];
   vector [N] sha_lt = prior_sha_lt_sd .* sha_lt_raw;
   vector [N] ind_lt[M];
+  //JM 28/02/22: Initing with their values.
+  //vector [N] ind_lt_sd;
+  //matrix [N,N] ind_lt_covar;
+  //matrix [N,N] ind_lt_cov_cholesky;
+  vector [N] ind_lt_sd = sqrt(ind_lt_var);
+  matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
+  matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
 
-  //TODO: This is wrong I think? What's going on with the x_hat???
 
   vector [(M+2) * N] x_hat = append_row(y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
+  //JM 28/02/22: Reparametrising the shared short-term variances by inverse gammas
+  //matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
+  vector [N] sha_st_sd = sqrt(sha_st_var);
+  matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
   /**
   *  Kalman filter parameters:
@@ -261,11 +274,10 @@ transformed parameters{
 
   }
 
-  //Setting up for long-term discrepancies
-  ind_lt_sd = sqrt(ind_lt_var);
-  ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
-  ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
-  //Long-term Discrepancies and AR_params
+  //JM 28/02/22: Now do this earlier.
+  //ind_lt_sd = sqrt(ind_lt_var);
+  //ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
+  //ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
   lt_discrepancies[1:(2 * N)] = append_row(rep_vector(0.0,N), sha_lt);
   AR_params[1:(2 * N)] = append_row(rep_vector(1.0,N), sha_st_ar_param);
   for (i in 1:M){
@@ -278,17 +290,19 @@ model{
   /**
   * Priors
   */
-  y_init_mean ~ normal(0,10);    // Initial value of y
-  y_init_var  ~ inv_gamma(10,1); // Initial variance of y
-  SIGMA_t ~ inv_wishart(10,diag_matrix(rep_vector(1.0,N))); // the random walk of y
+  y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
+  y_init_var  ~ inv_gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
+  SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
+
 
   // Shared discrepancies
   sha_lt_raw ~ std_normal();
-  sha_st_var ~ exponential(prior_sha_st_var_exp); // Variance
+  //sha_st_var ~ exponential(prior_sha_st_var_exp); // Variance
+  sha_st_var ~ inv_gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
   // Correlation matrix
-  if(form_prior_sha_st_cor == 0){
+  if(form_prior_sha_st == 0){
     sha_st_cor ~ lkj_corr(prior_sha_st_cor_lkj[1]);
-  } else if(form_prior_sha_st_cor == 1){
+  } else if(form_prior_sha_st == 1){
     sha_st_cor ~ inv_wishart(prior_sha_st_cor_wish_nu[1], prior_sha_st_cor_wish_sigma);
   } else {
     target += priors_cor_beta(sha_st_cor, N, prior_sha_st_cor_beta_1, prior_sha_st_cor_beta_2);
@@ -300,9 +314,9 @@ model{
   // where C is independent of the model. This means we treat C outside the for loop.
   ind_lt_var ~ inv_gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
   //Long term correlations
-  if(form_prior_ind_lt_cor == 0){
+  if(form_prior_ind_lt == 0){
     ind_lt_cor ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
-  } else if(form_prior_ind_lt_cor == 1){
+  } else if(form_prior_ind_lt == 1){
     ind_lt_cor ~ inv_wishart(prior_ind_lt_cor_wish_nu[1], prior_ind_lt_cor_wish_sigma);
   } else {
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
@@ -312,9 +326,9 @@ model{
     ind_st_var[i] ~ inv_gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
 
     // Correlation matrix
-    if(form_prior_ind_st_cor == 0){
+    if(form_prior_ind_st == 0){
       ind_st_cor[i] ~ lkj_corr(prior_ind_st_cor_lkj[1]);
-    } else if(form_prior_ind_st_cor == 1){
+    } else if(form_prior_ind_st == 1){
       ind_st_cor[i] ~ inv_wishart(prior_ind_st_cor_wish_nu[1], prior_ind_st_cor_wish_sigma);
     } else {
       target += priors_cor_beta(ind_st_cor[i], N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2);

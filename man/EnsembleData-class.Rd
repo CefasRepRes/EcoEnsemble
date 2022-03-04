@@ -10,14 +10,13 @@ A class that holds the observation data, simulator outputs, and prior informatio
 \section{Slots}{
 
 \describe{
-\item{\code{stan_input}}{A list of parameters in the correct form to fit the ensemble model in Stan.}
+\item{\code{stan_input}}{A \code{list} of parameters in the correct form to fit the ensemble model in Stan.}
 
 \item{\code{observations}}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the observations.}
 
 \item{\code{simulators}}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
 
-\item{\code{priors}}{A \code{list} of data specifying the prior distributions for the ensemble.
-See the \code{define_priors} function for the required form.}
+\item{\code{priors}}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 }}
 
 \seealso{

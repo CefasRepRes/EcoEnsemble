@@ -1,8 +1,5 @@
 test_that("Validation for initial input data works", {
-  error_message <- paste0("TEST data is not in the correct form. This data should be ",
-                          "passed through as a list, the first element being a matrix or data ",
-                          "frame containing the data, the second element being the covariance ",
-                          "matrix as a matrix or data frame.")
+  error_message <- paste0("TEST data is not in the correct form. This data should be passed through as a list, the first element being a matrix or data frame containing the data, the second element being the covariance matrix as a matrix or data frame.")
   expect_error(validate_input_data("TEST", NULL), error_message)
   expect_error(validate_input_data("TEST", list(x=1)), error_message)
   expect_error(validate_input_data("TEST", list(x=1, y=2, z=3, t =4)), error_message)
@@ -27,8 +24,7 @@ test_that("Validation for data/covariance compatibility works", {
 
   covariance_matrix <- diag(8)
   expect_error(validate_compatibility("TEST", list(data_matrix, covariance_matrix)),
-               paste0("TEST data has 9 columns but the covariance matrix has 8 columns.",
-                      " Variables for the covariance matrix should match the observed data."))
+               "TEST data has 9 columns but the covariance matrix has 8 columns. Variables for the covariance matrix should match the observed data.")
 
   covariance_matrix <- diag(9)
   expect_error(validate_compatibility("TEST", list(data_matrix, covariance_matrix)),

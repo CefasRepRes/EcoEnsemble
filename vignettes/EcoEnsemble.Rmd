@@ -1,101 +1,395 @@
 ---
 title: "EcoEnsemble"
+subtitle: "Bayesian ensemble modelling for combining ecosystem models"
+author: "James A. Martindale and Michael A. Spence"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{EcoEnsemble}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}#
+references:
+- id: spence_ff
+  title: A general framework for combining ecosystem models.
+  author:
+  - family: Spence
+    given: M.A.
+  - family: Blanchard
+    given: J.L.
+  - family: Rossberg
+    given: A.G.
+  - family: Heath
+    given: M.R.
+  - family: Heymans
+    given: J.J.
+  - family: Mackinson
+    given: S.
+  - family: Serpetti
+    given: N.
+  - family: Speirs
+    given: D.C.
+  - family: Thorpe
+    given: R.B.
+  - family: Blackwell
+    given: P.G.
+  container-title: Fish and Fisheries
+  volume: 19
+  page: 1013-1042
+  type: article-journal
+  issued:
+    year: 2018
+- id: chandler
+  title: "Exploiting strength, discounting weakness: combining information from multiple climate simulators"
+  author:
+  - family: Chandler
+    given: Richard E.
+  container-title: "Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences"
+  volume: 371
+  issue: 1991 
+  type: article-journal
+  issued:
+    year: 2013
+- id: zhang
+  title: Information Uncertainty and Stock Returns
+  author:
+  - family: Zhang
+    given: X. Frank
+  container-title: The Journal of Finance
+  volume: 61
+  page: 105-137 
+  type: article-journal
+  issued:
+    year: 2006
+- id: rougier2013
+  title: "Model and data limitations: the sources and implications of epistemic uncertainty"
+  author:
+  - family: Rougier
+    given: J. C.
+  - family: Beven
+    given: K. J.
+  publisher: Cambridge University Press
+  page: 40-63
+  type: book
+  issued:
+    year: 2013
+- id: rougier2016
+  title: Ensemble Averaging and Mean Squared Error
+  author:
+  - family: Rougier
+    given: J. C. 
+  container-title: Journal of Climate
+  volume: 29
+  page: 8865-8870
+  type: article-journal
+  issued:
+    year: 2016
+- id: banner_higgs
+  title: Considerations for assessing model averaging of regression coefficients
+  author:
+  - family: Banner
+    given: Katharine M.
+  - family: Higgs
+    given: Megan D.
+  container-title: Ecological Applications
+  volume: 27
+  page: 78-93
+  type: article-journal
+  issued:
+    year: 2017
+- id: Dormann_18
+  title: "Model averaging in ecology: a review of Bayesian, information-theoretic, and tactical approaches for predictive inference"
+  author:
+  - family: Dormann, 
+    given: Carsten F.
+  - family: Calabrese
+    given: Justin M. 
+  - family: Guillera-Arroita
+    given: Gurutzeta 
+  - family: Matechou
+    given: Eleni 
+  - family: Bahn
+    given: Volker 
+  - family: Barton
+    given: Kamil 
+  - family: Beale
+    given: Colin M. 
+  - family: Ciuti
+    given: Simone 
+  - family: Elith
+    given: Jane 
+  - family: Gerstner
+    given: Katharina 
+  - family: Guelat
+    given: Jerome 
+  - family: Keil
+    given: Petr 
+  - family: Lahoz-Monfort
+    given: Jose J. 
+  - family: Pollock
+    given: Laura J. 
+  - family: Reineking
+    given: Björn 
+  - family: Roberts
+    given: David R. 
+  - family: Schrøder
+    given: Boris 
+  - family: Thuiller
+    given: Wilfried 
+  - family: Warton
+    given: David I. 
+  - family: Wintle
+    given: Brendan A. 
+  - family: Wood
+    given: Simon N. 
+  - family: Wuest
+    given: Rafael O. 
+  - family: Hartig
+    given: Florian
+  container-title: Ecological Monographs
+  volume: 88
+  page: 485-504
+  type: article-journal
+  issued:
+    year: 2018
+- id: mackinson
+  title: Evaluating the fishery and ecological consequences of the proposed {N}orth {S}ea multi-annual plan
+  author:
+  - family: Mackinson
+    given: Steven 
+  - family: Platts
+    given: Mark 
+  - family: Garcia
+    given: Clement
+  - family: Lynam
+    given: Christopher
+  container-title: PLOS ONE
+  volume: 13
+  page: 1-23
+  type: article-journal
+  issued:
+    year: 2018
+- id: thorpe15
+  title: Evaluation and management implications of uncertainty in a multispecies size-structured model of population and community responses to fishing
+  author:
+  - family: Thorpe
+    given:  Robert B. 
+  - family: Le Quesne
+    given:  Will J. F. 
+  - family: Luxford
+    given:  Fay 
+  - family: Collie
+    given:  Jeremy S. 
+  - family: Jennings
+    given:  Simon
+  container-title: Methods in Ecology and Evolution
+  volume: 6
+  page: 49-58
+  type: article-journal
+  issued:
+    year: 2015
+- id: Collie_16
+  title: "Ecosystem models for fisheries management: finding the sweet spot"
+  author: 
+   - family: Collie
+     given: Jeremy S
+   - family: Botsford
+     given: Louis W
+   - family: Hastings
+     given: Alan
+   - family: Kaplan
+     given: Isaac C
+   - family: Largier
+     given: John L
+   - family: Livingston
+     given: Patricia A
+   - family: Plaganyi
+     given: Eva
+   - family: Rose
+     given: Kenneth A
+   - family: Wells
+     given: Brian K
+   - family: Werner
+     given: Francisco E
+  container-title: Fish and Fisheries
+  page: 101-125
+  type: article-journal 
+  issued: 
+   year: 2016
+- id: Essington_13
+  title: "Pitfalls and guidelines for recycling models for ecosystem-based fisheries management: evaluating model suitability for forage fish fisheries"
+  author: 
+   - family: Essington
+     given: Timothy E.
+   - family: Plaganyi
+     given: Eva E.
+  container-title: ICES Journal of Marine Science
+  page: 118-127
+  type: article-journal 
+  issued: 
+   year: 2013
+- id: fulton_03
+  title: Effect of Complexity of Marine Ecosystem Models
+  author: 
+   - family: Fulton
+     given: Elizabeth
+   - family: Smith
+     given: A.
+   - family: Johnson
+     given: Craig
+  container-title: Marine Ecology Progress Series
+  page: 1-16
+  type: article-journal 
+  issued: 
+    year: 2003
+- id: Hart_fay
+  title: Applying tree analysis to assess combinations of Ecosystem-Based Fisheries Management actions in Management Strategy Evaluation
+  author: 
+   - family: Hart
+     given: Amanda R.
+   - family: Fay
+     given: Gavin
+  container-title: Fisheries Research
+  page: 105466
+  type: article-journal 
+  issued: 
+    year: 2020
+- id: Gaichas_08
+  title: "A context for ecosystem-based fishery management: Developing concepts of ecosystems and sustainability"
+  author: 
+   - family: Gaichas
+     given: Sarah K.
+  container-title: Marine Policy
+  page: 393 - 401
+  type: article-journal 
+  issued:
+    year: 2008
+- id: fishsums
+  title: "Modelling the effects of fishing on the North Sea fish community size composition"
+  author:
+  - family: Speirs
+    given: Douglas C. 
+  - family: Greenstreet
+    given: Simon P.R.
+  - family: Heath
+    given: Michael R.
+  container-title: Ecological Modelling
+  volume: 321
+  page: 35--45
+  type: article-journal 
+  issued: 
+    year: 2016
+- id: kennedy_ohagan
+  title: Bayesian calibration of computer models
+  author: 
+   - family: Kennedy
+     given: Marc C.
+   - family: "O'Hagan"
+     given: Anthony
+  container-title: "Journal of the Royal Statistical Society: Series B (Statistical Methodology)"
+  volume: 63
+  page: 425-464
+  type: article-journal 
+  issued: 
+    year: 2001
 ---
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
-```{r setup}
+```{r include=FALSE}
 library(EcoEnsemble)
+
 ```
+
+
 # Introduction
+When managing ecosystems, often complex ecosystem models are used to inform management of the outcome of various management decisions.  
+
+Often, there are several complex models (henceforth referred to as simulators) available, each giving different predictions. Hence, the results, and ultimately management actions, can be sensitive to the choice of simulator that is used to calculate them (@Collie_16, @Essington_13, @fulton_03,@Hart_fay,@Gaichas_08}. 
+Moreover, although some simulators are better at describing some aspects of the system than others, in general no simulator is uniformly better than the others [@chandler].  
+Further, by ignoring the other simulators, we are limiting the amount of information available and increasing our uncertainty (@spence_ff), often to a greater extent than we formally recognise.
+Instead of choosing one simulator, it is possible to combine them using an ensemble model, allowing managers to maximise the predicting power of the individual simulators, whilst reducing the uncertainty, thus improving their decision making [@zhang].
+
+
+There are many methods of combining the individual simulators. Taking the average of all of the simulators often outperforms all of the individual simulators [@rougier2016].
+Many other methods of combining simulators, such as weighting schemes (e.g. Bayesian model averaging @banner_higgs, @Dormann_18) explicitly assumes that one of the simulators would correctly describe the truth [@chandler].
+This assumption has several issues: firstly, this is not something that we expect to be the case [@chandler]. This forces the belief that one of the simulators can accurately predict the truth, which simply may not be true. In addition, treating a suite of simulators as containing the true model will tend to underestimate the uncertainty since alternative simulators, possibly ones that have not even been developed yet, could easily give predictions outside of the current available range [@chandler].
+As we get more information our knowledge should increase (or at worst stay the same) and this should result in a decrease in the uncertainty of the true value. Assuming that one of the in the suite of models is right would mean that adding another simulator could increase the uncertainty despite the increased amount of information [@Dormann_18].
+By not assuming that any of the simulators is correct, but instead allowing the simulators to reduce the uncertainty in the truth gives a much more robust quantification of uncertainty.
+It is often the case that the individual models are similar, either having similar processes, forcing inputs or fitted using similar data, suggesting that the model discrepancies are not independent [@rougier2013]. 
+@spence_ff developed an ensemble model that treats the individual simulators as exchangeable and coming from a population of such models. They separated each individual model's discrepancy into discrepancy shared between the simulators and discrepancy that is specific to that model. By modelling it this way, the ensemble model exploits the strengths whilst discounting the weaknesses of each individual model [@chandler], whilst robustly quantifying the uncertainty allowing for more accurate advice.
+
 
 # Model description
-At time $t$, the true quantity of interest for $d$ variables, $\mathbf{y}^{(t)}=(y_1^{(t)},\ldots,y_d^{(t)})'$, is described by $m$ simulators, $\mathbf{\hat{x}}_{k}^{(t)}=(\hat{x}_{k,1}^{(t)},\ldots,\hat{x}_{k,n_k}^{(t)})'$, with $n_k$ outputs each relating to one of the variables of interest, for $k=1,\ldots,m$, and noisy observations of the variables of interest, $\hat{\mathbf{y}}^{(t)}=(\hat{y}_1^{(t)},\ldots,\hat{y}_d^{(t)})'$.
-%In the ensemble model, uncertainty is separated into parameter, structural, and observation uncertainty.
+
+
+`EcoEnsemble`, is an `R` package that implements the ensemble model of @spence_ff when the simulators either output the quantity of interest or not. At time $t$, the true quantity of interest for $d$ variables, $\mathbf{y}^{(t)}=(y_1^{(t)},\ldots,y_d^{(t)})'$, is described by $m$ simulators, $\mathbf{\hat{x}}_{k}^{(t)}=(\hat{x}_{k,1}^{(t)},\ldots,\hat{x}_{k,n_k}^{(t)})'$, with $n_k$ outputs each relating to one of the variables of interest, for $k=1,\ldots,m$, and noisy observations of the variables of interest, $\hat{\mathbf{y}}^{(t)}=(\hat{y}_1^{(t)},\ldots,\hat{y}_d^{(t)})'$.
 
 Not all of the simulators output all the variables over the whole time period. 
-To accommodate these differences, \citet{spence_ff} introduced a latent variable, known as the `best guess', $\mathbf{x}_{k}^{(t)}=({x}_{1}^{(t)},\ldots,{x}_{d}^{(t)})'$, which represents simulator $k$'s output if it described all $d$ variables at time $t$ with no parameter uncertainty. In this version of the model, variables are either present or absent in each simulator, therefore if the $k$th simulator was evaluated at time $t$, its output was
-\begin{equation}
+To accommodate these differences, @spence_ff introduced a latent variable, known as the `best guess', $\mathbf{x}_{k}^{(t)}=({x}_{1}^{(t)},\ldots,{x}_{d}^{(t)})'$, which represents simulator $k$'s output if it described all $d$ variables at time $t$ with no parameter uncertainty. In this version of the model, variables are either present or absent in each simulator, therefore if the $k$th simulator was evaluated at time $t$, its output was
+$$
 \mathbf{\hat{x}}_{k}^{(t)}\sim{}N(M_k^{(t)}\mathbf{x}_{k}^{(t)},\Sigma_k),
-\label{eq:par_un}
-\end{equation}
+$$
 when simulator $k$ outputs the variables of interest,
 where $M_k^{(t)}$ is a $n_k\times{}d$ matrix  and $M_k^{(t)}$ is a $n_k\times{}d$ matrix and $\Sigma_k$ reflects the parameter uncertainty of the $k$th simulator.
 
-The true value of the yield at time $t$ was simulator $k$'s best guess plus a discrepancy term, $\mathbf{\zeta}^{(t)}_k$ \citep{kennedy_ohagan}, i.e. 
-\begin{equation}
+The true value of the yield at time $t$ was simulator $k$'s best guess plus a discrepancy term, $\mathbf{\zeta}^{(t)}_k$ @kennedy_ohagan, i.e. 
+$$
 \mathbf{y}^{(t)} =  \mathbf{x}_{k}^{(t)} + \mathbf{\zeta}^{(t)}_k.
-\label{eq:disc}
-\end{equation}
+$$
 The discrepancy term, $\mathbf{\zeta}^{(t)}_k$, is split between discrepancies that are shared between all of the simulators, and discrepancies that were specific to the $k$th simulator. These two discrepancies are further split into fixed discrepancies, the long-term shared discrepancy, $\mathbf\delta$, and simulator $k$'s long-term individual discrepancy, $\mathbf\gamma_k$, and dynamic discrepancies, the short-term shared discrepancy, $\mathbf\eta^{(t)}$, and simulator $k$'s short-term individual discrepancy, $\mathbf{z}_k^{(t)}$, i.e.
-\begin{equation}
+$$
 \mathbf{\zeta}^{(t)}_k = \mathbf\delta + \mathbf\eta^{(t)} + \mathbf\gamma_k + \mathbf{z}_k^{(t)}.
-\end{equation}
+$$
 The long-term individual discrepancy for the $k$th simulator is
-\begin{equation}
+$$
     \mathbf{\gamma}_k\sim{}N(\mathbf{0},C_{\gamma}).
-\end{equation}
+$$
 The short-term discrepancy terms, $\mathbf\eta^{(t)}$ and $\mathbf{z}_k^{(t)}$, follow an auto-regressive processes of order one,
-\begin{equation}
+$$
 \mathbf{\eta}^{(t)}\sim{}N(R_{\eta}\mathbf{\eta}^{(t-1)},\Lambda_{\eta})
-\end{equation}
+$$
 and
-\begin{equation}
+$$
 \mathbf{z}_{k}^{(t)}\sim{}N(R_{k}\mathbf{z}_{k}^{(t-1)},\Lambda_{k})
-\end{equation}
+$$
 respectively.
 
 
 In the absence of any other information, the true biomass evolves according to a random walk,
-\begin{equation}
-    \mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},\Lambda_y),
-\end{equation}
+$$
+\mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},\Lambda_y),
+$$
 with noisy observations of the variables,
-\begin{equation}
+$$
 \mathbf{\hat{y}}^{(t)}\sim{}N(\mathbf{y}^{(t)},\Sigma_y),
-\label{eq:obs_uncert}
-\end{equation}
+$$
 when there are observations at time $t$.
-%In this study we took the diagonal elements of $\Sigma_y$ to be 0.2, and zero on the off-diagonal elements so that coefficient of variation was approximately 0.5.
-%In this study we took the diagonal elements of $\Sigma_y$ were calculated from uncertainty in the assessment, and zero on the off-diagonal elements.
 
-A summary of the ensemble model can be found in Table \ref{tb:ensemble_mod}. For more details on the model see \citet{spence_ff}.
+<!-- A summary of the ensemble model can be found in the table below. For more details on the model see @spence_ff. -->
 
 
-\begin{table}[ht]
-\begin{center}
-\caption{A summary of the variables in the ensemble model. Values of $n_k$ and $M_k$ are simulator specific.}
-\label{tb:ensemble_mod}
-\begin{tabular}{cclp{5cm}l}
-\hline
-Variable&Dimensions& Description & Relationship \\
-\hline
-$\mathbf{y}^{(t)}$&$d$&The truth & $\mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},{\Lambda}_{y})$\\
-$\mathbf{\hat{y}}^{(t)}$&$d$&Noisy observation of $\mathbf{y}^{(t)}$&$\hat{\mathbf{y}}^{(t)}\sim{}N({\mathbf{y}}^{(t)},\Sigma_{y})$\\
-$\mathbf\delta$&$d$&Long-term shared discrepancy&\\
-$\mathbf\eta^{(t)}$&$d$&Short-term shared discrepancy&$\mathbf{\eta}^{(t)}\sim{}N(
-    R_{\eta}\mathbf{\eta}^{(t-1)},\Lambda_{\eta}$)\\
-$\mathbf\mu^{(t)}$&$d$&Simulator consensus&$\mathbf\mu^{(t)}=\mathbf{y}^{(t)} + \mathbf\delta + \mathbf\eta^{(t)}$\\
-$\mathbf{\gamma}_{k}$&$d$&Simulator $k$'s long-term individual discrepancy&$\mathbf\gamma_{k}\sim{}N(\mathbf{0},C_{\gamma})$\\
-$\mathbf{z}_{k}^{(t)}$&$d$&Simulator $k$'s short-term individual discrepancy&$\mathbf{z}_{k}^{(t)}\sim{}N(R_{k}\mathbf{z}_{k}^{(t-1)},\Lambda_{k})$\\
-$\mathbf{x}_{k}^{(t)}$&$d$&Simulator $k$'s best guess&$\mathbf{x}_{k}^{(t)}=\mathbf{\mu}^{(t)} + \mathbf{\gamma}_{k} +\mathbf{z}_{k}^{(t)}$\\
-$\mathbf{\hat{x}}_{k}^{(t)}$&$n_k$& The expectation of simulator $k$'s output $\mathbf{x}_{k}^{(t)}$&$\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(M_k\mathbf{x}_{k}^{(t)},\Sigma_{k})$
-\end{tabular}
-\end{center}
-\end{table}
+
+
+<!-- \begin{table}[!h] -->
+<!-- \centering -->
+<!-- \caption{A summary of the variables in the ensemble model. Values of $n_k$ and $M_k$ are simulator specific.} -->
+<!-- \begin{tabular}{|l|l|l|l|} -->
+<!-- \hline -->
+<!-- Variable&Dimensions& Description & Relationship \\ -->
+<!-- \hline -->
+<!-- $\mathbf{y}^{(t)}$&$d$&The truth & $\mathbf{y}^{(t)}\sim{}N(\mathbf{y}^{(t-1)},{\Lambda}_{y})$\\ -->
+<!-- $\mathbf{\hat{y}}^{(t)}$&$d$&Noisy observation of $\mathbf{y}^{(t)}$&$\hat{\mathbf{y}}^{(t)}\sim{}N({\mathbf{y}}^{(t)},\Sigma_{y})$\\ -->
+<!-- $\mathbf\delta$&$d$&Long-term shared discrepancy&\\ -->
+<!-- $\mathbf\eta^{(t)}$&$d$&Short-term shared discrepancy&$\mathbf{\eta}^{(t)}\sim{}N( -->
+<!--     R_{\eta}\mathbf{\eta}^{(t-1)},\Lambda_{\eta}$)\\ -->
+<!-- $\mathbf\mu^{(t)}$&$d$&Simulator consensus&$\mathbf\mu^{(t)}=\mathbf{y}^{(t)} + \mathbf\delta + \mathbf\eta^{(t)}$\\ -->
+<!-- $\mathbf{\gamma}_{k}$&$d$&Simulator $k$'s long-term individual discrepancy&$\mathbf\gamma_{k}\sim{}N(\mathbf{0},C_{\gamma})$\\ -->
+<!-- $\mathbf{z}_{k}^{(t)}$&$d$&Simulator $k$'s short-term individual discrepancy&$\mathbf{z}_{k}^{(t)}\sim{}N(R_{k}\mathbf{z}_{k}^{(t-1)},\Lambda_{k})$\\ -->
+<!-- $\mathbf{x}_{k}^{(t)}$&$d$&Simulator $k$'s best guess&$\mathbf{x}_{k}^{(t)}=\mathbf{\mu}^{(t)} + \mathbf{\gamma}_{k} +\mathbf{z}_{k}^{(t)}$\\ -->
+<!-- $\mathbf{\hat{x}}_{k}^{(t)}$&$n_k$& The expectation of simulator $k$'s output $\mathbf{x}_{k}^{(t)}$&$\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(M_k\mathbf{x}_{k}^{(t)},\Sigma_{k})$  -->
+<!-- \end{tabular} -->
+<!-- \end{table} -->
+
 
 ## Dynamic linear model
-It is possible to write the model described above as a dynamical linear model. If we let
+In the `EcoEnsemble` package, we write the ensemble model as a dynamical linear model. If we let
 \begin{equation}
 \mathbf\theta^{(t)}=(\mathbf{y}^{(t)'},\mathbf\eta^{(t)'},\mathbf{z}_1^{(t)'},\ldots,\mathbf{z}_m^{(t)'})',
 \end{equation}
@@ -165,68 +459,78 @@ $\mathbf{0}$ being a $d$ dimensional vector of 0s,
 and $S^{(t)}$ is a matrix that is used to describe which variables are observed at time $t$. If all observations and the simulators give an output at time $t$ then $S^{(t)}=I_{d+\sum_{k=1}^{m}n_k}$, however if some outputs are missing then the rows corresponding to that output are removed. For example, if at time $t$ all of the simulators output the variables of interest but there are no observations then $S^{(t)}$ is $I_{d+\sum_{k=1}^{m}n_k}$ with the first $d$ rows removed.
 
 
-## Kalman filter
 
-By considering the ensemble model as a dynamical linear model it is possible to fit it using a Kalman filter. In this package we use the sequential Kalman filter \citep{chui_chen}, which speeds up computation of the Kalman filter as there is no requirement to take the inverse of large matrices. For the sequential Kalman filter the observations, equation \ref{eq:DLM_obs} should be independent of one another, i.e. the off diagonal elements of the covariance matrix being be zero.
-If we perform eigen decomposition on covariance matrix of the observations, then for the $k$th simulator
-\begin{equation}
-\Sigma_k=Q_k\Delta_kQ_k'
-\end{equation}
-where, $Q_k$ is a matrix, the same size as $\Sigma_k$, with the $i$th column being the $i$th eigen vector, and $\Delta_k$ is a diagonal matrix with $\Delta_{i,i}$ being the $i$th eigen value. Equation \ref{eq:par_un} becomes
-\begin{equation}
-Q_k'\mathbf{\hat{x}}_{k}^{(t)}\sim{}N(Q_k'M_k\mathbf{x}_{k}^{(t)},\Delta_k).
-\end{equation}
-Similarly,
-\begin{equation}
-\Sigma_y=Q_y\Delta_yQ_y',
-\end{equation}
-with equation \ref{eq:obs_uncert} becoming
-\begin{equation}
-Q_y'\mathbf{\hat{y}}^{(t)}\sim{}N(Q_y'\mathbf{y}^{(t)},\Delta_y).
-\end{equation}
-This means that the dynamical linear model in equation \ref{eq:DLM_obs} becomes
-\begin{equation}
-    S^{(t)}\mathbf{\tilde{w}}^{(t)}\sim{}N(S^{(t)}\tilde{B}^{(t)}(\mathbf{\theta} + \mathbf\zeta),S^{(t)}\Delta{}S^{(t)'}),
-\end{equation}
-where $\mathbf{\tilde{w}}^{(t)}=Q'\mathbf{w}$ and $\tilde{B}^{(t)}=Q'B$, with
-\begin{equation}
-Q=
-\begin{pmatrix}
-Q_y & 0 &  \ldots & 0\\
-0 & Q_1  &  \ldots & 0\\
-\vdots   & \vdots & \ddots & \vdots \\
-0  &  0  & \ldots & Q_m
-\end{pmatrix}
-\end{equation}
-and
-\begin{equation}
-\Delta=
-\begin{pmatrix}
-\Delta_y& 0  & \ldots & 0\\
-0 &\Delta_1 &   \ldots & 0\\
-\vdots & \vdots  & \ddots & \vdots \\
-0  &  0  & \ldots & \Delta_m
-\end{pmatrix}.
-\end{equation}
-For further details on the Kalman filter see \citet[Chapter 7,][]{chui_chen}.
+# Dataset for the North Sea
+We demonstrate the ensemble model by investigating what would happen to the spawning stock biomass (SSB) of four species in the North Sea ($d=4$), Norway pout *(Trisopterus esmarkii)*, Atlantic herring *(Clupea harengus)*, Atlantic cod *(Gadus morhua)*, and Common sole *(Solea solea)*, if we were to stop fishing in 2017. We used four simulators and estimates of SSB from single-species assessments to predict the true SSB from 1984 until 2017, and the SSB from 2018 until 2050.
 
 
-# Example
-We demonstrate the ensemble model by investigating what would happen the the spawning stock biomass (SSB) or four species in the North Sea ($d=4$), [add species names here (and latin)], if we were to stop fishing in 2019. We used four simulators and estimates of SSB from single-species assessments to predict the true SSB from 1984 until 2019, and the SSB from 2020 unitl [last year].
+## Observations
+Noisy observations of the SSB was taken from single-species stock assessments \citep{ices_ns,ices_hawg}. The uncertainty is species specific so off diagonal elements of $\Sigma_y$ is are zero and the diagonal elements are calculated from the uncertainty in the stock assessments. These values, and the associated uncertainty are contained in the `SSB_obs` and `Sigma_obs` variables. The `SSB_obs` data frame contains a row for each year, with a column for each species observed. Note that for `EcoEnsemble`, the rows and columns of all observations / model outputs must be named appropriately in order for the data transformations to behave correctly.
+```{r label="Observations"}
+SSB_obs
+Sigma_obs
+```
 
 ## Simulators
 
-\textbf{EcoPath with EcoSim} (EwE) is an ecosystem model with 60 functional groups for the North Sea \citep{ices_ewe}. It outputs all four species from 1991 until [last year], in the variable [add], meaning that $n_1=4$ and $M_1=I_4$.
-The covariance of the EwE's output, $\Sigma_{1}$ was calculated in \citet{mackinson} and is [add].
+**EcoPath with EcoSim** (EwE) is an ecosystem model with 60 functional groups for the North Sea \citep{ices_ewe}. It outputs all four species from 1991 until 2050, in the variable `SSB_ewe`, meaning that $n_1=4$ and $M_1=I_4$.
+The covariance of the EwE's output, $\Sigma_{1}$ was calculated in @mackinson and is stored in the variable `Sigma_ewe`. Its value is
 
-\textbf{LeMans} is a discrete time length-based model that describes growth and predation \citep{thorpe15}. It outputs all four species from 1986 until [last year], in the variable [add], meaning that $n_2=4$ and $M_2=I_4$.
-The covariance of the LeMans' output, $\Sigma_{2}$ was calculated in \citet{thorpe15} and is [add].
 
-\textbf{mizer} is a size-based model that describes ontogenetic feeding and growth, mortality, and reproduction driven by size-dependent predation and maturation processes \citep{blanchard}. It outputs all four species from 1984 until [last year], in the variable [add], meaning that $n_3=4$ and $M_3=I_4$.
-The covariance of the mizer's output, $\Sigma_{3}$ was calculated in \citet{spence_ns} and is [add].
+```{r label="EwESigma"}
+Sigma_ewe
+```
+<!---\begin{equation}
+\Sigma_{\mathrm{ewe}}=
+\begin{pmatrix}
+9.28 \times 10^{-3} & 1.87 \times 10^{-3} &  8.52 \times 10^{-4} & -1.11\times 10^{-4}\\
+1.87 \times 10^{-3} & 3.97 \times 10^{-3} &  4.60 \times 10^{-4} & 4.27\times 10^{-4}\\
+8.52 \times 10^{-4} & 4.60 \times 10^{-4} &  8.52 \times 10^{-3} & 5.58\times 10^{-5}\\
+-1.11\times 10^{-4} & 4.27\times 10^{-4} &  5.58 \times 10^{-5} & 3.14\times 10^{-3}
+\end{pmatrix}.
+\end{equation}-->
 
-\textbf{FishSUMS} is a discrete time length-based model that describes growth, density-dependent mortality, and losses due to fishing and predation by explicitly modelled species, and seasonal reproduction \citep{fishsums}. It outputs [list the species], i.e. it does not output sole, from 1984 until [last year], in the variable [add], meaning that $n_4=4$ and
-\begin{equation}
+
+**LeMans** is a discrete time length-based model that describes growth and predation \citep{thorpe15}. It outputs all four species from 1986 until 2050, in the variable `SSB_lm`, meaning that $n_2=4$ and $M_2=I_4$.
+The covariance of the LeMans' output, $\Sigma_{2}$ was calculated in \citet{thorpe15} and is stored in the variable `Sigma_lm`. Its value is
+
+```{r label="lmSigma"}
+Sigma_lm
+```
+<!---\begin{equation}
+\Sigma_{\mathrm{lm}}=
+\begin{pmatrix}
+0.182 & 0.081 & -0.029 & 0.121  \\
+0.081 & 0.105 & -0.015 & 0.133  \\
+-0.029 & -0.015 & 0.080 & -0.021  \\
+0.121 & 0.133 & -0.021 & 0.225  
+\end{pmatrix}.
+\end{equation}-->
+
+**mizer** is a size-based model that describes ontogenetic feeding and growth, mortality, and reproduction driven by size-dependent predation and maturation processes \citep{blanchard}. It outputs all four species from 1984 until 2050, in the variable `SSB_miz`, meaning that $n_3=4$ and $M_3=I_4$.
+The covariance of the mizer's output, $\Sigma_{3}$ was calculated in \citet{spence_ns} and is stored in the variable `Sigma_miz`. Its value is
+
+```{r label="mizSigma"}
+Sigma_miz
+```
+<!--\begin{equation}
+\Sigma_{\mathrm{miz}}=
+\begin{pmatrix}
+0.302 & 0.032 & -0.001 & 0.0003  \\
+0.032 & 0.068 & 0.023 & -0.001  \\
+-0.001 & 0.023 & 0.172 & 0.002  \\
+0.0003 & -0.001 & 0.002 & 0.007  
+\end{pmatrix}.
+\end{equation}-->
+
+
+**FishSUMS** is a discrete time length-based model that describes growth, density-dependent mortality, and losses due to fishing and predation by explicitly modelled species, and seasonal reproduction (@fishsums). It outputs Norway pout, Atlantic Herring, and Atlantic Cod, i.e. it does not output sole, from 1984 until 2050, in the variable `SSB_fs`, meaning that $n_4=3$ and
+
+```{r label="fsSigma"}
+Sigma_fs
+```
+
+<!--\begin{equation}
     M_4=
     \begin{pmatrix}
 1 & 0 &  0 & 0\\
@@ -234,25 +538,247 @@ The covariance of the mizer's output, $\Sigma_{3}$ was calculated in \citet{spen
 0 & 0 & 1 & 0 
 \end{pmatrix}.
 \end{equation}
-%%%%% James -- Im not sure what the last species is you may need to adjust this equation.
-The covariance of the FishSUMS' output, $\Sigma_{4}$ was calculated in \citet{spence_ff} and is [add].
+The covariance of the FishSUMS' output, $\Sigma_{4}$ was calculated in @spence_ff and is stored in the variable `Sigma_fs`. Its value is
+\begin{equation}
+\Sigma_{\mathrm{fs}}=
+\begin{pmatrix}
+0.004 & 0.002 & -0.002  \\
+0.002 & 0.007 & 0.0004  \\
+-0.002 & 0.0004 & 0.007  \\
+\end{pmatrix}.
+\end{equation}-->
 
-## Observations
 
-## Initial settings
+The single-species stock assessments for the 4 species, along with the model outputs are shown below. 
+<!-- TODO: Need to add a legend here -->
+```{r model_outputs, echo=FALSE}
+load("data/initial_run.RData")
+plt <- function(sample, variable){
+fit <- sample@ensemble_fit
+  ensemble_data <- fit@ensemble_data
+  observations <- ensemble_data@observations[[1]]
+  simulators <- ensemble_data@simulators
+  stan_input <- ensemble_data@stan_input
+
+  # Find which variable we are interested in
+  if(is.double(variable)){
+    variable <- colnames(observations)[variable]
+  }
+  if (is.na(variable)
+      || !(variable %in% colnames(observations) )){
+    stop(paste0("Invalid variable. This should be the name of a species or an index less than ",
+                ncol(observations)))
+  }
+  var_index = which(colnames(observations) == variable)
+  #We have to use the stan_input version because `observations` does not have data in the future
+  df <- stan_input$observations[, var_index]
+
+  #Simulator outputs
+  for (i in 1:length(simulators)) {
+    simulator <- simulators[[i]]
+
+    #Skip simulators that dont have the species
+    if (!(variable %in% colnames(simulator[[1]]))){
+      next
+    }
+
+    #Find the right output
+    relative_index <- which(colnames(simulator[[1]]) == variable)
+    index <- cumsum(stan_input$model_num_species)[i] - stan_input$model_num_species[1] + relative_index
+    df <- cbind(df, stan_input$model_outputs[, index])
+
+    #Use the name if available
+    colnames(df)[ncol(df)] <- paste0("Simulator ", i)
+    if (length(simulator) == 3){
+      colnames(df)[ncol(df)] <- simulator[[3]]
+    }
+  }
+  #Years
+  
+  start_year <- min(as.double(rownames(observations)))
+  df <- cbind(start_year:(start_year+stan_input$time-1), df)
+  colnames(df)[1] <- "Year"
+
+  colnames(df)[2] <- "Observations"
+  #Keeping zeros makes the graphs nosedive simply because we're missing data/outputs
+  #TODO: Worry about legitimate zeros here!
+  df <- data.frame(df)
+  for (i in 1:ncol(df)) {
+    df[df[, i] == 0, i] = NA
+  }
+
+  df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
+
+    p <- ggplot2::ggplot(data=df, ggplot2::aes(x=`Year`, y=`value`, na.rm = TRUE)) +
+    ggplot2::geom_line(ggplot2::aes(group=`Simulator`,colour=`Simulator`), na.rm = TRUE) +
+    ggplot2::ggtitle(variable)  +ggplot2::theme(legend.position = "None")
+  return(p)
+  
+}
+plt(sample, 1);plt(sample, 2);plt(sample, 3);plt(sample,4)
+```
+
+
+# Fitting the model
+## Prior configuration
+In the ensemble framework, appropriate priors must be set on the different discrepancy terms. Configuring priors in the `EcoEnsemble` package is most easily done using the `EnsemblePrior` constructor. We can set
+
+``` {r}
+priors <- priors <- EnsemblePrior(
+                        d = 4,
+                        ind_st_params = list("lkj", list(25, 0.25), 30),
+                        ind_lt_params = list(
+                          "beta",
+                          list(c(25, 25, 25, 10),c(25, 25, 25, 0.1)),
+                          list(matrix(40, 4, 4), matrix(40, 4, 4))
+                          ),
+                        sha_st_params = list("lkj", list(25, 0.25), 30),
+                        sha_lt_params = 5)
+```
+
+The interpretation of these inputs is explained in more detail below.
+
+### Individual discrepancies
+The short-term individual discrepancy terms are modelled using $AR(1)$ processes, so that for a given simulator we have $z_i^{(t)} \sim N(\rho_i z_i^{(t-1)}, \Sigma_i)$. We need only put priors on the covariance matrix $\Sigma_i$ to fit the model. All inidividual discrepancy arguments are prefixed by `ind_...`. 
+
+#### Short-term discrepancies
+For the individual short-term discrepancies, we choose to decompose $\Sigma_i$ into a diagonal matrix of variances $\Pi_i = \mathrm{diag}(\pi_i)$ and a correlation matrix $\Lambda_i$ via the relationship $\Sigma_i = \sqrt{\mathrm{diag}(\pi_i)}  \Lambda_i \sqrt{\mathrm{diag}(\pi_i)}.$ With this decomposition, we put $\mathrm{InvGamma}(25, 0.25)$ priors on the diagonal variance elements $\mathrm{diag}(\pi_i)$ by setting `ind_st_var_params = list(25, 0.25)`.
+
+For the correlation matrix, we choose an $LKJ(30)$ prior, where an $LKJ$ distribution with parameter $\eta$ has the density
+$$f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.$$
+To describe this parametrisation in the `define_priors` function, we set `ind_st_cor_form = "lkj"` to encode that we wish to use an $LKJ$ prior, and pass through the parameter by setting `ind_st_cor_params = 30`.
+
+
+#### Long-term discrepancies
+For the long-term individual discrepancies, we can perform the same decomposition. However, on longer time scales we may expect that there are greater differences in the variances, and greater correlations well. As such, we may change our variance priors, still using an $\mathrm{InvGamma}(25, 0.25)$ prior for Norway Pout, Atlantic Herring and Atlantic Cod, but now using a $\mathrm{InvGamma}(10, 0.1)$ prior for the variance of Sole. We do this by setting `ind_lt_var_params = list(c(25, 25, 25, 10),c(25, 25, 25, 0.1))`. 
+
+To give greater correlations between discrepancies, instead of using an $LKJ(30)$ distribution, we now choose to use a $\mathrm{Beta}(40, 40)$ distribution on each of the correlations between the species. (Note that to ensure positive-definiteness of the correlation matrix, we need to rescale the correlations via the transformation $f(\rho) = \frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2} + 1/2}$ before using the beta priors). We identify this by choosing the option `ind_lt_cor_form = "beta"` and setting the success and failure parameters of the beta distribution using the options `ind_lt_cor_params = list(matrix(40, 4, 4), matrix(40, 4, 4))`. By changing the matrix elements, we could chose a tighter (or looser) Beta prior on individual correlation terms.
+
+
+### Shared discrepancies
+Similarly to above, we choose an $LKJ(30)$ distribution for the correlation matrix of the shared short-term discrepancies. We do this through the options `sha_st_cor_form = "lkj",sha_st_cor_params = 30`. Unlike above, variance terms for the shared short-term discrepancies are parametrised using an $\exp$ distribution, so we choose an $\exp(3)$ by setting the option `sha_st_var_exp = 3`. For the shared long-term discrepancy, we set the standard deviation to be $5$ by setting the option `sha_lt_sd = c(5,5,5,5)`.
+
+
+
+
+## Model fitting
+
+The ensemble model parameters are fit using the `fit_ensemble_model` function, which converts the data into the required form and passes it through to a Stan model implementing the ensemble model. Hamiltonian Monte Carlo then samples from the posterior distribution, or a point estimate of the maximum of the joint density can found by setting `full_sample` as `FALSE` if desired. A sample of the ensemble parameters can then be generated using the `generate_sample` function.
+
+```{r, label = "fit", eval=FALSE}
+fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                                   list(SSB_lm,  Sigma_lm,  "LeMans"),
+                                                   list(SSB_miz, Sigma_miz, "mizer"),
+                                                   list(SSB_fs,  Sigma_fs,  "FishSUMS")),
+                                 priors = priors)
+sample <- generate_sample(fit_sample)
+```
+
+Note that for the simulators, we pass through the name of the simulators as the third argument. This is not required, however provides more accurate error messages and appropriately labeled plots when needed.
+
 
 ## Results
 
+The `generate_sample` function returns an `EnsembleSample` object. This object has two slots: 
+- `mle` - an 
+
+Samples of the model parameters can be easily plotted by calling `plot` on this object. By default, the first variable is plotted. The plot show the observations over time, along with the simulator outputs, the ensemble best guess of the truth (the median of the $y^{(t)}$ samples) and, if a full sampling was completed, ribbons of the quantiles (0.05 and 0.95 by default).
+``` {r, label = "Initial_plots", fig.dim = c(7, 4), warning=FALSE}
+plot(sample)
+```
+
+We can change which variable we plot by passing through a `variable` option, and are free to change the aesthetics in the same way as other `ggplot2` plots. Different quantiles can also be specified with the quantiles option.
+
+```{r, label = "Initial_plots_changed", fig.dim = c(7, 4), warning=FALSE}
+plot(sample, variable = "Cod", quantiles = c(0.25, 0.75)) + 
+    ggplot2::theme_classic() + 
+    ggplot2::scale_color_brewer(palette="Set3")  +
+    ggplot2::ylab("SSB (log tonnes)")
+```
+
+
+## Alternative fitting
+Using the wrapper functions `fit_ensemble_model, generate_sample` is the easiest way to generate samples from the ensemble model. However, for finer control, the model can be fit directly with Stan. To create data in the correct form of the model, simply create an `EnsembleData` object using the constructor.
+
+```{r, label = "data_DIY"}
+ens_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
+                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                            list(SSB_lm,  Sigma_lm,  "LeMans"),
+                                            list(SSB_miz, Sigma_miz, "mizer"),
+                                            list(SSB_fs,  Sigma_fs,  "FishSUMS")),
+                          priors = priors)
+
+```
+The `EnsembleData` object has 4 slots: `observations`, `simulators`, and `priors` are the data as passed through in the constructor. The `stan_input` input slot gives the transformed data in the appropriate form. To fit the model directly in Stan, the compiled Stan model can be retrieved through the `get_mcmc_ensemble_model()` method. Then a sampling can be manually run as follows.
+
+```{r, label = "sneaky_update_sam_to_be_correct_samples", echo = FALSE}
+sam <- sample@ensemble_fit@samples
+```
+
+```{r, label = "fit_DIY", eval=FALSE}
+mod <- get_mcmc_ensemble_model()
+sam <- rstan::sampling(mod, ens_data@stan_input, chains=(parallel::detectCores()-1))
+```
+
+
+To generate individual samples of the ensemble parameters with this output, now call the `gen_sample` functions.
+
+```{r label="sample_DIY", eval = FALSE}
+fit <- EnsembleFit(ens_data, samples = sam)
+transf_data <- get_transformed_data(fit)
+mle_sample <- gen_sample(1, ex.fit = rstan::extract(sams), transformed_data = transf_data,
+                         time = ens_data@stan_input$time)
+
+```
+
+This can often be a quicker way to generate the mle of an object, as shown below.
+
+```{r label="Generate_mle_DIY"}
+mod <- get_mcmc_ensemble_model()
+point_estimate <- rstan::optimizing(mod, ens_data@stan_input, as_vector=FALSE)
+fit <- EnsembleFit(ens_data, point_estimate = point_estimate)
+transf_data <- get_transformed_data(fit)
+mle_pe <- get_mle(1, ex.fit = point_estimate$par, transformed_data = transf_data,
+                         time = ens_data@stan_input$time)
+
+```
+
+
 ## Prior sensitivity
 
-\appendix
-# Covariance parameterisation
-The covariance matrix, $\Sigma$, can be decomposed as
-\begin{equation*}
-    \Sigma=DPD'
-\end{equation*}
-where $D$ is a diagonal matrix with the $i$th diagonal being
-\begin{equation*}
-    D_{i,i}=\sqrt{\Sigma_{i,i}},
-\end{equation*}
-and $P$ being a correlation matrix.
+```{r, label = "retrieve_results_encore", echo = FALSE}
+load("data/initial_run_looser.RData")
+load("data/initial_run.RData")
+```
+The choice of priors for the ensemble model can have an impact on the model outputs, for example we can fit using less informative priors.
+```{r label="looser_bounds", eval = FALSE}
+N_species <- 4
+priors <- EnsemblePrior(d = 4,
+                        ind_st_params = list("lkj", list(1, 1), 3),
+                        ind_lt_params = list(
+                          "beta",
+                          list(1, 1),
+                          list(matrix(5,N_species, N_species), matrix(5, N_species, N_species))
+                          ),
+                        sha_st_params = list("lkj", list(10, 0.1), 3),
+                        sha_lt_params = 3)
+fit_loose <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                                   list(SSB_fs,  Sigma_fs, "FishSUMS"),
+                                                   list(SSB_lm,  Sigma_lm, "LeMans"),
+                                                   list(SSB_miz, Sigma_miz, "mizer")),
+                                 priors = priors)
+sample_loose <- generate_sample(fit_loose, num_samples = 2000)
+```
+
+Comparing the two graphs for Cod shows that the ensemble model is fairly insensitive to the choice of priors in this case. For models with less data availability, larger changes in uncertainty ranges would be expected.
+
+```{r label="final_plots", fig.dim = c(7, 4), warning=FALSE}
+#The initial ensemble model run
+plot(sample, variable = "Cod")
+#The ensemble model with less informative priors
+plot(sample_loose, variable = "Cod")
+```
+  
+# References

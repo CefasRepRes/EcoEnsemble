@@ -11,8 +11,7 @@ EnsembleData(observations, simulators, priors)
 
 \item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
 
-\item{priors}{A \code{list} of data specifying the prior distributions for the ensemble.
-See the \code{define_priors} function for the required form.}
+\item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 }
 \value{
 An object of class \code{EnsembleData}
@@ -22,16 +21,17 @@ A constructor for the \code{EnsembleData} class. This is used to convert input d
 }
 \examples{
 N_species <- 4
-priors <- define_priors(ind_st_var_params = list(25, 0.25),
-                       ind_st_cor_form = "lkj", #Using an LKJ distribution for individual short-term discrepancies
-                       ind_st_cor_params = 30, #The parameter is 30
-                     ind_lt_var_params = list(rep(25,N_species),rep(0.25,N_species)),
-                     ind_lt_cor_form = "beta",
-                     ind_lt_cor_params = list(matrix(40,N_species, N_species), matrix(40, N_species, N_species)),
-                     sha_st_var_exp = 3,
-                     sha_st_cor_form = "lkj",
-                     sha_st_cor_params = 30,
-                   sha_lt_sd = rep(4,N_species))
+priors <- EnsemblePrior(
+    d = num_species,
+    ind_st_params = list("lkj",  list(3, 2), 3),
+    ind_lt_params = list("beta",
+                         list(c(10,4,8, 7),c(2,3,1, 4)),
+                         list(matrix(5, num_species, num_species),matrix(0.5, num_species, num_species))
+                         ),
+    sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
+    sha_lt_params = 5,
+    truth_params = list(10, list(3, 3), list(10, diag(num_species)))
+)
 ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),

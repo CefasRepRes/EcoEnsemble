@@ -45,21 +45,26 @@ plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
     stop(paste0("Invalid variable. This should be the name of a species or an index less than ",
                 ncol(observations)))
   }
-
+  var_index = which(colnames(observations) == variable)
   #We have to use the stan_input version because `observations` does not have data in the future
-  df <- fit@ensemble_data@stan_input$observations[, which(colnames(observations) == variable)]
+  df <- stan_input$observations[, var_index]
 
   #Ensemble outputs
   if(!is.null(fit@samples)){
-    df <- cbind(df, apply(sample@mle[, which(colnames(observations) == variable), ], 1, median))
-    df <- cbind(df, apply(sample@sample[, which(colnames(observations) == variable), ], 1, quantile, min(quantiles)))
-    df <- cbind(df, apply(sample@sample[, which(colnames(observations) == variable), ], 1, quantile, max(quantiles)))
+    df <- cbind(df, apply(sample@mle[, var_index, ], 1, median))
+    df <- cbind(df, apply(sample@sample[, var_index, ], 1, quantile, min(quantiles)))
+    df <- cbind(df, apply(sample@sample[, var_index, ], 1, quantile, max(quantiles)))
     colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble true value", "EnsembleLower", "EnsembleUpper")
 
   }else{
-    df <- cbind(df, sample@mle[, which(colnames(observations) == variable)])
+    df <- cbind(df, sample@mle[, var_index])
     colnames(df)[ncol(df)] <- "Ensemble true value"
   }
+
+  colnames(df)[1] <- "Observations"
+
+  df[, c(1, 2)] <- df[, c(2, 1)]
+  colnames(df)[c(1, 2)] <- colnames(df)[c(2, 1)]
 
   #Simulator outputs
   for (i in 1:length(simulators)) {
@@ -81,8 +86,6 @@ plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
       colnames(df)[ncol(df)] <- simulator[[3]]
     }
   }
-  colnames(df)[1] <- "Observations"
-
   #Years
   start_year <- min(as.double(rownames(observations)))
   df <- cbind(start_year:(start_year+stan_input$time-1), df)
@@ -95,9 +98,11 @@ plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
     df[df[, i] == 0, i] = NA
   }
 
-
   if(!is.null(fit@samples)){
     df <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
+
+    #TODO This is grim
+    df[df$Simulator != "Ensemble.true.value", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
     return(plot_values_sample_gg(df, variable))
   }
   df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
@@ -105,16 +110,9 @@ plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
 
 }
 
-#Is this needed?
-#setMethod("plot", signature(x = "EnsembleSample", y = "missing"),
-#          function(x, ...) {
-#            plot_values(x, ...)
-#          }
-#)
-
 plot_values_optimised_gg<- function(df, title){
   p <- ggplot2::ggplot(data=df, ggplot2::aes(x=`Year`, y=`value`, na.rm = TRUE)) +
-    ggplot2::geom_line(ggplot2::aes(group=`Simulator`,colour=`Simulator`)) +
+    ggplot2::geom_line(ggplot2::aes(group=`Simulator`,colour=`Simulator`), na.rm = TRUE) +
     ggplot2::ggtitle(title)
   return(p)
 }
@@ -122,12 +120,14 @@ plot_values_optimised_gg<- function(df, title){
 plot_values_sample_gg<- function(df, title){
   p <- plot_values_optimised_gg(df, title)
 
-  g <- ggplot2::ggplot_build(p)
-  ens_colour <- subset(g$data[[1]], group == 2)
-  ens_colour <- unique(ens_colour["colour"])$colour
+  #g <- ggplot2::ggplot_build(p)
+  #ens_colour <- subset(g$data[[1]], group == 2)
+  #ens_colour <- unique(ens_colour["colour"])$colour
+  #p <- p + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`),
+  #                              alpha=0.2, fill=ens_colour)
+  p <- p + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`, fill = `Simulator`),
+                                alpha=0.2)
 
-  p <- p + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`),
-                                alpha=0.2, fill=ens_colour)
   return(p)
 }
 

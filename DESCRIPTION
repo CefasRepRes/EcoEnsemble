@@ -1,6 +1,6 @@
 Package: EcoEnsemble
 Title: Bayesian ensemble modelling for combining ecosystem models
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     c(person(given = "James A.",
                 family = "Martindale",

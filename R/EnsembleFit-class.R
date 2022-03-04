@@ -1,4 +1,4 @@
-#' @rdname
+#' @rdname EnsembleFit
 #' @export
 EnsembleFit <- function(ensemble_data, samples = NULL, point_estimate = NULL) {
   ensemble_data <- new('EnsembleFit',
@@ -29,6 +29,7 @@ setClassUnion("list_or_null", c("list", "NULL"))
 #'
 #' @references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
 #' @seealso \code{\link{EnsembleFit}}, \code{\link{fit_ensemble_model}}, \code{\link{generate_sample}}
+#' @rdname EnsembleFit
 #' @export
 setClass(
   "EnsembleFit",

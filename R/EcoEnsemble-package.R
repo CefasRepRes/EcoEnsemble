@@ -4,7 +4,7 @@
 #'
 #' @details
 #' The ensemble model can be implemented in three main stages:
-#' 1. Eliciting priors on discrepancy terms: This is done by using the `define_priors` function.
+#' 1. Eliciting priors on discrepancy terms: This is done by using the `EnsemblePrior` constructor.
 #' 2. Fitting the ensemble model: Using `fit_ensemble_model` with simulator outputs, observations and prior information. The ensemble model can be fit, obtaining either the point estimate, which maximises the posterior density, or running Markov chain Monte Carlo to generate a sample from the posterior denisty of the ensemble model.
 #' 3. Sampling the latent variables from the fitted model: Using `generate_sample` with the fitted ensemble object, the discrepancy terms and the ensemble's best guess of the truth can be generated. Similarly to `fit_ensemble_model`, this can either be a point estimate or a full sample.
 #'

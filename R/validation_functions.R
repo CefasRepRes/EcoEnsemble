@@ -9,7 +9,7 @@ validate_compatibility <- function(name, pair){
 
   df <- as.matrix(pair[[1]])
   if (ncol(df) != ncol(covar)){
-    msg <- paste0(name, " data has ", ncol(df), "columns but the covariance matrix has ", ncol(covar), "columns. Variables for the covariance matrix should match the observed data.")
+    msg <- paste0(name, " data has ", ncol(df), " columns but the covariance matrix has ", ncol(covar), " columns. Variables for the covariance matrix should match the observed data.")
     stop(msg)
   }
 
@@ -86,63 +86,24 @@ validate_simulator <- function(simulator, observation_variables, name){
 }
 
 
-validate_correlation_priors <- function(type_str, form, params, N) {
-  form <- tolower(form)
-  if (!(form %in% c("lkj", "inv_wishart", "beta"))){
-    msg <- paste0("Invalid prior choice on ", type_str," correlation matrix.",
-                  " Correlation priors should be one of 'lkj', 'inv_wishart',",
-                  " or 'beta'. Prior choice: ", form)
-    stop(msg)
-  }
 
-  msg <- ""
-  if(form == "lkj" &
-     length(params) != 1){
-    msg <- paste0("Invalid lkj parameter for ", type_str, " correlation matrix prior.",
-                  " This should be a list with exactly one real number.")
 
-  }else if (form == "inv_wishart" &
-            (length(params) != 2 ||
-              !is.matrix(params[[2]] ))){
-    #TODO: Come back to this message.
-    msg <- paste0("Invalid inverse Wishart parameters for ", type_str, " correlation",
-                  " matrix prior.")
-  }else if (form == "beta" &
-            (length(params) !=2 ||
-             !is.matrix(params[[1]]) ||
-             !is.matrix(params[[2]]) ||
-             !is.square.matrix(params[[1]]) ||
-             !is.square.matrix(params[[2]]) ||
-             !is.symmetric.matrix(params[[1]]) || #TODO:What are the exact conditions we should check here? Do we need symmetry?
-             !is.symmetric.matrix(params[[2]]) ||
-             !(dim(params[[1]])[1] == N) ||
-             !(dim(params[[2]])[1] == N))){
-    msg <- paste0("Invalid beta parameters for ", type_str, " correlation matrix priors.",
-                  " These should be square, symmetric matrices with the same dimension as the",
-                  " number of model outputs.")
-  }
-  if(msg != ""){
-    stop(msg)
-  }
+validate_priors <- function(d, priors){
 
-}
-
-validate_priors <- function(N, priors){
-
+  #TODO: This is done elsewhere now. Need to decide how best to structure this.
   #Correlation priors
-  cor_pri <- priors$prior_correlations
-  validate_correlation_priors("individual short-term", cor_pri$ind_st_cor_form, cor_pri$ind_st_cor_params, N)
-  validate_correlation_priors("individual long-term",  cor_pri$ind_lt_cor_form, cor_pri$ind_lt_cor_params, N)
-  validate_correlation_priors("shared short-term",     cor_pri$sha_st_cor_form, cor_pri$sha_st_cor_params, N)
+  #priors_input <- priors@priors_stan_input
+  #validate_correlation_priors("individual short-term", priors@ind_st_params[[1]], priors@ind_st_params[[3]], d)
+  #validate_correlation_priors("individual long-term",  priors@ind_lt_params[[1]], priors@ind_lt_params[[3]], d)
+  #validate_correlation_priors("shared short-term",     priors@sha_st_params[[1]], priors@sha_st_params[[3]], d)
 
   #Other priors
-  if(length(priors$prior_ind_lt_var_a) != N ||
-     length(priors$prior_ind_lt_var_b) != N){
-    msg <- paste0("Invalid priors for the variance of the individual long-term",
-                  " discrepancies. These should be vectors of length ", N)
-    stop(msg)
+  #if(!(length(priors_input$prior_ind_lt_var_a) %in% c(1, d)) ||
+  #   !(length(priors_input$prior_ind_lt_var_b) %in% c(1, d))){
+  #  msg <- paste0("Invalid priors for the variance of the individual long-term discrepancies. These should be vectors of length ", d)
+  #  stop(msg)
 
-  }
+  #}
   #TODO: Should we be doing validation on the following?
   #priors$prior_ind_st_var_a
   #priors$prior_ind_st_var_b
@@ -153,11 +114,9 @@ validate_data <- function(observations, simulators, priors){
   validate_observations(observations)
 
   if(!is.list(simulators)){
-   stop(paste0("Simulator data should be passed through as a list, with each ",
-               "element containing a list of the data for a given simulator."))
+   stop(paste0("Simulator data should be passed through as a list, with each element containing a list of the data for a given simulator."))
   }
 
-  #for(simulator in simulators){
   for(i in 1:length(simulators)){
     simulator <- simulators[[i]]
     sim_name <- paste0("One of your simulator's [[", i, "]]")
