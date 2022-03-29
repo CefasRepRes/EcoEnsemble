@@ -20,5 +20,5 @@ A class that holds the observation data, simulator outputs, and prior informatio
 }}
 
 \seealso{
-\code{\link{EnsembleData}}, \code{\link{define_priors}}, \code{\link{fit_ensemble_model}}
+\code{\link{EnsembleData}}, \code{\link{EnsemblePrior}}, \code{\link{fit_ensemble_model}}
 }

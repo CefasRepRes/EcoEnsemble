@@ -21,12 +21,10 @@ validate_correlation_priors <- function(type_str, form, params, d) {
      length(params) != 1){
     msg <- paste0("Invalid lkj parameter for ", type_str, " correlation matrix prior. This should be a list with exactly one real number.")
 
-  }else if (form == "inv_wishart" &
-            (length(params) != 2 ||
-             !is.matrix(params[[2]] ))){
-    #TODO: Come back to this message.
-    msg <- paste0("Invalid inverse Wishart parameters for ", type_str, " correlation",
-                  " matrix prior.")
+  }else if (form == "inv_wishart"){
+    if(length(params) != 2 || !is.numeric(params[[1]]) || !is.matrix(params[[2]]) || !is.square.matrix(params[[2]]) || params[[1]] <= d-1){
+      msg <- paste0("Invalid inverse Wishart parameters for ", type_str, " correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1.")
+    }
   }else if (form == "beta" &
             (length(params) !=2 ||
              !is.matrix(params[[1]]) ||

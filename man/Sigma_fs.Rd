@@ -14,8 +14,6 @@ Sigma_fs
 A 3x3 covariance matrix quantifying the parameter uncertainty of FishSUMS
 }
 \references{
-Speirs, D.C., Guirey, E.J., Gurney, W.S.C. and Heath, M.R. (2010).
-A length structured partial ecosystem model for cod in the North Sea.
-Fisheries Research 106, 474-494.
+Spence, M. A., Blanchard, J. L., Rossberg, A. G., Heath, M. R., Heymans, J. J., Mackinson, S., Serpetti, N., Speirs, D. C., Thorpe, R. B., and Blackwell, P. G. (2018). A general framework for combining ecosystem models. Fish and Fisheries, 19(6), 1031–1042.
 }
 \keyword{datasets}

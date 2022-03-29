@@ -7,7 +7,7 @@
 \format{
 A data frame with 34 rows and 4 variables:
 \describe{
-\item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
+\item{\code{N.pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
 \item{\code{Cod}}{Spawning stock biomass of Cod, in log tonnes.}
 \item{\code{Sole}}{Spawning stock biomass of Sole, in log tonnes.}

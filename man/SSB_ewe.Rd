@@ -7,7 +7,7 @@
 \format{
 A \code{data.frame} with 60 rows and 4 variables:
 \describe{
-\item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
+\item{\code{N.pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
 \item{\code{Cod}}{Spawning stock biomass of Cod, in log tonnes.}
 \item{\code{Sole}}{Spawning stock biomass of Sole, in log tonnes.}
@@ -17,12 +17,9 @@ A \code{data.frame} with 60 rows and 4 variables:
 SSB_ewe
 }
 \description{
-A dataset containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod,
-and Sole in the North Sea between 1991-2050 under an MSY fishing scenario from EcoPath with EcoSim.
+A dataset containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod, and Sole in the North Sea between 1991-2050 under an MSY fishing scenario from EcoPath with EcoSim.
 }
 \references{
-C Walters, V Christensen and D Pauly (1997) Structuring dynamic
-models of exploited ecosystems from trophic mass-balance assessments
-Rev. Fish Biol. Fish., 7, pp. 139-172
+ICES (2016). Working Group on Multispecies Assessment Methods (WGSAM). Technical report, International Council for Exploration of the Seas.
 }
 \keyword{datasets}

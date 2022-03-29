@@ -1,18 +1,15 @@
 #' Ecopath with EcoSim SSB
 #'
-#' A dataset containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod,
-#' and Sole in the North Sea between 1991-2050 under an MSY fishing scenario from EcoPath with EcoSim.
+#' A dataset containing the predictions for spawning stock biomass of Norway Pout, Herring, Cod, and Sole in the North Sea between 1991-2050 under an MSY fishing scenario from EcoPath with EcoSim.
 #'
 #' @format A `data.frame` with 60 rows and 4 variables:
 #' \describe{
-#'   \item{`N.Pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
+#'   \item{`N.pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
 #'   \item{`Herring`}{Spawning stock biomass of Herring, in log tonnes.}
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #'   \item{`Sole`}{Spawning stock biomass of Sole, in log tonnes.}
 #' }
-#' @references C Walters, V Christensen and D Pauly (1997) Structuring dynamic
-#' models of exploited ecosystems from trophic mass-balance assessments
-#' Rev. Fish Biol. Fish., 7, pp. 139-172
+#' @references ICES (2016). Working Group on Multispecies Assessment Methods (WGSAM). Technical report, International Council for Exploration of the Seas.
 "SSB_ewe"
 
 #' FishSUMS SSB
@@ -23,13 +20,11 @@
 #'
 #' @format A `data.frame` with 67 rows and 3 variables:
 #' \describe{
-#'   \item{`N.Pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
+#'   \item{`N.pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
 #'   \item{`Herring`}{Spawning stock biomass of Herring, in log tonnes.}
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #' }
-#' @references Speirs, D.C., Guirey, E.J., Gurney, W.S.C. and Heath, M.R. (2010).
-#' A length structured partial ecosystem model for cod in the North Sea.
-#' Fisheries Research 106, 474-494.
+#' @references Speirs, D., Greenstreet, S., and Heath, M. (2016). Modelling the effects of fishing on the North Sea fish community size composition. Ecological Modelling, 321, 35–45
 "SSB_fs"
 
 #' LeMans SSB
@@ -39,15 +34,12 @@
 #'
 #' @format A `data.frame` with 65 rows and 4 variables:
 #' \describe{
-#'   \item{`N.Pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
+#'   \item{`N.pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
 #'   \item{`Herring`}{Spawning stock biomass of Herring, in log tonnes.}
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #'   \item{`Sole`}{Spawning stock biomass of Sole, in log tonnes.}
 #' }
-#' @references   Michael A. Spence, Hayley J. Bannister, Johnathan E. Ball, Paul J. Dolder
-#' and Robert B. Thorpe (2019). LeMaRns: Length-Based Multispecies Analysis
-#' by Numerical Simulation. R package version 0.1.2.
-#' \href{https://CRAN.R-project.org/package=LeMaRns}{CRAN}
+#' @references Thorpe, R. B., Le Quesne, W. J. F., Luxford, F., Collie, J. S., and Jennings, S. (2015). Evaluation and management implications of uncertainty in a multispecies size-structured model of population and community responses to fishing. Methods in Ecology and Evolution, 6(1), 49–58.
 "SSB_lm"
 
 
@@ -58,14 +50,12 @@
 #'
 #' @format A data frame with 67 rows and 4 variables:
 #' \describe{
-#'   \item{`N.Pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
+#'   \item{`N.pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
 #'   \item{`Herring`}{Spawning stock biomass of Herring, in log tonnes.}
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #'   \item{`Sole`}{Spawning stock biomass of Sole, in log tonnes.}
 #' }
-#' @references F. Scott, J.L. Blanchard and K.H. Andersen. mizer: an R package for
-#' multispecies, trait-based and community size spectrum ecological
-#' modelling. Methods in Ecology and Evolution 5(10) 1121-1125 (2014).
+#' @references Blanchard, J. L., Andersen, K. H., Scott, F., Hintzen, N. T., Piet, G., and Jennings, S. (2014). Evaluating targets and trade-offs among fisheries and conservation objectives using a multispecies size spectrum model. Journal of Applied Ecology, 51(3), 612–622
 "SSB_miz"
 
 #' Stock assessment SSB
@@ -75,7 +65,7 @@
 #'
 #' @format A data frame with 34 rows and 4 variables:
 #' \describe{
-#'   \item{`N.Pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
+#'   \item{`N.pout`}{Spawning stock biomass of Norway Pout, in log tonnes.}
 #'   \item{`Herring`}{Spawning stock biomass of Herring, in log tonnes.}
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #'   \item{`Sole`}{Spawning stock biomass of Sole, in log tonnes.}
@@ -91,38 +81,28 @@
 #'
 #' A 4x4 covariance matrix quantifying the parameter uncertainty of Ecopath with EcoSim
 #' @format A 4x4 `matrix`.
-#' @references C Walters, V Christensen and D Pauly (1997) Structuring dynamic
-#' models of exploited ecosystems from trophic mass-balance assessments
-#' Rev. Fish Biol. Fish., 7, pp. 139-172
-
+#' @references Mackinson, S., Platts, M., Garcia, C., and Lynam, C. (2018). Evaluating the fishery and ecological consequences of the proposed North Sea multi-annual plan. PLOS ONE, 13(1), 1–23.
 "Sigma_ewe"
 
 #' FishSUMS Sigma
 #'
 #' A 3x3 covariance matrix quantifying the parameter uncertainty of FishSUMS
 #' @format A 3x3 `matrix`.
-#' @references Speirs, D.C., Guirey, E.J., Gurney, W.S.C. and Heath, M.R. (2010).
-#' A length structured partial ecosystem model for cod in the North Sea.
-#' Fisheries Research 106, 474-494.
+#' @references Spence, M. A., Blanchard, J. L., Rossberg, A. G., Heath, M. R., Heymans, J. J., Mackinson, S., Serpetti, N., Speirs, D. C., Thorpe, R. B., and Blackwell, P. G. (2018). A general framework for combining ecosystem models. Fish and Fisheries, 19(6), 1031–1042.
 "Sigma_fs"
 
 #' LeMans Sigma
 #'
 #' @format A 4x4 `matrix`.
 #' A 4x4 covariance matrix quantifying the parameter uncertainty of LeMans
-#' @references   Michael A. Spence, Hayley J. Bannister, Johnathan E. Ball, Paul J. Dolder
-#' and Robert B. Thorpe (2019). LeMaRns: Length-Based Multispecies Analysis
-#' by Numerical Simulation. R package version 0.1.2.
-#' \href{https://CRAN.R-project.org/package=LeMaRns}{CRAN}
+#' @references   Thorpe, R. B., Le Quesne, W. J. F., Luxford, F., Collie, J. S., and Jennings, S. (2015). Evaluation and management implications of uncertainty in a multispecies size-structured model of population and community responses to fishing. Methods in Ecology and Evolution, 6(1), 49–58.
 "Sigma_lm"
 
 #' mizer Sigma
 #'
 #' @format A 4x4 `matrix`.
 #' A 4x4 covariance matrix quantifying the parameter uncertainty of mizer
-#' @references F. Scott, J.L. Blanchard and K.H. Andersen. mizer: an R package for
-#' multispecies, trait-based and community size spectrum ecological
-#' modelling. Methods in Ecology and Evolution 5(10) 1121-1125 (2014).
+#' @references Spence, M. A., Blackwell, P. G., and Blanchard, J. L. (2016). Parameter uncertainty of a dynamic multispecies size spectrum model. Canadian Journal of Fisheries and Aquatic Sciences, 73(4), 589–59
 
 "Sigma_miz"
 

@@ -7,7 +7,7 @@
 \format{
 A \code{data.frame} with 65 rows and 4 variables:
 \describe{
-\item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
+\item{\code{N.pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
 \item{\code{Cod}}{Spawning stock biomass of Cod, in log tonnes.}
 \item{\code{Sole}}{Spawning stock biomass of Sole, in log tonnes.}
@@ -21,9 +21,6 @@ A \code{data.frame} containing the predictions for spawning stock biomass of Nor
 in the North Sea between 1986-2050 under an MSY fishing scenario from the LeMaRns package.
 }
 \references{
-Michael A. Spence, Hayley J. Bannister, Johnathan E. Ball, Paul J. Dolder
-and Robert B. Thorpe (2019). LeMaRns: Length-Based Multispecies Analysis
-by Numerical Simulation. R package version 0.1.2.
-\href{https://CRAN.R-project.org/package=LeMaRns}{CRAN}
+Thorpe, R. B., Le Quesne, W. J. F., Luxford, F., Collie, J. S., and Jennings, S. (2015). Evaluation and management implications of uncertainty in a multispecies size-structured model of population and community responses to fishing. Methods in Ecology and Evolution, 6(1), 49–58.
 }
 \keyword{datasets}

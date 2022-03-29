@@ -7,7 +7,7 @@
 \format{
 A data frame with 67 rows and 4 variables:
 \describe{
-\item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
+\item{\code{N.pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
 \item{\code{Cod}}{Spawning stock biomass of Cod, in log tonnes.}
 \item{\code{Sole}}{Spawning stock biomass of Sole, in log tonnes.}
@@ -21,8 +21,6 @@ A \code{data.frame} containing the predictions for spawning stock biomass of Nor
 in the North Sea between 1984-2050 under an MSY fishing scenario from mizer.
 }
 \references{
-F. Scott, J.L. Blanchard and K.H. Andersen. mizer: an R package for
-multispecies, trait-based and community size spectrum ecological
-modelling. Methods in Ecology and Evolution 5(10) 1121-1125 (2014).
+Blanchard, J. L., Andersen, K. H., Scott, F., Hintzen, N. T., Piet, G., and Jennings, S. (2014). Evaluating targets and trade-offs among fisheries and conservation objectives using a multispecies size spectrum model. Journal of Applied Ecology, 51(3), 612–622
 }
 \keyword{datasets}

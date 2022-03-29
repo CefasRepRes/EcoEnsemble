@@ -27,6 +27,8 @@ An \code{EnsemblePrior} object encapsulates the prior information for the ensemb
 
 \references{
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
+
+Lewandowski, Daniel, Dorota Kurowicka, and Harry Joe. 2009. “Generating Random Correlation Matrices Based on Vines and Extended Onion Method.” Journal of Multivariate Analysis 100: 1989–2001.
 }
 \seealso{
 \code{\link{EnsemblePrior}}, \code{\link{EnsembleData}}, \code{\link{fit_ensemble_model}},

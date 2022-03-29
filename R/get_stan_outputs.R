@@ -2,52 +2,54 @@
 #'
 #'Methods to generates samples of the latent variables from a fitted ensemble model.
 #'@param fit An `EnsembleFit` object.
-#'@param num_samples The number of samples generated if the `EnsembleFit` object is not a full sampling of the posterior of the ensemble model. The default is 1. If the `EnsembleFit` object is a full sampling of the posterior, then the number of samples will be the same as the number of samples in the ensemble MCMC. (I don't understand this James)
-#'@param time A non-negative integer specifying the time for which the ensemble model was run. (I don't understand)
-#'@param ex.fit The extracted samples / point estimate from the `EnsembleFit` object. For samples, this should be the output of `rstan::extract()` on the `stanfit` object and for point estimate outputs this should be the `par` slot.
-#'@param x The sample of parameters from the ensemble model to use (if the `EnsembleFit` object is a full sampling, otherwise uses the MLE). The default is 1.
-#'@param transformed_data James?
+#'@param num_samples A `numeric` specifying the number of samples to be generated. The default is 1.
+#'@param time A `numeric` specifying the time for which the ensemble model was run.
+#'@param ex.fit A `list` containing the samples / point estimate from the `EnsembleFit` object.
+#'@param x A `numeric` specifying which sample from the posterior to use. The default is 1.
+#'@param transformed_data A `list` of transformed input data.
 #'
-#'@details The samples are created using the methods described in ....
-#'
+#'@details The samples are created using the methods described in Strickland et. al. (2009) and Durbin and Koopman (2002).
 #'
 #'@return
-#'`generate_sample` gives a `list` of length 2, with the first element being the MLE of latent variables and the second element being samples of the latent variables.
+#'`generate_sample` gives a `list` of length 2, the first element being the MLE of latent variables and the second element being a set of samples of the latent variables.
 #'
-#'* If `fit` is a full MCMC sampling of the ensemble model, then:
-#'    + `mle` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array` (where \eqn{M} is the number of simulators and \eqn{N_{ens}} is the number of samples from the ensemble model), giving the MLE of the latent variables for each available sample from the ensemble model.
-#'    + `sample` is a `time`\eqn{\times (3M + 2) \times N_{ens}} `array`, giving a sample of the latent variables for each available sample of the ensemble model.
+#'* If `fit` is a sampling of the ensemble model parameters, then:
+#'    + `mle` is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, where \eqn{M} is the number of simulators and `num_samples` is the number of samples from the ensemble model, giving the MLE of the latent variables for each available sample from the ensemble model.
+#'    + `sample` is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, giving a sample of the latent variables for each available sample of the ensemble model.
 #'
-#'* If `fit` is a point estimate of the ensemble model, then:
-#'    + `mle` is a `time`\eqn{\times (3M + 2) \times} 1 `array` giving the MLE of the latent variables for the point estimate
-#' of the ensemble model.
+#'* If `fit` is a point estimate of the ensemble model parameters, then:
+#'    + `mle` is a `time`\eqn{\times (3M + 2) \times} 1 `array` giving the MLE of the latent variables for the point estimate of the ensemble model.
 #'    + `sample` is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, giving `num_samples` samples of the latent variables for the single point estimate of the ensemble model.
 #'
-#'`get_transformed_data` gives a `list` of transformed input data in discrepancy space.
+#'`get_transformed_data` gives a `list` of transformed input data.
 #'
 #'`get_parameters` gives a `list` of ensemble parameters from the requested sample.
 #'
-#'`get_mle` gives the MLE of the latent variables for the the requested sample of ensemble parameter values. (matrix?)
+#'`get_mle` If `fit` is a sampling of the ensemble model parameters, then this is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`. If `fit` is a point estimate of the ensemble model parameters, then this is a `time`\eqn{\times (3M + 2) \times} 1 `array` giving the MLE of the latent variables for the point estimate of the ensemble model.
 #'
-#'`gen_sample` gives a sample from the latent variables for the the requested sample of ensemble parameter values. (matrix/array?)
+#'`gen_sample` If `fit` is a sampling of the ensemble model parameters, then this is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`, giving a sample of the latent variables for each available sample of the ensemble model. If `fit` is a point estimate of the ensemble model parameters, then this is a `time`\eqn{\times (3M + 2) \times} `num_samples` `array`.
 #'
 #'
 #'@rdname get_stan_outputs
-#' @references the one I forgot.
+#' @references J. Durbin, S. J. Koopman (2002) A simple and efficient simulation smoother for state space time series analysis Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616,
+#' @references Chris M.Strickland, Ian. W.Turner, RobertDenhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 #'@export
 #'@examples
-#'N_species <- 4
+#'num_species <- 4
 #' priors <- EnsemblePrior(
 #'     d = num_species,
 #'     ind_st_params = list("lkj",  list(3, 2), 3),
-#'     ind_lt_params = list("beta",
-#'                          list(c(10,4,8, 7),c(2,3,1, 4)),
-#'                          list(matrix(5, num_species, num_species),matrix(0.5, num_species, num_species))
-#'                          ),
+#'     ind_lt_params = list(
+#'        "beta",
+#'         list(c(10,4,8, 7),c(2,3,1, 4)),
+#'         list(matrix(5, num_species, num_species),
+#'              matrix(0.5, num_species, num_species))
+#'     ),
 #'     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
 #'     sha_lt_params = 5,
 #'     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
 #' )
+#'\dontrun{
 #'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
@@ -61,7 +63,7 @@
 #'ex.fit <- rstan::extract(fit@@ex.fit)
 #'mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
 #'                      time = fit@@ensemble_data@@stan_input$time, simplify = F)
-#'
+#'}
 generate_sample <- function(fit, num_samples = 1)
 {
 
@@ -77,24 +79,14 @@ generate_sample <- function(fit, num_samples = 1)
   if (full_sample){
     ex.fit <- rstan::extract(fit@samples)
     num_samples <- nrow(ex.fit$x_hat)
-    #ret$mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, bigM = bigM,
-    #                  all_eigenvalues_cov = all_eigenvalues_cov,
-    #                  observation_available = observation_available,
-    #                  time = stan_input$time, new_data = new_data, simplify = F)
     mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, transformed_data = transformed_data,
                       time = stan_input$time, simplify = F)
   }else {
     ex.fit <- fit@point_estimate$par
-    #ret$mle <- get_mle(x=1, ex.fit, bigM, all_eigenvalues_cov,
-    #                   observation_available, time = stan_input$time, new_data)
     mle <- get_mle(x=1, ex.fit, transformed_data = transformed_data,
                        time = stan_input$time)
   }
 
-  #sammy <- sapply(1:num_samples, gen_sample, ex.fit = ex.fit, bigM=bigM,
-  #                all_eigenvalues_cov = all_eigenvalues_cov,
-  #                observation_available = observation_available,
-  #                time = stan_input$time, simplify = F)
   sammy <- sapply(1:num_samples, gen_sample, ex.fit = ex.fit,
                   transformed_data = transformed_data,
                   time = stan_input$time, simplify = F)
@@ -106,8 +98,6 @@ generate_sample <- function(fit, num_samples = 1)
     }, y = mle,
     x = sammy)
     #TODO: CHange the dimnames to be something helpful for the end user....
-    #ret$sample <-array(as.numeric(unlist(tmp)),dim=c(nrow(ret$mle[[1]]),ncol(ret$mle[[1]]),num_samples),
-    #                   dimnames = list(1:stan_input$time), , 1:num_samples)
     sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
     mle <-array(as.numeric(unlist(mle)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
   }else{
@@ -119,6 +109,10 @@ generate_sample <- function(fit, num_samples = 1)
 
   return(EnsembleSample(fit, mle, sample_ret))
 }
+
+
+# Fudge to get past "no visible binding for global variable" in R-CMD check
+utils::globalVariables(c("KalmanFilter_back"))
 
 #'@rdname get_stan_outputs
 #'@export

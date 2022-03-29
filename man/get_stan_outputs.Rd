@@ -21,59 +21,61 @@ gen_sample(x = 1, ex.fit, transformed_data, time)
 \arguments{
 \item{fit}{An \code{EnsembleFit} object.}
 
-\item{num_samples}{The number of samples generated if the \code{EnsembleFit} object is not a full sampling of the posterior of the ensemble model. The default is 1. If the \code{EnsembleFit} object is a full sampling of the posterior, then the number of samples will be the same as the number of samples in the ensemble MCMC. (I don't understand this James)}
+\item{num_samples}{A \code{numeric} specifying the number of samples to be generated. The default is 1.}
 
-\item{ex.fit}{The extracted samples / point estimate from the \code{EnsembleFit} object. For samples, this should be the output of \code{rstan::extract()} on the \code{stanfit} object and for point estimate outputs this should be the \code{par} slot.}
+\item{ex.fit}{A \code{list} containing the samples / point estimate from the \code{EnsembleFit} object.}
 
-\item{x}{The sample of parameters from the ensemble model to use (if the \code{EnsembleFit} object is a full sampling, otherwise uses the MLE). The default is 1.}
+\item{x}{A \code{numeric} specifying which sample from the posterior to use. The default is 1.}
 
-\item{transformed_data}{James?}
+\item{transformed_data}{A \code{list} of transformed input data.}
 
-\item{time}{A non-negative integer specifying the time for which the ensemble model was run. (I don't understand)}
+\item{time}{A \code{numeric} specifying the time for which the ensemble model was run.}
 }
 \value{
-\code{generate_sample} gives a \code{list} of length 2, with the first element being the MLE of latent variables and the second element being samples of the latent variables.
+\code{generate_sample} gives a \code{list} of length 2, the first element being the MLE of latent variables and the second element being a set of samples of the latent variables.
 \itemize{
-\item If \code{fit} is a full MCMC sampling of the ensemble model, then:
+\item If \code{fit} is a sampling of the ensemble model parameters, then:
 \itemize{
-\item \code{mle} is a \code{time}\eqn{\times (3M + 2) \times N_{ens}} \code{array} (where \eqn{M} is the number of simulators and \eqn{N_{ens}} is the number of samples from the ensemble model), giving the MLE of the latent variables for each available sample from the ensemble model.
-\item \code{sample} is a \code{time}\eqn{\times (3M + 2) \times N_{ens}} \code{array}, giving a sample of the latent variables for each available sample of the ensemble model.
+\item \code{mle} is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}, where \eqn{M} is the number of simulators and \code{num_samples} is the number of samples from the ensemble model, giving the MLE of the latent variables for each available sample from the ensemble model.
+\item \code{sample} is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}, giving a sample of the latent variables for each available sample of the ensemble model.
 }
-\item If \code{fit} is a point estimate of the ensemble model, then:
+\item If \code{fit} is a point estimate of the ensemble model parameters, then:
 \itemize{
-\item \code{mle} is a \code{time}\eqn{\times (3M + 2) \times} 1 \code{array} giving the MLE of the latent variables for the point estimate
-of the ensemble model.
+\item \code{mle} is a \code{time}\eqn{\times (3M + 2) \times} 1 \code{array} giving the MLE of the latent variables for the point estimate of the ensemble model.
 \item \code{sample} is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}, giving \code{num_samples} samples of the latent variables for the single point estimate of the ensemble model.
 }
 }
 
-\code{get_transformed_data} gives a \code{list} of transformed input data in discrepancy space.
+\code{get_transformed_data} gives a \code{list} of transformed input data.
 
 \code{get_parameters} gives a \code{list} of ensemble parameters from the requested sample.
 
-\code{get_mle} gives the MLE of the latent variables for the the requested sample of ensemble parameter values. (matrix?)
+\code{get_mle} If \code{fit} is a sampling of the ensemble model parameters, then this is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}. If \code{fit} is a point estimate of the ensemble model parameters, then this is a \code{time}\eqn{\times (3M + 2) \times} 1 \code{array} giving the MLE of the latent variables for the point estimate of the ensemble model.
 
-\code{gen_sample} gives a sample from the latent variables for the the requested sample of ensemble parameter values. (matrix/array?)
+\code{gen_sample} If \code{fit} is a sampling of the ensemble model parameters, then this is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}, giving a sample of the latent variables for each available sample of the ensemble model. If \code{fit} is a point estimate of the ensemble model parameters, then this is a \code{time}\eqn{\times (3M + 2) \times} \code{num_samples} \code{array}.
 }
 \description{
 Methods to generates samples of the latent variables from a fitted ensemble model.
 }
 \details{
-The samples are created using the methods described in ....
+The samples are created using the methods described in Strickland et. al. (2009) and Durbin and Koopman (2002).
 }
 \examples{
-N_species <- 4
+num_species <- 4
 priors <- EnsemblePrior(
     d = num_species,
     ind_st_params = list("lkj",  list(3, 2), 3),
-    ind_lt_params = list("beta",
-                         list(c(10,4,8, 7),c(2,3,1, 4)),
-                         list(matrix(5, num_species, num_species),matrix(0.5, num_species, num_species))
-                         ),
+    ind_lt_params = list(
+       "beta",
+        list(c(10,4,8, 7),c(2,3,1, 4)),
+        list(matrix(5, num_species, num_species),
+             matrix(0.5, num_species, num_species))
+    ),
     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
     sha_lt_params = 5,
     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
 )
+\dontrun{
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
@@ -87,8 +89,10 @@ transf_data <- get_transformed_data(fit)
 ex.fit <- rstan::extract(fit@ex.fit)
 mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
                      time = fit@ensemble_data@stan_input$time, simplify = F)
-
+}
 }
 \references{
-the one I forgot.
+J. Durbin, S. J. Koopman (2002) A simple and efficient simulation smoother for state space time series analysis Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616,
+
+Chris M.Strickland, Ian. W.Turner, RobertDenhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 }

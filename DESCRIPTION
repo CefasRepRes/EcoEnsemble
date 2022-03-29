@@ -1,6 +1,6 @@
 Package: EcoEnsemble
-Title: Bayesian ensemble modelling for combining ecosystem models
-Version: 0.0.0.9002
+Title: A General Framework for Combining Ecosystem Models in R
+Version: 0.1.0
 Authors@R: 
     c(person(given = "James A.",
                 family = "Martindale",
@@ -11,8 +11,8 @@ Authors@R:
                 family = "Spence",
                 role = c("aut"),
                 comment = c(ORCID = "0000-0002-3445-7979")))
-Description: Set up, fit and sample from the ensemble model laid out in Spence et. al. (2018): A general framework for combining ecosystem models. <https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>
-License: GPL (>= 3)
+Description: Set up, fit and sample from the ensemble model described in Spence et al (2018): A general framework for combining ecosystem models<https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>.
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -26,7 +26,12 @@ Imports:
 	matrixcalc,
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
-    rstantools (>= 2.1.1)
+    rstantools (>= 2.1.1),
+    dplyr,
+    ggplot2,
+    reshape2,
+    tibble,
+    cowplot
 LinkingTo: 
     BH (>= 1.66.0),
     Rcpp (>= 0.12.0),
@@ -41,3 +46,18 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Collate: 
+    'EcoEnsemble-package.R'
+    'EnsemblePrior-class.R'
+    'EnsembleData-class.R'
+    'EnsembleFit-class.R'
+    'EnsembleSample-class.R'
+    'data.R'
+    'fit_ensemble.R'
+    'generate_simulator_stan_data.R'
+    'get_stan_outputs.R'
+    'plot_functions.R'
+    'prior_functions.R'
+    'stanmodels.R'
+    'validation_functions.R'
+    'validation_prior_functions.R'

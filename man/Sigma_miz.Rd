@@ -15,8 +15,6 @@ Sigma_miz
 mizer Sigma
 }
 \references{
-F. Scott, J.L. Blanchard and K.H. Andersen. mizer: an R package for
-multispecies, trait-based and community size spectrum ecological
-modelling. Methods in Ecology and Evolution 5(10) 1121-1125 (2014).
+Spence, M. A., Blackwell, P. G., and Blanchard, J. L. (2016). Parameter uncertainty of a dynamic multispecies size spectrum model. Canadian Journal of Fisheries and Aquatic Sciences, 73(4), 589–59
 }
 \keyword{datasets}

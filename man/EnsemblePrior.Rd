@@ -2,8 +2,7 @@
 % Please edit documentation in R/EnsemblePrior-class.R
 \name{EnsemblePrior}
 \alias{EnsemblePrior}
-\title{Constructor for the \code{EnsemblePrior} class
-TODO: Rewrite this and adapt the Stan model!}
+\title{Constructor for the \code{EnsemblePrior} class}
 \usage{
 EnsemblePrior(
   d,
@@ -40,14 +39,14 @@ Most discrepancy prior paramaters (\verb{ind_st_params, ind_lt_params, sha_st_pa
 
 There are currently three supported prior distributions on covariance matrices. As in Spence et. al. (2018) , the discrepancy covariance matrices (individual and shared short-term discrepancies \eqn{z_k^{(t)},\eta^{(t)}} as well as individual long-term discrepancies \eqn{\gamma_k}, but not the shared long-term discrepancy \eqn{\delta}) are decomposed into a vector of variances and a correlation matrix \deqn{\Lambda = \sqrt{\mathrm{diag}(\pi)}  P \sqrt{\mathrm{diag}(\pi)},} where \eqn{\pi} is the vector of variances for each species, and \eqn{P} is the correlation matrix. The variance terms \eqn{\pi} are parameterised by inverse-gamma distributions, while the correlation matrices can be parameterised in three different ways depending on the choice of parameterisation given in the first element of the \code{list}. Selecting \code{'lkj'}, \code{'inv_wishart'}, or \code{'beta'} refers to the LKJ, inverse Wishart, or Beta distributions respectively. The associated parameters should be passed through as the third element in the \code{list}, and should be of the form:
 \itemize{
-\item If \code{'lkj'} is selected., then  the third element should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such  that the probability density is given by  \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.}
+\item If \code{'lkj'} is selected., then  the third element should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such  that the probability density is given by  (Lewandowski et. al. 2009) \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.}
 \item If \code{'inv_wishart'} is selected., then  the third element should be a \code{list} containing a scalar value \eqn{\nu} (giving the degrees of freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix it produces (i.e \eqn{d \times d} where \eqn{d} is the number of species). The density of an inverse Wishart is given by  \deqn{f(W|\eta, S) = \frac{1}{2^{\eta d/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + d + 1)/2}  \exp \left(- \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),} where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(X \right)}} is the trace of \eqn{X}.  Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation  matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered.
 \item If \code{'beta'} is selected., then  the third element should be a  \code{list} containing two \eqn{d \times d} matrices (where \eqn{d} is the number of species), giving the prior success parameters \eqn{\alpha} and prior failure parameters \eqn{\beta} respectively. To ensure positive-definiteness, the correlations are rescaled from \eqn{[-1,1] \rightarrow [0,1]} via the function \eqn{\frac{1}{\pi} \tan^{-1} \frac{\rho}{\sqrt{1-\rho^2}} + \frac{1}{2}}. It is on these rescaled parameters that the Beta distribution applies.
 }
 
-In addition to priors on the discrepancy terms, it is also possible to add prior information on the truth. Use of the Kalman filter requires priors on the initial values and variance of the truth $y^{(t)}$. By default, a $N(0, 10)$ prior is used on the initial values, and an Inv-Gamma$(10, 1)$ prior is used for the initial variances, however these values can be configured by the \code{truth_params} argument. The covariance matrix of the random walk of the truth \eqn{\Lambda_y} can also be configured subject to an inverse-Wishart prior. The elements of the \code{truth_params} list should respectively be
+In addition to priors on the discrepancy terms, it is also possible to add prior information on the truth. We require priors on the truth at \eqn{t=0}. By default, a \eqn{N(0, 10)} prior is used on the initial values, and an Inv-Gamma\eqn{(10, 1)} prior is used for the initial variances, however these values can be configured by the \code{truth_params} argument. The covariance matrix of the random walk of the truth \eqn{\Lambda_y} can also be configured subject to an inverse-Wishart prior. The elements of the \code{truth_params} list should be
 \enumerate{
-\item A \code{numeric} vector giving the standard deviation of the normal prior used for each species of the initial truth values. Default value is 10
+\item A \code{numeric} giving the standard deviation of the normal prior used for each species of the initial truth values. Default value is 10
 \item A \code{list} of length \code{2} containing the shape and scale parameters (respectively) for the inverse gamma priors on the initial variance of the truth. The default value is \code{list(10, 1)}.
 \item A \code{list} of length \code{2} containing the inverse-Wishart parameters for the random walk of the truth. The default value is \code{list(d, diag(d))} where \code{d} is the number of species.
 }
@@ -58,10 +57,12 @@ num_species <- 4
 priors <- EnsemblePrior(
     d = num_species,
     ind_st_params = list("lkj",  list(3, 2), 3),
-    ind_lt_params = list("beta",
-                         list(c(10,4,8, 7),c(2,3,1, 4)),
-                         list(matrix(5, num_species, num_species),matrix(0.5, num_species, num_species))
-                         ),
+    ind_lt_params = list(
+       "beta",
+       list(c(10,4,8, 7),c(2,3,1, 4)),
+       list(matrix(5, num_species, num_species),
+            matrix(0.5, num_species, num_species))
+     ),
     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
     sha_lt_params = 5,
     truth_params = list(10, list(3, 3), list(10, diag(num_species)))

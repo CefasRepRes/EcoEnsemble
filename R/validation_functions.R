@@ -24,20 +24,12 @@ validate_compatibility <- function(name, pair){
   }
 
   if (length(cova_variables) == 0){
-    msg <- paste(name ," covariance matrix variables are not",
-                 " named. Each column of the data frame",
-                 " and the covariance matrix should be named",
-                 " appropriately and match each other.", sep="")
+    msg <- paste0(name ," covariance matrix variables are not named. Each column of the data frame and the covariance matrix should be named appropriately and match each other.")
     stop(msg)
   }
 
   if (!all(cova_variables == data_variables)){
-    #TODO Split nicely over multiple lines???
-    msg <- paste(paste(name, " covariance matrix variables do not",
-                       " match the associated data frame. Each column",
-                       " of the data frame",
-                       " and covariance matrix should match each other",
-                       " and be in the same order.", sep=""),
+    msg <- paste(paste0(name, " covariance matrix variables do not match the associated data frame. Each column of the data frame and covariance matrix should match each other and be in the same order."),
                  "Data variables:",
                  paste(data_variables, sep="", collapse=', '),
                  "Covariance matrix variables: ",
@@ -85,31 +77,6 @@ validate_simulator <- function(simulator, observation_variables, name){
 
 }
 
-
-
-
-validate_priors <- function(d, priors){
-
-  #TODO: This is done elsewhere now. Need to decide how best to structure this.
-  #Correlation priors
-  #priors_input <- priors@priors_stan_input
-  #validate_correlation_priors("individual short-term", priors@ind_st_params[[1]], priors@ind_st_params[[3]], d)
-  #validate_correlation_priors("individual long-term",  priors@ind_lt_params[[1]], priors@ind_lt_params[[3]], d)
-  #validate_correlation_priors("shared short-term",     priors@sha_st_params[[1]], priors@sha_st_params[[3]], d)
-
-  #Other priors
-  #if(!(length(priors_input$prior_ind_lt_var_a) %in% c(1, d)) ||
-  #   !(length(priors_input$prior_ind_lt_var_b) %in% c(1, d))){
-  #  msg <- paste0("Invalid priors for the variance of the individual long-term discrepancies. These should be vectors of length ", d)
-  #  stop(msg)
-
-  #}
-  #TODO: Should we be doing validation on the following?
-  #priors$prior_ind_st_var_a
-  #priors$prior_ind_st_var_b
-  #priors$prior_sha_st_var_exp
-}
-
 validate_data <- function(observations, simulators, priors){
   validate_observations(observations)
 
@@ -125,5 +92,4 @@ validate_data <- function(observations, simulators, priors){
     }
     validate_simulator(simulator, colnames(observations[[1]]), sim_name)
   }
-  validate_priors(ncol(observations[[1]]), priors)
 }

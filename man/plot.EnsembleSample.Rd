@@ -4,16 +4,16 @@
 \alias{plot.EnsembleSample}
 \title{Plot the ensemble output}
 \usage{
-\method{plot}{EnsembleSample}(sample, variable = 1, quantiles = c(0.05, 0.95))
+\method{plot}{EnsembleSample}(x, variable = NULL, quantiles = c(0.05, 0.95), ...)
 }
 \arguments{
-\item{sample}{An \code{EnsembleSample} object.}
+\item{x}{An \code{EnsembleSample} object.}
 
 \item{variable}{The name of the variable to plot. This can either be a \code{character} string in the same form as the observation variable, or an index for the column in the observations data frame.}
 
 \item{quantiles}{A \code{numeric} vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model. The default is \code{c(0.05,0.95)}.}
 
-\item{ggplot}{A \code{logical} which plots the graphs using ggplot if \code{TRUE} and base R if \code{FALSE}. (James is this needed?)}
+\item{...}{Other arguments passed on to methods. Not currently used.}
 }
 \value{
 The \code{ggplot} object.
@@ -22,15 +22,16 @@ The \code{ggplot} object.
 Plots the latent variables predicted by the ensemble model, along with simulator outputs and observations.
 }
 \examples{
+\dontrun{
 fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors)
-sample <- generate_sample(fit_sample, num_samples = 2000)
-plot(sample)
-plot(sample, variable = "Cod", quantiles=c(0.2, 0.8))
+samples <- generate_sample(fit_sample, num_samples = 2000)
+plot(samples)
+plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
 
 
 fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
@@ -40,6 +41,7 @@ fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
                                priors = priors,
                                full_sample = FALSE)
-sample1 <- generate_sample(fit_point, num_samples = 2000)
-plot(sample1, variable="Herring")
+samples1 <- generate_sample(fit_point, num_samples = 2000)
+plot(samples1, variable="Herring")
+}
 }

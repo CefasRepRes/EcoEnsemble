@@ -7,31 +7,34 @@
 fit_ensemble_model(observations, simulators, priors, full_sample = TRUE, ...)
 }
 \arguments{
-\item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the observations.}
+\item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is is a \eqn{d \times d} \code{matrix} where \eqn{d} is the number of columns of the observations data frame / matrix. This matrix is the covariance matrix of the observations.}
 
-\item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is the covariance matrix of the simulator outputs.}
+\item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is a \eqn{n_k \times n_k} \code{matrix} where \eqn{n_k} is the number of columns of the simulators output data frame / matrix. This matrix is the covariance matrix of the simulator outputs.}
 
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 
-\item{full_sample}{A \code{logical} that runs a full sampling of the ensemble model if \code{TRUE} and optimises to the MLE if \code{FALSE}. The default is TRUE.}
+\item{full_sample}{A \code{logical} that runs a full sampling of the posterior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the posterior density of the ensemble model.}
 
-\item{...}{Additional parameters passed to the function \code{rstan::sampling}.}
+\item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }
 \value{
-An \code{EnsembleFit} object containing the data passed through to  and the fitted \code{stanfit} object.
+An \code{EnsembleFit} object.
 }
 \description{
 \code{fit_ensemble_model} runs an MCMC of the ensemble model. This process can take a long time depending on the size of the datasets.
 }
 \examples{
-N_species <- 4
+\dontrun{
+num_species <- 4
 priors <- EnsemblePrior(
     d = num_species,
     ind_st_params = list("lkj",  list(3, 2), 3),
-    ind_lt_params = list("beta",
-                         list(c(10,4,8, 7),c(2,3,1, 4)),
-                         list(matrix(5, num_species, num_species),matrix(0.5, num_species, num_species))
-                         ),
+    ind_lt_params = list(
+       "beta",
+       list(c(10,4,8, 7),c(2,3,1, 4)),
+       list(matrix(5, num_species, num_species),
+            matrix(0.5, num_species, num_species))
+    ),
     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
     sha_lt_params = 5,
     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
@@ -51,6 +54,7 @@ fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors,
                          control=list(adapt_delta = 0.99)) # Additional Stan parameters.
+}
 }
 \references{
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org

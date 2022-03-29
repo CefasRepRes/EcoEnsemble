@@ -1,7 +1,7 @@
 generate_simulator_stan_data <- function(observations, simulators){
   N <- ncol(observations[[1]])
   M <- length(simulators)
-  times <- c()
+  times <- rownames(observations[[1]])
   model_num_species <- rep(NA, M)
   Ms  <- matrix(NA, nrow=0, ncol=N)
   model_covariances <- c()

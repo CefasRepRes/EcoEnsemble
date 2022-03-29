@@ -62,11 +62,18 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 
 
 
-# If only one of each inverse-gamma variable is provided, then repeat it for every species considered. We don't do any validation here
-repeat_priors <- function(d, prior_params){
-    if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2 && length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
-      prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
-      prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
+# If only one of each inverse-gamma variable is provided, then repeat it for every species considered.
+repeat_priors <- function(d, prior_params, nm, nm_var){
+    if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2){
+      if(length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
+        prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
+        prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
+      }
+
+      if(length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d){
+        stop(paste0("Invalid inverse-gamma parameters for ", nm, " priors (the second element of the ", nm_var, " parameter). This should be a list of length 2, with each entry a numeric of length 1 or ", d, " specifying the shape and scale parameters of the inverse- gamma distributions."))
+      }
+
     }
   return(prior_params)
 }

@@ -7,7 +7,7 @@
 \format{
 A \code{data.frame} with 67 rows and 3 variables:
 \describe{
-\item{\code{N.Pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
+\item{\code{N.pout}}{Spawning stock biomass of Norway Pout, in log tonnes.}
 \item{\code{Herring}}{Spawning stock biomass of Herring, in log tonnes.}
 \item{\code{Cod}}{Spawning stock biomass of Cod, in log tonnes.}
 }
@@ -21,8 +21,6 @@ in the North Sea between 1984-2050 under an MSY fishing scenario from FishSUMS. 
 produce outputs for Sole.
 }
 \references{
-Speirs, D.C., Guirey, E.J., Gurney, W.S.C. and Heath, M.R. (2010).
-A length structured partial ecosystem model for cod in the North Sea.
-Fisheries Research 106, 474-494.
+Speirs, D., Greenstreet, S., and Heath, M. (2016). Modelling the effects of fishing on the North Sea fish community size composition. Ecological Modelling, 321, 35–45
 }
 \keyword{datasets}

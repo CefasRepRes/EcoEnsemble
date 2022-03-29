@@ -1,22 +1,27 @@
 #' Plot the ensemble output
 #'
 #'Plots the latent variables predicted by the ensemble model, along with simulator outputs and observations.
-#'@param sample An `EnsembleSample` object.
+#'@param x An `EnsembleSample` object.
 #'@param variable The name of the variable to plot. This can either be a `character` string in the same form as the observation variable, or an index for the column in the observations data frame.
-#'@param ggplot A `logical` which plots the graphs using ggplot if `TRUE` and base R if `FALSE`. (James is this needed?)
 #'@param quantiles A `numeric` vector of length 2 giving the quantiles for which to plot ribbons if doing a full sampling of the ensemble model. The default is `c(0.05,0.95)`.
+#'@param ... Other arguments passed on to methods. Not currently used.
 #'@return The `ggplot` object.
+#'@importFrom stats median
+#'@importFrom stats quantile
+#'@importFrom stats rnorm
+#'@importFrom cowplot plot_grid
 #'@export
 #'@examples
+#'\dontrun{
 #'fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
 #'                          priors = priors)
-#'sample <- generate_sample(fit_sample, num_samples = 2000)
-#'plot(sample)
-#'plot(sample, variable = "Cod", quantiles=c(0.2, 0.8))
+#'samples <- generate_sample(fit_sample, num_samples = 2000)
+#'plot(samples)
+#'plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
 #'
 #'
 #'fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
@@ -26,47 +31,50 @@
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
 #'                                priors = priors,
 #'                                full_sample = FALSE)
-#'sample1 <- generate_sample(fit_point, num_samples = 2000)
-#'plot(sample1, variable="Herring")
-plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
+#'samples1 <- generate_sample(fit_point, num_samples = 2000)
+#'plot(samples1, variable="Herring")
+#'}
+plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...){
+  if(!is.null(variable)){
+    return(plot_single(x, variable, quantiles, ...))
+  }
 
-  fit <- sample@ensemble_fit
+  d <- x@ensemble_fit@ensemble_data@priors@d
+  plots_all <- lapply(1:d, function(i){plot_single(x, i, quantiles, ...) + ggplot2::theme(legend.position = "none")})
+  legend <- cowplot::get_legend(plot_single(x, 1))
+  plots_all <- append(plots_all, list(legend))
+  return(
+    do.call(cowplot::plot_grid, plots_all)
+  )
+}
+
+# Fudge to get past "no visible binding for global variable" in R-CMD check
+utils::globalVariables(c("Year", "EnsembleLower", "EnsembleUpper", "value", "Simulator"))
+
+plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
+
+  fit <- samples@ensemble_fit
   ensemble_data <- fit@ensemble_data
   observations <- ensemble_data@observations[[1]]
   simulators <- ensemble_data@simulators
   stan_input <- ensemble_data@stan_input
 
   # Find which variable we are interested in
-  if(is.double(variable)){
+  if(is.double(variable) || is.integer(variable)){
+    if (abs(variable - round(variable)) > .Machine$double.eps^0.5){
+      warning("Non-integer variable specified. variable will be taken as floor(variable). This is done by R, strange isn't it?!")
+    }
     variable <- colnames(observations)[variable]
   }
   if (is.na(variable)
       || !(variable %in% colnames(observations) )){
     stop(paste0("Invalid variable. This should be the name of a species or an index less than ",
-                ncol(observations)))
-  }
-  var_index = which(colnames(observations) == variable)
-  #We have to use the stan_input version because `observations` does not have data in the future
-  df <- stan_input$observations[, var_index]
-
-  #Ensemble outputs
-  if(!is.null(fit@samples)){
-    df <- cbind(df, apply(sample@mle[, var_index, ], 1, median))
-    df <- cbind(df, apply(sample@sample[, var_index, ], 1, quantile, min(quantiles)))
-    df <- cbind(df, apply(sample@sample[, var_index, ], 1, quantile, max(quantiles)))
-    colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble true value", "EnsembleLower", "EnsembleUpper")
-
-  }else{
-    df <- cbind(df, sample@mle[, var_index])
-    colnames(df)[ncol(df)] <- "Ensemble true value"
+                ncol(observations) + 1))
   }
 
-  colnames(df)[1] <- "Observations"
 
-  df[, c(1, 2)] <- df[, c(2, 1)]
-  colnames(df)[c(1, 2)] <- colnames(df)[c(2, 1)]
-
-  #Simulator outputs
+  df <- tibble::rownames_to_column(observations)[, c("rowname", variable)]
+  colnames(df) <- c("Year", "Observations")
   for (i in 1:length(simulators)) {
     simulator <- simulators[[i]]
 
@@ -74,62 +82,49 @@ plot.EnsembleSample <- function(sample, variable=1, quantiles=c(0.05, 0.95)){
     if (!(variable %in% colnames(simulator[[1]]))){
       next
     }
-
-    #Find the right output
-    relative_index <- which(colnames(simulator[[1]]) == variable)
-    index <- cumsum(stan_input$model_num_species)[i] - stan_input$model_num_species[1] + relative_index
-    df <- cbind(df, stan_input$model_outputs[, index])
-
+    df_sim <- tibble::rownames_to_column(simulator[[1]], var = "Year")[, c("Year", variable)]
     #Use the name if available
-    colnames(df)[ncol(df)] <- paste0("Simulator ", i)
+    colnames(df_sim)[2] <- paste0("Simulator ", i)
     if (length(simulator) == 3){
-      colnames(df)[ncol(df)] <- simulator[[3]]
+      colnames(df_sim)[2] <- simulator[[3]]
     }
-  }
-  #Years
-  start_year <- min(as.double(rownames(observations)))
-  df <- cbind(start_year:(start_year+stan_input$time-1), df)
-  colnames(df)[1] <- "Year"
 
-  #Keeping zeros makes the graphs nosedive simply because we're missing data/outputs
-  #TODO: Worry about legitimate zeros here!
-  df <- data.frame(df)
-  for (i in 1:ncol(df)) {
-    df[df[, i] == 0, i] = NA
-  }
+    df <- dplyr::full_join(df, df_sim, by = "Year")
 
+  }
+  var_index = which(colnames(observations) == variable)
   if(!is.null(fit@samples)){
-    df <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
+    df <- cbind(df, apply(samples@mle[, var_index, ], 1, median))
+    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, min(quantiles)))
+    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, max(quantiles)))
+    df <- data.frame(df)
+    df$Year <- as.numeric(df$Year)
+    colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble Model Prediction", "EnsembleLower", "EnsembleUpper")
+
+    df_plot <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
 
     #TODO This is grim
-    df[df$Simulator != "Ensemble.true.value", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
-    return(plot_values_sample_gg(df, variable))
+    df_plot[df_plot$Simulator != "Ensemble Model Prediction", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
+    return(plot_values_sample_gg(df_plot, variable), ...)
+
+  }else{
+    df <- cbind(df, samples@mle[, var_index])
+    df <- data.frame(df)
+    df$Year <- as.numeric(df$Year)
+    colnames(df)[ncol(df)] <- "Ensemble Model Prediction"
+
+    df_plot <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
+    return(plot_values_optimised_gg(df_plot, variable, ...))
   }
-  df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
-  return(plot_values_optimised_gg(df, variable))
+
 
 }
 
-plot_values_optimised_gg<- function(df, title){
-  p <- ggplot2::ggplot(data=df, ggplot2::aes(x=`Year`, y=`value`, na.rm = TRUE)) +
-    ggplot2::geom_line(ggplot2::aes(group=`Simulator`,colour=`Simulator`), na.rm = TRUE) +
-    ggplot2::ggtitle(title)
+plot_values_optimised_gg<- function(df, title, ...){
+  p <- ggplot2::ggplot(data=df, ggplot2::aes(x=`Year`, y=`value`, na.rm = TRUE), ...) + ggplot2::geom_line(ggplot2::aes(group=`Simulator`,colour=`Simulator`), na.rm = TRUE) + ggplot2::ggtitle(title)
   return(p)
 }
 
-plot_values_sample_gg<- function(df, title){
-  p <- plot_values_optimised_gg(df, title)
-
-  #g <- ggplot2::ggplot_build(p)
-  #ens_colour <- subset(g$data[[1]], group == 2)
-  #ens_colour <- unique(ens_colour["colour"])$colour
-  #p <- p + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`),
-  #                              alpha=0.2, fill=ens_colour)
-  p <- p + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`, fill = `Simulator`),
-                                alpha=0.2)
-
-  return(p)
+plot_values_sample_gg<- function(df, title, ...){
+    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`, fill = `Simulator`), alpha=0.2))
 }
-
-
-

@@ -14,8 +14,6 @@ Sigma_ewe
 A 4x4 covariance matrix quantifying the parameter uncertainty of Ecopath with EcoSim
 }
 \references{
-C Walters, V Christensen and D Pauly (1997) Structuring dynamic
-models of exploited ecosystems from trophic mass-balance assessments
-Rev. Fish Biol. Fish., 7, pp. 139-172
+Mackinson, S., Platts, M., Garcia, C., and Lynam, C. (2018). Evaluating the fishery and ecological consequences of the proposed North Sea multi-annual plan. PLOS ONE, 13(1), 1–23.
 }
 \keyword{datasets}

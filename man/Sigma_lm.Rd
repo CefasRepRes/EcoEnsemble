@@ -15,9 +15,6 @@ Sigma_lm
 LeMans Sigma
 }
 \references{
-Michael A. Spence, Hayley J. Bannister, Johnathan E. Ball, Paul J. Dolder
-and Robert B. Thorpe (2019). LeMaRns: Length-Based Multispecies Analysis
-by Numerical Simulation. R package version 0.1.2.
-\href{https://CRAN.R-project.org/package=LeMaRns}{CRAN}
+Thorpe, R. B., Le Quesne, W. J. F., Luxford, F., Collie, J. S., and Jennings, S. (2015). Evaluation and management implications of uncertainty in a multispecies size-structured model of population and community responses to fishing. Methods in Ecology and Evolution, 6(1), 49–58.
 }
 \keyword{datasets}

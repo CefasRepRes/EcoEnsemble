@@ -64,13 +64,14 @@ test_that("Validation for LKJ correlation priors works", {
 })
 
 test_that("Validation for inverse wishart correlation priors works", {
-  inv_wishart_error <- "Invalid inverse Wishart parameters for TEST correlation matrix prior."
+  inv_wishart_error <- "Invalid inverse Wishart parameters for TEST correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1."
   expect_error(validate_correlation_priors("TEST", "inv_wishart", numeric(0), 9),inv_wishart_error)
   expect_error(validate_correlation_priors("TEST", "inv_wishart", list(1,2,4), 9),inv_wishart_error)
   expect_error(validate_correlation_priors("TEST", "inv_wishart", list(1), 9),inv_wishart_error)
   expect_error(validate_correlation_priors("TEST", "inv_wishart", list(1,2), 9),inv_wishart_error)
-
-  expect_null(validate_correlation_priors("TEST", "inv_wishart", list(1,diag(9)), 9))
+  expect_error(validate_correlation_priors("TEST", "inv_wishart", list(1,matrix(0, 9, 9)), 9),inv_wishart_error)
+  expect_error(validate_correlation_priors("TEST", "inv_wishart", list(10,diag(9)[1:8, ]), 9),inv_wishart_error)
+  expect_null(validate_correlation_priors("TEST", "inv_wishart", list(10,diag(9)), 9))
 })
 
 test_that("Validation for beta correlation priors works", {
