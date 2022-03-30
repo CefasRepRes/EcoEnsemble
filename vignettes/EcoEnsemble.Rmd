@@ -535,15 +535,7 @@ The covariance of the EwE's output, $\Sigma_{1}$, was calculated in @mackinson a
 ```{r label="EwESigma"}
 Sigma_ewe
 ```
-<!---\begin{equation}
-\Sigma_{\mathrm{ewe}}=
-\begin{pmatrix}
-9.28 \times 10^{-3} & 1.87 \times 10^{-3} &  8.52 \times 10^{-4} & -1.11\times 10^{-4}\\
-1.87 \times 10^{-3} & 3.97 \times 10^{-3} &  4.60 \times 10^{-4} & 4.27\times 10^{-4}\\
-8.52 \times 10^{-4} & 4.60 \times 10^{-4} &  8.52 \times 10^{-3} & 5.58\times 10^{-5}\\
--1.11\times 10^{-4} & 4.27\times 10^{-4} &  5.58 \times 10^{-5} & 3.14\times 10^{-3}
-\end{pmatrix}.
-\end{equation}-->
+
 
 
 **LeMans** is a discrete time length-based model that describes growth and predation (@thorpe15). It outputs all four species from 1986 until 2050, in the variable `SSB_lm`, meaning that $n_2=4$ and $M_2=I_4$.
@@ -552,15 +544,7 @@ The covariance of the LeMans' output, $\Sigma_{2}$, was calculated in @thorpe15 
 ```{r label="lmSigma"}
 Sigma_lm
 ```
-<!---\begin{equation}
-\Sigma_{\mathrm{lm}}=
-\begin{pmatrix}
-0.182 & 0.081 & -0.029 & 0.121  \\
-0.081 & 0.105 & -0.015 & 0.133  \\
--0.029 & -0.015 & 0.080 & -0.021  \\
-0.121 & 0.133 & -0.021 & 0.225  
-\end{pmatrix}.
-\end{equation}-->
+
 
 **mizer** is a size-based model that describes ontogenetic feeding and growth, mortality, and reproduction driven by size-dependent predation and maturation processes (@blanchard). It outputs all four species from 1984 until 2050, in the variable `SSB_miz`, meaning that $n_3=4$ and $M_3=I_4$.
 The covariance of the mizer's output, $\Sigma_{3}$, was calculated in @spence_ns and is stored in the variable `Sigma_miz`,
@@ -568,15 +552,7 @@ The covariance of the mizer's output, $\Sigma_{3}$, was calculated in @spence_ns
 ```{r label="mizSigma"}
 Sigma_miz
 ```
-<!--\begin{equation}
-\Sigma_{\mathrm{miz}}=
-\begin{pmatrix}
-0.302 & 0.032 & -0.001 & 0.0003  \\
-0.032 & 0.068 & 0.023 & -0.001  \\
--0.001 & 0.023 & 0.172 & 0.002  \\
-0.0003 & -0.001 & 0.002 & 0.007  
-\end{pmatrix}.
-\end{equation}-->
+
 
 
 **FishSUMS** is a discrete time length-based model that describes growth, density-dependent mortality, and losses due to fishing and predation by explicitly modelled species, and seasonal reproduction (@fishsums). It outputs Norway pout, Atlantic Herring, and Atlantic Cod (i.e. it does not output Sole), from 1984 until 2050, in the variable `SSB_fs`, meaning that $n_4=3$ and

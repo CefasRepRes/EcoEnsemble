@@ -97,7 +97,6 @@ generate_sample <- function(fit, num_samples = 1)
       y - x$sam_x_hat + x$sam_x
     }, y = mle,
     x = sammy)
-    #TODO: CHange the dimnames to be something helpful for the end user....
     sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
     mle <-array(as.numeric(unlist(mle)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
   }else{

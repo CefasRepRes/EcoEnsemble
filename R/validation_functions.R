@@ -67,7 +67,6 @@ validate_simulator <- function(simulator, observation_variables, name){
   # Check also that it's compatible with the observations
   df <- simulator[[1]]
   if (!all(colnames(df) %in% observation_variables)){
-    #TODO: Wrap over a few lines.
     msg <- paste(name, "contains variables that are not present in the observed data. Model outputs",
                  " should match the observed data. Model variables:",
                  paste(colnames(df), sep="", collapse=', '), ". Observation variables:",

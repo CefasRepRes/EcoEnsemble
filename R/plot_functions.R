@@ -103,7 +103,6 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
 
     df_plot <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
 
-    #TODO This is grim
     df_plot[df_plot$Simulator != "Ensemble Model Prediction", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
     return(plot_values_sample_gg(df_plot, variable), ...)
 

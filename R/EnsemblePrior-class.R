@@ -154,7 +154,4 @@ validate_input <- function(d, ind_st_params, ind_lt_params, sha_st_params, sha_l
   validate_priors_ar_process(ind_lt_params, "individual long-term", d)
   validate_priors_ar_process(sha_st_params, "shared short-term", d)
 
-  #TODO: Validate truth parameters
-  #Degrees of freedom >= d
-  #Scale matrix should be d * d
 }
