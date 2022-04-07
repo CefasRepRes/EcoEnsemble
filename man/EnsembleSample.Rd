@@ -21,6 +21,9 @@ where \eqn{y^{(t)}} is the ensemble model's prediction of the latent truth value
 \eqn{\eta^{(t)}} is the shared short-term discrepancy at time \eqn{t},
 \eqn{z_i^{(t)}} is the individual short-term discrepancy of simulator \eqn{i} at time \eqn{t}.}
 }
+\value{
+An object of class \code{EnsembleSample}
+}
 \description{
 A constructor for the \code{EnsembleSample} class. These objects are generated automatically using the \code{generate_sample} function.
 }

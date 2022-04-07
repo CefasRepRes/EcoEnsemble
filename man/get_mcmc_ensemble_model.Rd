@@ -36,7 +36,7 @@ ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "mizer")),
                               priors = priors)
-\dontrun{
-out <- rstan::sampling(mod, ensemble_data@stan_input, chains=(parallel::detectCores()-1))
+\donttest{
+out <- rstan::sampling(mod, ensemble_data@stan_input, chains = 1)
 }
 }

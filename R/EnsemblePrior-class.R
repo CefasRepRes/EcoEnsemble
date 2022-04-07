@@ -7,7 +7,7 @@
 #' @param sha_st_params A `list` containing a prior specification for the shared short-term discrepancies \eqn{\eta^{(t)}}. See details
 #' @param sha_lt_params A `numeric` containing the standard deviations for the normal prior used on the shared short-term discrepancy \eqn{\mu}. If a single value is supplied,  this is repeated for each species.
 #' @param truth_params A `list` containing a prior specification for the processes on the truth \eqn{y^{(t)}}. The default value is `list(10, list(10, 1), list(d, diag(d))` where `d` is the number of species.
-#'
+#'@return An object of class `EnsemblePrior`
 #' @details
 #' Most discrepancy prior paramaters (`ind_st_params, ind_lt_params, sha_st_params` but not `sha_lt_params`) should be encoded by a `list.` The entries of the list are respectively
 #' 1. A `character` specifying how the priors are encoded. Currently supported priors are `'LKJ'`, `'inv_wishart'`, or `'Beta'`.

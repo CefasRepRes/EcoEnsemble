@@ -49,7 +49,7 @@
 #'     sha_lt_params = 5,
 #'     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
 #' )
-#'\dontrun{
+#'\donttest{
 #'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),

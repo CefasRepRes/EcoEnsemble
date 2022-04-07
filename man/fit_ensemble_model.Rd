@@ -24,7 +24,7 @@ An \code{EnsembleFit} object.
 \code{fit_ensemble_model} runs an MCMC of the ensemble model. This process can take a long time depending on the size of the datasets.
 }
 \examples{
-\dontrun{
+\donttest{
 num_species <- 4
 priors <- EnsemblePrior(
     d = num_species,
@@ -46,7 +46,7 @@ fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
                          priors = priors,
                          full_sample = FALSE) #Only optimise in this case
-Run a full sample
+#Run a full sample
 fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),

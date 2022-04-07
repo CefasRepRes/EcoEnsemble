@@ -27,8 +27,8 @@
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "mizer")),
 #'                               priors = priors)
-#'\dontrun{
-#'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains=(parallel::detectCores()-1))
+#'\donttest{
+#'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains = 1)
 #'}
 
 get_mcmc_ensemble_model <- function(){
@@ -48,7 +48,7 @@ get_mcmc_ensemble_model <- function(){
 #'@seealso \code{\linkS4class{EnsembleFit}}, \code{\link{EnsembleSample}}
 #'@export
 #'@examples
-#'\dontrun{
+#'\donttest{
 #' num_species <- 4
 #' priors <- EnsemblePrior(
 #'     d = num_species,
@@ -70,7 +70,7 @@ get_mcmc_ensemble_model <- function(){
 #'                                      list(SSB_miz, Sigma_miz, "Mizer")),
 #'                          priors = priors,
 #'                          full_sample = FALSE) #Only optimise in this case
-#' Run a full sample
+#' #Run a full sample
 #' fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),

@@ -13,6 +13,9 @@ EnsembleFit(ensemble_data, samples = NULL, point_estimate = NULL)
 
 \item{point_estimate}{A \code{list} output of the optimised model. The default value is \code{NULL}.}
 }
+\value{
+An object of class \code{EnsembleFit}
+}
 \description{
 The constructor for an \code{EnsembleFit} object. This function need not be called as an \code{EnsembleFit} object is constructed automatically by the \code{fit_ensemble_model} function.
 The \code{samples} slot contains the samples from the MCMC if a full sampling was completed, otherwise the \code{point_estimate} slot contains information about a point estimate.

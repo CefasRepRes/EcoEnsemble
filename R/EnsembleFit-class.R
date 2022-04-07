@@ -6,7 +6,7 @@
 #' @param ensemble_data An `EnsembleData` object encapsulating the data used to fit the ensemble model.
 #' @param samples A `stanfit` object containing the samples drawn from the fitted model. The default value is `NULL`.
 #' @param point_estimate A `list` output of the optimised model. The default value is `NULL`.
-#'
+#'@return An object of class `EnsembleFit`
 #' @references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
 #' @seealso \code{\linkS4class{EnsembleFit}}, \code{\link{fit_ensemble_model}},
 #' @export

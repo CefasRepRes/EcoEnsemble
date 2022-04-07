@@ -22,7 +22,7 @@ The \code{ggplot} object.
 Plots the latent variables predicted by the ensemble model, along with simulator outputs and observations.
 }
 \examples{
-\dontrun{
+\donttest{
 fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),

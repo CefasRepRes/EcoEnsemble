@@ -26,6 +26,9 @@ EnsemblePrior(
 
 \item{truth_params}{A \code{list} containing a prior specification for the processes on the truth \eqn{y^{(t)}}. The default value is \verb{list(10, list(10, 1), list(d, diag(d))} where \code{d} is the number of species.}
 }
+\value{
+An object of class \code{EnsemblePrior}
+}
 \description{
 A constructor for the \code{EnsemblePrior} class. This is used to encode prior information for the ensemble model.
 }

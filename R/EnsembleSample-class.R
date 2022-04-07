@@ -16,6 +16,7 @@
 #' where \eqn{y^{(t)}} is the ensemble model's prediction of the latent truth value at time \eqn{t},
 #' \eqn{\eta^{(t)}} is the shared short-term discrepancy at time \eqn{t},
 #' \eqn{z_i^{(t)}} is the individual short-term discrepancy of simulator \eqn{i} at time \eqn{t}.
+#'@return An object of class `EnsembleSample`
 #' @seealso \code{\link{EnsembleSample}}, \code{\link{generate_sample}}
 #' @export
 EnsembleSample <- function(ensemble_fit, mle, samples) {
