@@ -116,59 +116,6 @@ data{
 	matrix[N, N] prior_sigma_t_inv_wish_sigma;//inverse wishart
 
 }
-transformed data{
-/*
-  matrix[N + sum(model_num_species) , (M+2) * N ] bigM = rep_matrix(0,N + sum(model_num_species) , (M+2) * N );
-  // transfomations used for sequential modelling
-  vector[N + sum(model_num_species) ] all_eigenvalues_cov;
-  matrix[N + sum(model_num_species)  , N + sum(model_num_species) ] all_eigenvectors_cov = rep_matrix(0,N + sum(model_num_species) , N + sum(model_num_species) );
-  // vector
-  matrix[time , N + sum(model_num_species) ] observation_available;
-  matrix[time , N + sum(model_num_species) ] new_data;
-
-  bigM[1:N,1:N] = diag_matrix(rep_vector(1.0,N));
-
-
-  all_eigenvalues_cov[1:N] = eigenvalues_sym(obs_covariances);
-  all_eigenvectors_cov[1:N,1:N] = eigenvectors_sym(obs_covariances);
-  if (M > 0){
-    bigM[(N + 1):(N + model_num_species[1] ),1:N] = Ms[1:model_num_species[1],];
-    bigM[(N + 1):(N + model_num_species[1] ),(N+1):(2*N)] = Ms[1:model_num_species[1],];
-    bigM[(N + 1):(N + model_num_species[1] ),(2*N + 1):(3 * N)] = Ms[1:model_num_species[1],];
-	  all_eigenvalues_cov[(N + 1):(N + model_num_species[1] )] = eigenvalues_sym(to_matrix(model_covariances[1:sq_int(model_num_species,1)],model_num_species[1],model_num_species[1]));
-	  all_eigenvectors_cov[(N + 1):(N + model_num_species[1]),(N + 1):(N + model_num_species[1])] = eigenvectors_sym(to_matrix(model_covariances[1:sq_int(model_num_species,1)],model_num_species[1],model_num_species[1]));
-	  if(M > 1){
-		  for(i in 2:M){
-		    int start_index =  N + sum(model_num_species[1:(i-1)]) + 1;
-		    int end_index = N + sum(model_num_species[1:i]);
-		    matrix[model_num_species[i], N ] Ms_transformation = Ms[(sum(model_num_species[1:(i-1)]) + 1):sum(model_num_species[1:i]),];
-		    bigM[start_index:end_index,1:N] = Ms_transformation;
-  		  bigM[start_index:end_index,(N+1):(2*N)] = Ms_transformation;
-	   	  bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] = Ms_transformation;
-		    all_eigenvalues_cov[start_index:end_index] = eigenvalues_sym(to_matrix(model_covariances[(sq_int(model_num_species,i-1) + 1):(sq_int(model_num_species,i))],model_num_species[i],model_num_species[i]));
-		    all_eigenvectors_cov[start_index:end_index, start_index:end_index] = eigenvectors_sym(to_matrix(model_covariances[(sq_int(model_num_species,i-1) + 1):(sq_int(model_num_species,i))],model_num_species[i],model_num_species[i]));
-		  }
-	  }
-  }
-
-  //Expand the observation times to be observations for each model for each species for each time step
-  for (i in 1:time){
-    //Data observations
-    observation_available[i,1:N] = rep_row_vector(observation_times[i,1],N);
-	  if (M > 0){
-	    //Model observations
-		  observation_available[i,(N+1):(N + model_num_species[1])] = rep_row_vector(observation_times[i,2],model_num_species[1]);
-		  for (j in 2:M){
-			  observation_available[i,(N + sum(model_num_species[1:(j-1)]) + 1):(N + sum(model_num_species[1:j]))] = rep_row_vector(observation_times[i,j + 1],model_num_species[j]);
-		  }
-	  }
-
-	  new_data[i,] = (all_eigenvectors_cov' * append_row(observations[i],model_outputs[i,]'))';
-  }
-
-  bigM = all_eigenvectors_cov' * bigM;
-  */
-}
 parameters{
   /**
    * Simulator discrepancies
@@ -310,4 +257,3 @@ model{
   //target += KalmanFilter_seq_em(AR_params, lt_discrepancies, all_eigenvalues_cov, SIGMA, bigM,
   //                              SIGMA_init, x_hat, time, new_data, observation_available);
 }
-

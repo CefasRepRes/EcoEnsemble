@@ -11,12 +11,23 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// AGFCEM
+void AGFCEM(double input);
+RcppExport SEXP _EcoEnsemble_AGFCEM(SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type input(inputSEXP);
+    AGFCEM(input);
+    return R_NilValue;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_stan_fit4KF_back_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_mod();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_EcoEnsemble_AGFCEM", (DL_FUNC) &_EcoEnsemble_AGFCEM, 1},
     {"_rcpp_module_boot_stan_fit4KF_back_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4KF_back_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_prior_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_prior_mod, 0},
