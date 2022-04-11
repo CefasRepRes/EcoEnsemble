@@ -63,11 +63,11 @@ generate_simulator_stan_data <- function(observations, simulators){
     }
   }
   obs_covariances <- observations[[2]]
-  return(list(N=N,
+  return(list(N = N,
               time = length(times),
-              M=M,
-              model_num_species=model_num_species,
-              Ms= Ms,
+              M = M,
+              model_num_species = model_num_species,
+              Ms = Ms,
               observation_times = observation_times,
               model_outputs = model_outputs,
               model_covariances = model_covariances,

@@ -23,7 +23,7 @@ functions{
   /**
    * The Kalman filter - likelihood
    */
-  
+
 
   int sq_int(int[] model_num_species, int M){
     int ret = 0;
@@ -35,7 +35,7 @@ functions{
 }
 data{
   int <lower=0> N;   // Number of variables
-  int <lower=0> time;// How long the model is run for
+  //int <lower=0> time;// How long the model is run for
 
   /**
    * Observations

@@ -52,6 +52,8 @@ Collate:
     'EnsembleData-class.R'
     'EnsembleFit-class.R'
     'EnsembleSample-class.R'
+    'Prior_sampling.R'
+    'RcppExports.R'
     'data.R'
     'fit_ensemble.R'
     'generate_simulator_stan_data.R'

@@ -95,8 +95,8 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
   var_index = which(colnames(observations) == variable)
   if(!is.null(fit@samples)){
     df <- cbind(df, apply(samples@mle[, var_index, ], 1, median))
-    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, min(quantiles)))
-    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, max(quantiles)))
+    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE))
+    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE))
     df <- data.frame(df)
     df$Year <- as.numeric(df$Year)
     colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble Model Prediction", "EnsembleLower", "EnsembleUpper")
@@ -104,7 +104,7 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
     df_plot <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
 
     df_plot[df_plot$Simulator != "Ensemble Model Prediction", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
-    return(plot_values_sample_gg(df_plot, variable), ...)
+    return(plot_values_sample_gg(df_plot, variable, ...))
 
   }else{
     df <- cbind(df, samples@mle[, var_index])
