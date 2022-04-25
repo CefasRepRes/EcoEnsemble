@@ -60,7 +60,7 @@
 #'
 #'# A quicker way to get the MLE for the first sample from the ensemble
 #'transf_data <- get_transformed_data(fit)
-#'ex.fit <- rstan::extract(fit@@ex.fit)
+#'ex.fit <- rstan::extract(fit@@samples)
 #'mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
 #'                      time = fit@@ensemble_data@@stan_input$time, simplify = F)
 #'}

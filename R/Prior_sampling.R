@@ -28,7 +28,7 @@
 #' )
 #' prior_density <- prior_ensemble_model(priors, M = 3)
 #' }
-prior_ensemble_model <- function(priors,M=1,
+prior_ensemble_model <- function(priors, M = 1,
                                     full_sample = TRUE, ...){
   stan_input <- priors@priors_stan_input
   stan_input$M <- M
@@ -87,8 +87,8 @@ prior_ensemble_model <- function(priors,M=1,
 #' }
 sample_prior <- function(observations, simulators, priors, sam_priors, num_samples = 1, full_sample = TRUE,...){
   if(missing(sam_priors)){
-    sam_priors <- prior_ensemble_model(priors,
-                         full_sample = full_sample,M=length(simulators), ...)
+    sam_priors <- prior_ensemble_model(priors, M=length(simulators),
+                                       full_sample = full_sample,, ...)
   }
   ens_data <- EnsembleData(observations, simulators, priors)
   fit_prior <- EnsembleFit(ens_data, sam_priors$samples, sam_priors$point_estimate)
