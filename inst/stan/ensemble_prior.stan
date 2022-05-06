@@ -21,9 +21,17 @@ functions{
   }
 
   /**
-   * The Kalman filter - likelihood
+   * Hierarchical priors...
    */
-
+  real priors_cor_hierarchical_beta(matrix ind_st_cor, int N, matrix M){
+    real log_prior = 0;
+    for (i in 1:(N-1)){
+      for (j in (i+1):N){
+        log_prior += beta_lpdf(0.5*(ind_st_cor[i, j] + 1)| M[i, j], M[j, i] );
+      }
+    }
+    return log_prior;
+  }
 
   int sq_int(int[] model_num_species, int M){
     int ret = 0;
@@ -40,14 +48,12 @@ data{
   /**
    * Observations
    */
-   /*
-  vector [N] observations[time];
+  /*vector [N] observations[time];
   cov_matrix [N] obs_covariances;
 
   /**
   * Simulators
   */
-
   int<lower=0> M; // number of models
 /*
   matrix [time,M+1] observation_times; // times that observations happen
@@ -56,7 +62,6 @@ data{
   matrix [time ,sum(model_num_species)] model_outputs; // vector of observations from the models
   vector [sq_int(model_num_species, M)] model_covariances; // vector of covariance matrices -- this needs to be checked that the individual matrices are positive definite!
 */
-
 	/**
 	 * Prior choice paramters:
 	 * These determine the form of the prior parametrisation using an integar representation.
@@ -65,25 +70,33 @@ data{
 	 *      0 - LKJ correlation matrix
 	 *      1 - Inverse Wishart correlation matrix
 	 *      2 - Beta distributions on correlation matrix entries.
-	 *      NOT IMPLEMENTED: 3 - Inverse Wishart covariance matrix
+	 *      ONLY IMPLEMENTED FOR SHORT-TERM: 3 - Hierarchical beta priors
+	 *      NOT IMPLEMENTED: 4 - Inverse Wishart covariance matrix
 	 *
 	 */
 	 int<lower=0, upper=3> form_prior_ind_st;
-	 int<lower=0, upper=3> form_prior_ind_lt;
-	 int<lower=0, upper=3> form_prior_sha_st;
+	 int<lower=0, upper=2> form_prior_ind_lt;
+	 int<lower=0, upper=2> form_prior_sha_st;
 
 
   /**
    * Prior parameters
    */
   //Individual short-term
-  vector [N] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
-	vector [N] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
+  vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
+	vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
 	real prior_ind_st_cor_lkj[form_prior_ind_st == 0 ? 1 : 0]; // LKJ shape parameter
   matrix[form_prior_ind_st == 1 ? N : 0, form_prior_ind_st == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
 	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st == 1 ? 1 : 0]; //inverse wishart
 	matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_2; // beta shape parameter for Beta distribution
+
+  //JM 06/05: Adding in hierarchical prior options.
+  //Correlation: Each correlation matrix element is a Beta(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
+  //Variance: This is done via variance ~ Gamma(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
+  vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_cor_hierarchical_beta_hyper_params;
+  vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_var_hierarchical_hyperparams;
+
 
   //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
@@ -139,6 +152,20 @@ parameters{
   cov_matrix [N] SIGMA_t;
   vector [N] y_init_mean;
   vector <lower=0> [N] y_init_var;
+
+  /**
+   * Hierarchical parameters
+   *
+   * Correlations:
+   * The hierarchical beta priors on individual short term discrepancy correlations are encoded by a matrix M and a vector v. In this scheme, the correlations c[i,j] have c[i, j] ~ Beta(a[i, j], b[i, j]). Since correlation matrices are symmetric we need only care about one section of the matrix when making calculations. So the matrix M has:
+   * M[i, j] = a[i, j] for i < j
+   * M[i, j] = b[i, j] for i > j
+   */
+   	matrix<lower = 0>[form_prior_ind_st == 3 ? N : 0, form_prior_ind_st == 3 ? N : 0] prior_ind_st_cor_hierarchical_beta_params[form_prior_ind_st == 3 ? M : 0]; // a shape parameters for Beta distribution
+   	//Variances
+   	vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_alpha[form_prior_ind_st == 3 ? M : 0];
+    vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_beta[form_prior_ind_st == 3 ? M : 0];
+
 }
 transformed parameters{
   matrix [N,N] SIGMA_x[M];
@@ -236,24 +263,44 @@ model{
   } else {
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
+
+
   for(i in 1:M){
     ind_lt_raw[i] ~ std_normal();
-    ind_st_var[i] ~ inv_gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
+
+    //JM 06-05-2022: Extra magic step for hierarchical priors.
+    if(form_prior_ind_st == 3){
+      prior_ind_st_var_hierarchical_alpha[i] ~ gamma(prior_ind_st_var_hierarchical_hyperparams[1],
+                                                prior_ind_st_var_hierarchical_hyperparams[2]);
+      prior_ind_st_var_hierarchical_beta [i]  ~ gamma(prior_ind_st_var_hierarchical_hyperparams[3],
+                                                  prior_ind_st_var_hierarchical_hyperparams[4]);
+    }else{
+      ind_st_var[i] ~ inv_gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
+    }
+
 
     // Correlation matrix
     if(form_prior_ind_st == 0){
       ind_st_cor[i] ~ lkj_corr(prior_ind_st_cor_lkj[1]);
     } else if(form_prior_ind_st == 1){
       ind_st_cor[i] ~ inv_wishart(prior_ind_st_cor_wish_nu[1], prior_ind_st_cor_wish_sigma);
-    } else {
+    } else if(form_prior_ind_st == 2){
       target += priors_cor_beta(ind_st_cor[i], N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2);
-    }
-  }
+    } else if(form_prior_ind_st == 3){
 
-  /**
-   * Likelihood
-   */
-  // Kalman filter
-  //target += KalmanFilter_seq_em(AR_params, lt_discrepancies, all_eigenvalues_cov, SIGMA, bigM,
-  //                              SIGMA_init, x_hat, time, new_data, observation_available);
+      ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
+      //JM 06/05/22: Now include hierarchical options
+      for (k in 1:(N-1)){
+        for (l in (i+1):N) {
+          prior_ind_st_cor_hierarchical_beta_params[i][k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
+                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[2]);
+          prior_ind_st_cor_hierarchical_beta_params[i][l, k] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[3],
+                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
+        }
+      }
+      target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params[i]);
+    }
+
+  }
 }
+

@@ -10,8 +10,8 @@ validate_priors_ar_process <- function(ar_priors, nm, d){
 
 validate_correlation_priors <- function(type_str, form, params, d) {
   form <- tolower(form)
-  if (!(form %in% c("lkj", "inv_wishart", "beta"))){
-    msg <- paste0("Invalid prior choice on ", type_str," correlation matrix. Correlation priors should be one of 'lkj', 'inv_wishart', or 'beta'. Prior choice: ", form)
+  if (!(form %in% c("lkj", "inv_wishart", "beta", "hierarchical"))){
+    msg <- paste0("Invalid prior choice on ", type_str," correlation matrix. Correlation priors should be one of 'lkj', 'inv_wishart', 'beta', or 'hierarchical'. Prior choice: ", form)
     stop(msg)
   }
 
@@ -35,6 +35,8 @@ validate_correlation_priors <- function(type_str, form, params, d) {
              !(dim(params[[1]])[1] == d) ||
              !(dim(params[[2]])[1] == d))){
     msg <- paste0("Invalid beta parameters for ", type_str, " correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
+  }else if (form == "hierarchical"& length(params) !=4){
+    paste0("Invalid parameters for ", type_str, " correlation matrix priors. This should be a list of length 4.")
   }
   if(msg != ""){
     stop(msg)

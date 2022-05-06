@@ -91,8 +91,6 @@ setClass(
 
 
 
-
-
 create_prior_stan_input <- function(d, ind_st_params, ind_lt_params, sha_st_params, sha_lt_params, truth_params){
 
   validate_input(d, ind_st_params, ind_lt_params, sha_st_params, sha_lt_params, truth_params)
@@ -119,8 +117,9 @@ create_prior_stan_input <- function(d, ind_st_params, ind_lt_params, sha_st_para
   }
 
   priors <- list(
-    prior_ind_st_var_a = ind_st_params[[2]][[1]],
-    prior_ind_st_var_b = ind_st_params[[2]][[2]],
+    #JM 06/05/2022 - Account for hierarchical variance parametrisations
+    #prior_ind_st_var_a = ind_st_params[[2]][[1]],
+    #prior_ind_st_var_b = ind_st_params[[2]][[2]],
     prior_ind_lt_var_a = ind_lt_params[[2]][[1]],
     prior_ind_lt_var_b = ind_lt_params[[2]][[2]],
     prior_sha_st_var_a = sha_st_params[[2]][[1]],
@@ -132,6 +131,24 @@ create_prior_stan_input <- function(d, ind_st_params, ind_lt_params, sha_st_para
     prior_sigma_t_inv_wish_nu = truth_params[[3]][[1]],
     prior_sigma_t_inv_wish_sigma = truth_params[[3]][[2]]
   )
+
+  #JM 06/05/2022 - This is a magic grim check. Need to rewrite this code because this would be really hard to debug if anything goes wrong
+  #TODO: Make this less grim
+  if(tolower(ind_st_params[[1]]) == "hierarchical"){
+    ind_st_var_priors <- list(
+      prior_ind_st_var_a = numeric(0),
+      prior_ind_st_var_b = numeric(0),
+      prior_ind_st_var_hierarchical_hyperparams = ind_st_params[[2]]
+    )
+  }else{
+    ind_st_var_priors <- list(
+      prior_ind_st_var_a = ind_st_params[[2]][[1]],
+      prior_ind_st_var_b = ind_st_params[[2]][[2]],
+      prior_ind_st_var_hierarchical_hyperparams = numeric(0)
+    )
+  }
+  priors <- append(priors, ind_st_var_priors)
+
   priors_correlations <- list(
     ind_st_cor_form = ind_st_params[[1]],
     ind_st_cor_params = ind_st_params[[3]],

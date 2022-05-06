@@ -214,8 +214,9 @@ get_parameters <- function(ex.fit, x = 1){
 #'@export
 get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the fit
 {
+
   if(!exists("KalmanFilter_back"))
-    rstan::expose_stan_functions(stanmodels$KF_back)
+   rstan::expose_stan_functions(stanmodels$KF_back)
 
   params <- get_parameters(ex.fit,x)
 
