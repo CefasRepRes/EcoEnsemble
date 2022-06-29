@@ -1,7 +1,7 @@
 validate_compatibility <- function(name, pair){
   covar <- as.matrix(pair[[2]])
 
-  if (!is.square.matrix(covar)
+  if (!matrixcalc::is.square.matrix(covar)
       || !is.positive.definite(covar)){
     msg <- paste0(name, " covariance matrix is not a positive definite square matrix.")
     stop(msg)

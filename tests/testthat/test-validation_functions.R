@@ -51,8 +51,7 @@ test_that("Validation for data/covariance compatibility works", {
 test_that("Misc validation for correlation priors works", {
 
   expect_error(validate_correlation_priors("TEST", "FAKECORRELATIONS", numeric(0), 9),
-               paste0("Invalid prior choice on TEST correlation matrix. Correlation priors should be",
-                      " one of 'lkj', 'inv_wishart', or 'beta'. Prior choice: fakecorrelations"))
+               paste0("Invalid prior choice on TEST correlation matrix. Correlation priors should be one of 'lkj', 'inv_wishart', 'beta', or 'hierarchical'. Prior choice: fakecorrelations"))
 })
 
 test_that("Validation for LKJ correlation priors works", {

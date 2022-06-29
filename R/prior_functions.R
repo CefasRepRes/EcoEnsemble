@@ -42,7 +42,7 @@ correlation_prior <- function(params, form, type){
   ret[[paste0(type, "_beta_2")]] <- matrix(0,0,0)
 
   if(is_individual_short_term){
-    ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- numeric(4)
+    ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- numeric(0)
   }
 
 
@@ -56,10 +56,11 @@ correlation_prior <- function(params, form, type){
     ret[[paste0(type, "_beta_2")]] <- params[[2]]
   }else if(form == CORRELATIONS_PRIOR_HIERARCHICAL
            && is_individual_short_term){
+    if(!is_individual_short_term){
+      stop("Hierarchical parameters are only supported for individual short-term discrepancies.")
+    }
     #JM 06/05/2022
     ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- params
-  }else{
-    stop("Invalid correlation parameters! Did you try hierarchical parameters for something other than the individual short-term?")
   }
   return(ret)
 }
@@ -90,8 +91,15 @@ generate_correlation_priors_stan_data <- function(prior_correlations){
 repeat_priors <- function(d, prior_params, nm, nm_var){
     if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2){
       if(length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
-        prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
-        prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
+        if(d == 1){
+          prior_params[[2]][[1]] <- array(prior_params[[2]][[1]], dim = 1)
+          prior_params[[2]][[2]] <- array(prior_params[[2]][[2]], dim = 1)
+
+        }else{
+          prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
+          prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
+
+        }
       }
 
       #JM: 06-05-2022 Short term parameters can be a different form, so don't do validation in this case

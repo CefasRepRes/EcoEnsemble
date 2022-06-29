@@ -1,6 +1,6 @@
 validate_priors_ar_process <- function(ar_priors, nm, d){
   if(!is.list(ar_priors) || length(ar_priors) != 3 || !is.character(ar_priors[[1]])){
-    msg <- paste0("Invalid prior specification for the ", nm, " discrepancies. This should be a list of length 3 with entries respectively specifying (1)The choice of parametrisation (2)The inverse-gamma parameters for the variance terms and (3) The correlation matrix parametrers. ")
+    msg <- paste0("Invalid prior specification for the ", nm, " discrepancies. This should be a list of length 3 with entries respectively specifying (1)The choice of parametrisation (2)The parameters for the variance terms and (3) The correlation matrix parametrers. ")
     stop(msg)
   }
 
