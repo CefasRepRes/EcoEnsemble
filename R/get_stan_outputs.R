@@ -74,7 +74,8 @@ generate_sample <- function(fit, num_samples = 1)
 
   transformed_data <- get_transformed_data(fit)
 
-  rstan::expose_stan_functions(stanmodels$ensemble_model)
+  #TODO: Remove
+  #rstan::expose_stan_functions(stanmodels$ensemble_model)
 
   if (full_sample){
     ex.fit <- rstan::extract(fit@samples)
@@ -108,14 +109,15 @@ generate_sample <- function(fit, num_samples = 1)
 
 
   #Clean up the Stan functions
-  rm("As", "KalmanFilter_back", "KalmanFilter_seq_em", "priors_cor_beta", "priors_cor_hierarchical_beta", "sq_int")
+  #rm("As", "KalmanFilter_back", "KalmanFilter_seq_em", "priors_cor_beta", "priors_cor_hierarchical_beta", "sq_int")
 
   return(EnsembleSample(fit, mle, sample_ret))
 }
 
-
+#TODO: Remove this code?
 # Fudge to get past "no visible binding for global variable" in R-CMD check
-utils::globalVariables(c("KalmanFilter_back"))
+#utils::globalVariables(c("KalmanFilter_back"))
+
 
 #'@rdname get_stan_outputs
 #'@export
@@ -218,9 +220,9 @@ get_parameters <- function(ex.fit, x = 1){
 #'@export
 get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the fit
 {
-
-  if(!exists("KalmanFilter_back"))
-   rstan::expose_stan_functions(stanmodels$ensemble_model)
+  #TODO: Remove
+  #if(!exists("KalmanFilter_back"))
+  # rstan::expose_stan_functions(stanmodels$ensemble_model)
 
   params <- get_parameters(ex.fit,x)
 
@@ -235,8 +237,9 @@ get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the
 #'@export
 gen_sample <- function(x=1, ex.fit, transformed_data, time)
 {
-  if(!exists("KalmanFilter_back"))
-    rstan::expose_stan_functions(stanmodels$ensemble_model)
+  #TODO: remove
+  #if(!exists("KalmanFilter_back"))
+  #  rstan::expose_stan_functions(stanmodels$ensemble_model)
 
   params <- get_parameters(ex.fit, x)
 

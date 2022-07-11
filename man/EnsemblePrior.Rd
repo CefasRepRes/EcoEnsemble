@@ -35,7 +35,7 @@ A constructor for the \code{EnsemblePrior} class. This is used to encode prior i
 \details{
 Most discrepancy prior paramaters (\verb{ind_st_params, ind_lt_params, sha_st_params} but not \code{sha_lt_params}) should be encoded by a \code{list.} The entries of the list are respectively
 \enumerate{
-\item A \code{character} specifying how the priors are encoded. Currently supported priors are \code{'LKJ'}, \code{'inv_wishart'}, \code{'Beta'}, or \code{'hierarchical'}.
+\item A \code{character} specifying how the priors are encoded. Currently supported priors are \code{'LKJ'}, \code{'inv_wishart'}, \code{'Beta'}, or \code{'hierarchical'} (\code{'hierarchical'} is only supported for the individual short-term discrepancies).
 \item The prior parameters for the discrepancy variances, either a \code{list} of length 2 or a \code{numeric} of length 4. See below.
 \item The correlation matrix parameters, either a \code{list} of length 2 or a \code{numeric} of length 4. See below.
 }
@@ -55,7 +55,7 @@ The second element of the parameters \code{list} should then be a \code{numeric}
 \deqn{\frac{\rho_{k, i, j} + 1}{2} \sim \mathrm{Beta}(c_{k, i, j}, d_{k, i, j})} where
 \deqn{c_{k, i, j} \sim \mathrm{Gamma}(\alpha, \beta)}
 \deqn{d_{k, i, j} \sim \mathrm{Gamma}(\gamma, \delta)}
-So the third element should be a \code{numeric} of length 4 giving the \eqn{\alpha, \beta, \gamma, \delta} hyperparameters. respectively.
+So the third element should be a \code{numeric} of length 4 giving the \eqn{\alpha, \beta, \gamma, \delta} hyperparameters. respectively. NOTE: This options is only supported for the individual short-term discrepancy terms.
 }
 
 In addition to priors on the discrepancy terms, it is also possible to add prior information on the truth. We require priors on the truth at \eqn{t=0}. By default, a \eqn{N(0, 10)} prior is used on the initial values, and an Inv-Gamma\eqn{(10, 1)} prior is used for the initial variances, however these values can be configured by the \code{truth_params} argument. The covariance matrix of the random walk of the truth \eqn{\Lambda_y} can also be configured subject to an inverse-Wishart prior. The elements of the \code{truth_params} list should be

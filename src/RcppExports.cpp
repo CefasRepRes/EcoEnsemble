@@ -13,23 +13,22 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // KalmanFilter_back
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> KalmanFilter_back(const Eigen::Matrix<double, Eigen::Dynamic, 1>& rhos, const Eigen::Matrix<double, Eigen::Dynamic, 1>& dee, const Eigen::Matrix<double, Eigen::Dynamic, 1>& R, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& Q, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& C, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& P, const Eigen::Matrix<double, Eigen::Dynamic, 1>& xhat, const int& Time, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& y, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& obs, std::ostream* pstream__);
-RcppExport SEXP _EcoEnsemble_KalmanFilter_back(SEXP rhosSEXP, SEXP deeSEXP, SEXP RSEXP, SEXP QSEXP, SEXP CSEXP, SEXP PSEXP, SEXP xhatSEXP, SEXP TimeSEXP, SEXP ySEXP, SEXP obsSEXP, SEXP pstream__SEXP) {
+Eigen::MatrixXd KalmanFilter_back(Eigen::VectorXd rhos, Eigen::VectorXd dee, Eigen::VectorXd R, Eigen::MatrixXd Q, Eigen::MatrixXd C, Eigen::MatrixXd P, Eigen::VectorXd xhat, int Time, Eigen::MatrixXd y, Eigen::MatrixXd obs);
+RcppExport SEXP _EcoEnsemble_KalmanFilter_back(SEXP rhosSEXP, SEXP deeSEXP, SEXP RSEXP, SEXP QSEXP, SEXP CSEXP, SEXP PSEXP, SEXP xhatSEXP, SEXP TimeSEXP, SEXP ySEXP, SEXP obsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type rhos(rhosSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type dee(deeSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type R(RSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& >::type Q(QSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& >::type C(CSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type xhat(xhatSEXP);
-    Rcpp::traits::input_parameter< const int& >::type Time(TimeSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& >::type obs(obsSEXP);
-    Rcpp::traits::input_parameter< std::ostream* >::type pstream__(pstream__SEXP);
-    rcpp_result_gen = Rcpp::wrap(KalmanFilter_back(rhos, dee, R, Q, C, P, xhat, Time, y, obs, pstream__));
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type rhos(rhosSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type dee(deeSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type R(RSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Q(QSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type C(CSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type P(PSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type xhat(xhatSEXP);
+    Rcpp::traits::input_parameter< int >::type Time(TimeSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type obs(obsSEXP);
+    rcpp_result_gen = Rcpp::wrap(KalmanFilter_back(rhos, dee, R, Q, C, P, xhat, Time, y, obs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -38,7 +37,7 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_mod();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_EcoEnsemble_KalmanFilter_back", (DL_FUNC) &_EcoEnsemble_KalmanFilter_back, 11},
+    {"_EcoEnsemble_KalmanFilter_back", (DL_FUNC) &_EcoEnsemble_KalmanFilter_back, 10},
     {"_rcpp_module_boot_stan_fit4ensemble_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_prior_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_prior_mod, 0},
     {NULL, NULL, 0}

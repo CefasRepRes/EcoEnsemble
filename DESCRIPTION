@@ -22,8 +22,8 @@ Depends:
     R (>= 3.5.0)
 Imports: 
     methods,
-    Rcpp (>= 0.12.0),
-	matrixcalc,
+    Rcpp,
+    matrixcalc,
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
     rstantools (>= 2.1.1),
@@ -34,7 +34,7 @@ Imports:
     cowplot
 LinkingTo: 
     BH (>= 1.66.0),
-    Rcpp (>= 0.12.0),
+    Rcpp, 
     RcppEigen (>= 0.3.3.3.0),
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
