@@ -68,7 +68,7 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
   }
   if (is.na(variable)
       || !(variable %in% colnames(observations) )){
-    stop(paste0("Invalid variable. This should be the name of a species or an index less than ",
+    stop(paste0("Invalid variable. This should be the name of a variable or an index less than ",
                 ncol(observations) + 1))
   }
 

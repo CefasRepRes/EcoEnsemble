@@ -140,6 +140,10 @@ data{
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_cor_hierarchical_beta_hyper_params;
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_var_hierarchical_hyperparams;
 
+  //JM 22/07 Now have beta priors on the AR parameters
+  real<lower=0> prior_ind_st_ar_alpha;
+  real<lower=0> prior_ind_st_ar_beta;
+
 
   //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
@@ -160,6 +164,9 @@ data{
 	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st == 1 ? 1: 0]; //inverse wishart
 	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
+  //JM 22/07 Now have beta priors on the AR parameters
+  real<lower=0> prior_sha_st_ar_alpha;
+  real<lower=0> prior_sha_st_ar_beta;
 
  //Shared long-term
 	vector <lower=0> [N] prior_sha_lt_sd; //sd for prior on error
@@ -312,10 +319,7 @@ transformed parameters{
 
   }
 
-  //JM 28/02/22: Now do this earlier.
-  //ind_lt_sd = sqrt(ind_lt_var);
-  //ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
-  //ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
+
   lt_discrepancies[1:(2 * N)] = append_row(rep_vector(0.0,N), sha_lt);
   AR_params[1:(2 * N)] = append_row(rep_vector(1.0,N), sha_st_ar_param);
   for (i in 1:M){
@@ -328,6 +332,7 @@ model{
   /**
   * Priors
   */
+  //Random walk on y
   y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
   y_init_var  ~ inv_gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
@@ -335,8 +340,10 @@ model{
 
   // Shared discrepancies
   sha_lt_raw ~ std_normal();
-  //sha_st_var ~ exponential(prior_sha_st_var_exp); // Variance
   sha_st_var ~ inv_gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
+  //JM 22/07: Beta priors on the AR parameters
+  target += beta_lpdf((sha_st_ar_param + 1)/2 | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);
+
   // Correlation matrix
   if(form_prior_sha_st == 0){
     sha_st_cor ~ lkj_corr(prior_sha_st_cor_lkj[1]);
@@ -349,7 +356,7 @@ model{
 
   // Individual discrepancies
   // Note that we're assuming long-term discrepancies are drawn from a N(0,C) distribution
-  // where C is independent of the model. This means we treat C outside the for loop.
+  // where C is independent of the simulators. This means we treat C outside the for loop.
   ind_lt_var ~ inv_gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
   //Long term correlations
   if(form_prior_ind_lt == 0){
@@ -360,8 +367,11 @@ model{
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
 
-
   for(i in 1:M){
+    //AR Parameters
+    target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
+
+
     ind_lt_raw[i] ~ std_normal();
 
     //JM 06-05-2022: Extra magic step for hierarchical priors.

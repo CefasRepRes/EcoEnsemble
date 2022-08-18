@@ -656,19 +656,19 @@ Configuring these options in `EcoEnsemble` package is most easily done using the
 ``` {r}
 priors <- EnsemblePrior(
                         d = 4,
-                        ind_st_params = list("lkj", list(25, 0.25), 30),
-                        ind_lt_params = list(
+                        ind_st_params = IndSTPrior("lkj", list(25, 0.25), 30),
+                        ind_lt_params = IndLTPrior(
                           "beta",
                           list(c(25, 25, 25, 10),c(0.25, 0.25, 0.25, 0.1)),
                           list(matrix(40, 4, 4), matrix(40, 4, 4))
                           ),
-                        sha_st_params = list("lkj", list(25, 0.25), 30),
+                        sha_st_params = ShaSTPrior("lkj", list(25, 0.25), 30),
                         sha_lt_params = 3)
 ```
 
 This is:
 
-* `ind_st_params` - The individual short-term discrepancies $\mathbf{z}_{k}^{(t)}$. `list("lkj", list(25, 0.25), 30)` encodes that we use $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ priors for the variances of all species and an $LKJ(30)$ prior on the correlation matrix.
+* `ind_st_params` - The individual short-term discrepancies $\mathbf{z}_{k}^{(t)}$. `IndSTPrior("lkj", list(25, 0.25), 30)` encodes that we use $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ priors for the variances of all species and an $LKJ(30)$ prior on the correlation matrix.
 * `ind_lt_params` - The individual long-term discrepancies $\mathbf{\gamma_k}$ use an $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ prior for the variances of the first 3 species and an $\mathrm{\text{Inv-Gamma}(10, 0.1)}$ prior for the variance of the final species. The correlation matrix uses a $\mathrm{Beta}(40, 40)$ distribution for each of the off-diagonal elements.
 * `sha_st_params` - The shared short-term discrepancies $\mathbf{\eta}^{(t)}$ use $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ priors for variances of all species and an $LKJ(30)$ prior on the correlation matrix.
 * `sha_lt_params` - Unlike the other discrepancies, the shared long-term discrepancy $\mathbf{\mu}$ is not decomposed into correlation matrices and variances. Instead, a Gaussian distribution is used as the prior on each of the species. `sha_lt_params` encodes that the standard deviation of this Gaussian prior is `3`.
@@ -747,13 +747,13 @@ The choice of priors for the ensemble model can have an impact on the model outp
 N_species <- 4
 
 priors <- EnsemblePrior(d = 4,
-                        ind_st_params = list("lkj", list(25, 0.25), 30),
-                        ind_lt_params = list(
+                        ind_st_params = IndSTPrior("lkj", list(25, 0.25), 30),
+                        ind_lt_params = IndLTPrior(
                           "beta",
                           list(c(25, 25, 25, 10),c(0.25, 0.25, 0.25, 0.1)),
                           list(matrix(40, 4, 4), matrix(40, 4, 4))
                           ),
-                        sha_st_params = list("lkj", list(25, 0.25), 30),
+                        sha_st_params = ShaSTPrior("lkj", list(25, 0.25), 30),
                         sha_lt_params = 3)
 #Generate samples with this prior
 prior_samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
@@ -765,13 +765,13 @@ prior_samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
 plot1 <- plot(prior_samples, variable = "Cod") + theme(legend.position = "none") 
 #Now define much looser priors and get samples from this
 priors_loose <- EnsemblePrior(d = 4,
-                              ind_st_params = list("lkj", list(10, 1), 3),
-                              ind_lt_params = list(
+                              ind_st_params = IndSTPrior("lkj", list(10, 1), 3),
+                              ind_lt_params = IndLTPrior(
                                 "beta",
                                 list(10, 1),
                                 list(matrix(5,N_species, N_species), matrix(5, N_species, N_species)
                                      )                                                   ),
-                              sha_st_params = list("lkj", list(10, 0.1), 3),
+                              sha_st_params = ShaSTPrior("lkj", list(10, 0.1), 3),
                               sha_lt_params = 5)
 prior_samples_loose <- sample_prior(observations = list(SSB_obs, Sigma_obs),
                                  simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),

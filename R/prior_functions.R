@@ -1,6 +1,4 @@
-# These are the currently accepted priors for correlation matrices. If you add
-# anything here, you will also need to change the validate_correlation_priors
-# function in validation_functions.R
+# These are the currently accepted priors for correlation matrices. If you add anything here, you will also need to change the validate_parametrisation_form function in validation_prior_functions.R
 CORRELATIONS_PRIOR_LKJ <- 0
 CORRELATIONS_PRIOR_INV_WISHART <- 1
 CORRELATIONS_PRIOR_BETA <- 2
@@ -16,21 +14,17 @@ correlation_form_prior <- function(prior_choice){
   )
 }
 
-correlation_prior <- function(params, form, type){
+
+correlation_prior <- function(params, form, type, allow_hierarchical){
   retv <- rep(NA, 5)
   names(retv) <- c(paste0(type, "_lkj"), paste0(type, "_wish_nu"),
                    paste0(type, "_wish_sigma"),paste0(type, "_beta_1"),
                    paste0(type, "_beta_2"))
 
-  #JM 06/05/2022: Now allow for hierarchical priors, but only for the individual short-terms
-  #TODO: Shouldn't really have magic sneaky things for different types...
-  is_individual_short_term = (type == "prior_ind_st_cor")
-  if(is_individual_short_term){
-    retv <- rep(NA, 6)
-    names(retv) <- c(paste0(type, "_lkj"), paste0(type, "_wish_nu"),
-                     paste0(type, "_wish_sigma"),paste0(type, "_beta_1"),
-                     paste0(type, "_beta_2"),
-                     paste0(type, "_hierarchical_beta_hyper_params"))
+
+  if(allow_hierarchical){
+    retv <- append(retv, NA)
+    names(retv)[6] <- paste0(type, "_hierarchical_beta_hyper_params")
   }
 
   ret <- as.list(retv)
@@ -41,7 +35,7 @@ correlation_prior <- function(params, form, type){
   ret[[paste0(type, "_beta_1")]] <- matrix(0,0,0)
   ret[[paste0(type, "_beta_2")]] <- matrix(0,0,0)
 
-  if(is_individual_short_term){
+  if(allow_hierarchical){
     ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- numeric(0)
   }
 
@@ -55,61 +49,77 @@ correlation_prior <- function(params, form, type){
     ret[[paste0(type, "_beta_1")]] <- params[[1]]
     ret[[paste0(type, "_beta_2")]] <- params[[2]]
   }else if(form == CORRELATIONS_PRIOR_HIERARCHICAL
-           && is_individual_short_term){
-    if(!is_individual_short_term){
-      stop("Hierarchical parameters are only supported for individual short-term discrepancies.")
-    }
-    #JM 06/05/2022
-    ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- params
+           && allow_hierarchical){
+    ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- unlist(params)
   }
   return(ret)
 }
+#
+# generate_correlation_priors_stan_data <- function(prior_correlations){
+#   # Create the prior form identifier e.g. "lkj" becomes 0
+#   form_prior_ind_st <- correlation_form_prior(prior_correlations$ind_st_cor_form)
+#   form_prior_ind_lt <- correlation_form_prior(prior_correlations$ind_lt_cor_form)
+#   form_prior_sha_st <- correlation_form_prior(prior_correlations$sha_st_cor_form)
+#
+#   priors_data <- list(
+#     form_prior_ind_st = form_prior_ind_st,
+#     form_prior_ind_lt = form_prior_ind_lt,
+#     form_prior_sha_st = form_prior_sha_st
+#   )
+#
+#   priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_st_cor_params, form_prior_ind_st, "prior_ind_st_cor"))
+#   priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_lt_cor_params, form_prior_ind_lt, "prior_ind_lt_cor"))
+#   priors_data <- append(priors_data, correlation_prior(prior_correlations$sha_st_cor_params, form_prior_sha_st, "prior_sha_st_cor"))
+#
+#   return(priors_data)
+# }
+#
+#
+#
+# # If only one of each inverse-gamma variable is provided, then repeat it for every species considered.
+# repeat_priors <- function(d, prior_params, nm, nm_var){
+#     if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2){
+#       if(length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
+#         if(d == 1){
+#           prior_params[[2]][[1]] <- array(prior_params[[2]][[1]], dim = 1)
+#           prior_params[[2]][[2]] <- array(prior_params[[2]][[2]], dim = 1)
+#
+#         }else{
+#           prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
+#           prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
+#
+#         }
+#       }
+#
+#       #JM: 06-05-2022 Short term parameters can be a different form, so don't do validation in this case
+#       #TODO: Change this to do proper validation.
+#       #if(length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d){
+#       if((length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d) && nm_var != "ind_st_params"){
+#         stop(paste0("Invalid inverse-gamma parameters for ", nm, " priors (the second element of the ", nm_var, " parameter). This should be a list of length 2, with each entry a numeric of length 1 or ", d, " specifying the shape and scale parameters of the inverse- gamma distributions."))
+#       }
+#
+#     }
+#   return(prior_params)
+# }
 
 
-generate_correlation_priors_stan_data <- function(prior_correlations){
-  # Create the prior form identifier e.g. "lkj" becomes 0
-  form_prior_ind_st <- correlation_form_prior(prior_correlations$ind_st_cor_form)
-  form_prior_ind_lt <- correlation_form_prior(prior_correlations$ind_lt_cor_form)
-  form_prior_sha_st <- correlation_form_prior(prior_correlations$sha_st_cor_form)
+#If the user only specifies one variance parameter common for each species, then we should repeat this for each species so that Stan can understand.
+repeat_variance_priors <- function(d, priors){
 
-  priors_data <- list(
-    form_prior_ind_st = form_prior_ind_st,
-    form_prior_ind_lt = form_prior_ind_lt,
-    form_prior_sha_st = form_prior_sha_st
-  )
+  prior_var_params <- priors@var_params
 
-  priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_st_cor_params, form_prior_ind_st, "prior_ind_st_cor"))
-  priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_lt_cor_params, form_prior_ind_lt, "prior_ind_lt_cor"))
-  priors_data <- append(priors_data, correlation_prior(prior_correlations$sha_st_cor_params, form_prior_sha_st, "prior_sha_st_cor"))
+  ret <- prior_var_params
 
-  return(priors_data)
-}
-
-
-
-# If only one of each inverse-gamma variable is provided, then repeat it for every species considered.
-repeat_priors <- function(d, prior_params, nm, nm_var){
-    if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2){
-      if(length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
-        if(d == 1){
-          prior_params[[2]][[1]] <- array(prior_params[[2]][[1]], dim = 1)
-          prior_params[[2]][[2]] <- array(prior_params[[2]][[2]], dim = 1)
-
-        }else{
-          prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
-          prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
-
-        }
-      }
-
-      #JM: 06-05-2022 Short term parameters can be a different form, so don't do validation in this case
-      #TODO: Change this to do proper validation.
-      #if(length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d){
-      if((length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d) && nm_var != "ind_st_params"){
-        stop(paste0("Invalid inverse-gamma parameters for ", nm, " priors (the second element of the ", nm_var, " parameter). This should be a list of length 2, with each entry a numeric of length 1 or ", d, " specifying the shape and scale parameters of the inverse- gamma distributions."))
-      }
-
+  if(length(prior_var_params[[1]]) == 1 && length(prior_var_params[[2]] == 1)){
+    if(d == 1){
+      ret[[1]] <- array(prior_var_params[[1]], dim = 1)
+      ret[[2]] <- array(prior_var_params[[2]], dim = 1)
+    }else{
+      ret[[1]] <- rep(prior_var_params[[1]], d)
+      ret[[2]] <- rep(prior_var_params[[2]], d)
     }
-  return(prior_params)
+  }
+
+  return(ret)
 }
 

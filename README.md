@@ -40,15 +40,20 @@ To encode prior beliefs about how model discrepancies are related to one another
 
 ``` {r}
 #Endoding prior beliefs. Details of the meanings of these terms can be found in the vignette or the documentation
-priors <- EnsemblePrior(d = 4,
-                        ind_st_params = list("lkj", list(25, 0.25), 30),
-                        ind_lt_params = list(
-                          "beta",
-                          list(c(25, 25, 25, 10),c(0.25, 0.25, 0.25, 0.1)),
-                          list(matrix(40, 4, 4), matrix(40, 4, 4))
-                          ),
-                        sha_st_params = list("lkj", list(25, 0.25), 30),
-                        sha_lt_params = 3)
+num_species <- 4
+priors <- EnsemblePrior(
+  d = num_species,
+  ind_st_params = IndSTPrior("lkj",  list(3, 2), 3, AR_params = c(1,1)),
+  ind_lt_params = IndLTPrior(
+    "beta",
+    list(c(10,4,8, 7),c(2,3,1, 4)),
+    list(matrix(5, num_species, num_species),
+         matrix(0.5, num_species, num_species))
+  ),
+  sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
+  sha_lt_params = 5,
+  truth_params = TruthPrior(num_species, 10, list(3, 3), list(10, diag(num_species)))
+)
 ```
 This creates an `EnsemblePrior` object, which we can use to fit the ensemble model using the `fit_ensemble_model()` function and the data loaded with the package. When running a full MCMC sampling of the posterior, this step may take some time. Samples can then be generated from the resulting object using the `generate_sample()` function.
 

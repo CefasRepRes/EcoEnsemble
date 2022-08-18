@@ -97,6 +97,9 @@ data{
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_cor_hierarchical_beta_hyper_params;
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_var_hierarchical_hyperparams;
 
+  //JM 62/07 Now have beta priors on the AR parameters
+  real<lower=0> prior_ind_st_ar_alpha;
+  real<lower=0> prior_ind_st_ar_beta;
 
   //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
@@ -117,6 +120,9 @@ data{
 	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st == 1 ? 1: 0]; //inverse wishart
 	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
+    //JM 26/07 Now have beta priors on the AR parameters
+  real<lower=0> prior_sha_st_ar_alpha;
+  real<lower=0> prior_sha_st_ar_beta;
 
  //Shared long-term
 	vector <lower=0> [N] prior_sha_lt_sd; //sd for prior on error
