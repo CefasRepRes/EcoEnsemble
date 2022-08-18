@@ -37,7 +37,7 @@ setClass(
 
 generate_priors_stan_input_ind_lt <- function(d, x){
 
-  if(is(x, "IndLTPrior")){
+  if(!is(x, "IndLTPrior")){
     stop("Invalid object for individual long-term priors. This should be a IndLTPrior object.")
   }
 
