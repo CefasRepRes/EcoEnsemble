@@ -41,7 +41,7 @@ setClass(
 
 
 generate_priors_stan_input_sha_st <- function(d, x){
-  if(class(x) != "ShaSTPrior"){
+  if(!is(x, "ShaSTPrior")){
     stop("Invalid object for shared short-term priors. This should be a ShaSTPrior object.")
   }
 

@@ -334,13 +334,13 @@ model{
   */
   //Random walk on y
   y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
-  y_init_var  ~ inv_gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
+  y_init_var  ~ gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
 
 
   // Shared discrepancies
   sha_lt_raw ~ std_normal();
-  sha_st_var ~ inv_gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
+  sha_st_var ~ gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
   //JM 22/07: Beta priors on the AR parameters
   target += beta_lpdf((sha_st_ar_param + 1)/2 | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);
 
@@ -357,7 +357,7 @@ model{
   // Individual discrepancies
   // Note that we're assuming long-term discrepancies are drawn from a N(0,C) distribution
   // where C is independent of the simulators. This means we treat C outside the for loop.
-  ind_lt_var ~ inv_gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
+  ind_lt_var ~ gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
   //Long term correlations
   if(form_prior_ind_lt == 0){
     ind_lt_cor ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
@@ -381,7 +381,7 @@ model{
       prior_ind_st_var_hierarchical_beta [i]  ~ gamma(prior_ind_st_var_hierarchical_hyperparams[3],
                                                   prior_ind_st_var_hierarchical_hyperparams[4]);
     }else{
-      ind_st_var[i] ~ inv_gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
+      ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
     }
 
 
