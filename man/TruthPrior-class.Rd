@@ -8,7 +8,7 @@
 An \code{TruthPrior} object encapsulates the prior information for the short-term discrepancies of the shared discrepancy of the ensemble model.
 }
 \details{
-The truth \eqn{\mathbf{y}^{(t)}} is modelled as a random walk such that \deqn{\mathbf{y}^{(t+1)} \sim N(\mathbf{y}^{(t)}, \Lambda_y).} The covariance matrix \eqn{\Lambda_y} is parameterised by an inverse Wishart distribution (contained in the \code{rw_covariance} slot) and the initial value and covariance are modelled as drawn from a normal distribution (for the value) and an inverse gamma distribution (for the variance).
+The truth \eqn{\mathbf{y}^{(t)}} is modelled as a random walk such that \deqn{\mathbf{y}^{(t+1)} \sim N(\mathbf{y}^{(t)}, \Lambda_y).} The covariance matrix \eqn{\Lambda_y} is parameterised by an inverse Wishart distribution (contained in the \code{rw_covariance} slot) and the initial value and covariance are modelled as drawn from a normal distribution (for the value) and a gamma distribution (for the variance).
 }
 \section{Slots}{
 
@@ -17,7 +17,7 @@ The truth \eqn{\mathbf{y}^{(t)}} is modelled as a random walk such that \deqn{\m
 
 \item{\code{initial_mean_sd}}{A \code{numeric} giving the standard deviation of the normal prior on the initial mean value of the random walk. This is the same standard deviation for each variable of interest.}
 
-\item{\code{initial_vars}}{A \code{list} of length \code{2} containing the shape and scale parameters (respectively) for the inverse gamma priors on the variance of the initial value of the truth.}
+\item{\code{initial_vars}}{A \code{list} of length \code{2} containing the shape and scale parameters (respectively) for the gamma priors on the variance of the initial value of the truth.}
 
 \item{\code{rw_covariance}}{A \code{list} of length \code{2} containing the inverse-Wishart parameters for the covariance of the random walk of the truth.}
 }}

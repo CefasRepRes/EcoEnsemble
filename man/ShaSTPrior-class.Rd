@@ -8,7 +8,7 @@
 An \code{ShaSTPrior} object encapsulates the prior information for the short-term discrepancies of the shared discrepancy of the ensemble model.
 }
 \details{
-Shared short-term discrepancies \eqn{\mathbf{\eta}^{(t)}} are modelled as an AR(1) process so that \deqn{\mathbf{\eta}^{(t+1)} \sim N(R_\eta \mathbf{\eta}, \Lambda_\eta).} Accepted parametrisation forms for this discrepancy are \code{"lkj"}, \code{"beta"}, or \code{"inv_wishart"}.See details of the \code{EnsemblePrior()} constructor for more details.
+Shared short-term discrepancies \eqn{\mathbf{\eta}^{(t)}} are modelled as an AR(1) process so that \deqn{\mathbf{\eta}^{(t+1)} \sim N(R_\eta \mathbf{\eta}, \Lambda_\eta).} Accepted parametrisation forms for this discrepancy are \code{lkj}, \code{beta}, or \code{inv_wishart}. See details of the \code{EnsemblePrior()} constructor for more details.
 }
 \section{Slots}{
 

@@ -1,7 +1,7 @@
 #'@param d A `numeric` giving the number of variables of interest in the ensemble model.
 #'@param initial_mean_sd A `numeric` giving the standard deviation of the normal prior on the initial mean value of the random walk. This is the same standard deviation for each variable Default value is `10`.
-#'@param initial_vars A `list` of length `2` containing the shape and scale parameters (respectively) for the inverse gamma priors on the variance of the initial value of the truth. The default value is `list(10, 1)`.
-#'@param rw_covariance A `list` of length `2` containing the inverse-Wishart parameters for the covariance of the random walk of the truth. The default value is `list(d, diag(d))`.
+#'@param initial_vars A `list` of length `2` containing the shape and scale parameters (respectively) for the inverse gamma priors on the variance of the initial value of the truth. The default value is `list(10, 0.1)`.
+#'@param rw_covariance A `list` of length `2` containing the inverse-Wishart parameters for the covariance of the random walk of the truth. The default value is `list(2*d, diag(d))`.
 #' @examples
 #'
 #' ##### TruthPrior
@@ -12,7 +12,7 @@
 #'
 #' @rdname PriorConstructorFunctions
 #' @export
-TruthPrior <- function(d, initial_mean_sd = 10, initial_vars = list(1, 0.1), rw_covariance = list(d, diag(d))){
+TruthPrior <- function(d, initial_mean_sd = 10, initial_vars = list(10, 0.1), rw_covariance = list(2*d, diag(d))){
 
   ret <- new('TruthPrior',
              d = d,

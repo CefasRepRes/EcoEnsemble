@@ -1,6 +1,6 @@
 #' @rdname PriorConstructorFunctions
 #' @export
-IndLTPrior <- function(parametrisation_form, var_params, cor_params){
+IndLTPrior <- function(parametrisation_form = "lkj", var_params = list(1, 1), cor_params = 1){
   # validate_parametrisation_form(parametrisation_form)
   # if(is.numeric(cor_params))
   #   cor_params <- list(cor_params)

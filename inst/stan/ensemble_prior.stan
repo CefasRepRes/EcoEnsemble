@@ -141,7 +141,9 @@ parameters{
    */
   // Individual
   vector <lower=-1,upper=1>[N] ind_st_ar_param[M];
-  vector <lower=0>[N] ind_st_var[M];
+  vector <lower=0>[form_prior_ind_st != 3 ? N : 0] ind_st_var[M];
+  vector [form_prior_ind_st == 3 ? N : 0] log_ind_st_var[M];
+
   corr_matrix [N] ind_st_cor[M];
   vector[N] ind_lt_raw[M];
   vector <lower=0> [N] ind_lt_var;
@@ -167,10 +169,12 @@ parameters{
    * M[i, j] = a[i, j] for i < j
    * M[i, j] = b[i, j] for i > j
    */
-   	matrix<lower = 0>[form_prior_ind_st == 3 ? N : 0, form_prior_ind_st == 3 ? N : 0] prior_ind_st_cor_hierarchical_beta_params[form_prior_ind_st == 3 ? M : 0]; // a shape parameters for Beta distribution
+   	matrix<lower = 0>[form_prior_ind_st == 3 ? N : 0, form_prior_ind_st == 3 ? N : 0] prior_ind_st_cor_hierarchical_beta_params; // a shape parameters for Beta distribution
    	//Variances
-   	vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_alpha[form_prior_ind_st == 3 ? M : 0];
-    vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_beta[form_prior_ind_st == 3 ? M : 0];
+   	//vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_alpha[form_prior_ind_st == 3 ? M : 0];
+    //vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_beta[form_prior_ind_st == 3 ? M : 0];
+    //vector [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_mu;
+    vector<lower=0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_sigma_2;
 
 }
 transformed parameters{
@@ -185,6 +189,10 @@ transformed parameters{
   vector [N] ind_lt_sd = sqrt(ind_lt_var);
   matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
   matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
+
+  //JM 25-08-2022: This is the hierarchical version, we have to do parametrisations after it.
+  vector <lower=0>[N] ind_st_var_2[M];
+
 
 
   vector [(M+2) * N] x_hat = append_row(y_init_mean,rep_vector(0.0,N * (M + 1)));
@@ -209,7 +217,13 @@ transformed parameters{
   SIGMA[1:N, 1:N ] = SIGMA_t;
   SIGMA[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu;
   for (i in 1:M){
-    ind_st_sd[i] = sqrt(ind_st_var[i]);
+    if(form_prior_ind_st == 3){
+      ind_st_var_2[i] = exp(diagonal(prior_ind_st_cor_hierarchical_beta_params) + sqrt(prior_ind_st_var_hierarchical_sigma_2) .* log_ind_st_var[i]);
+    }else{
+      ind_st_var_2[i] = ind_st_var[i];
+    }
+
+    ind_st_sd[i] = sqrt(ind_st_var_2[i]);
     SIGMA_x[i] = diag_post_multiply(diag_pre_multiply(ind_st_sd[i],ind_st_cor[i]),ind_st_sd[i]);
 	  SIGMA[((i+1) * N + 1):((i+2)*N ),((i + 1) * N + 1):((i+2)*N )] = SIGMA_x[i];
   }
@@ -239,14 +253,14 @@ model{
   * Priors
   */
   y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
-  y_init_var  ~ inv_gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
+  y_init_var  ~ gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
 
 
   // Shared discrepancies
   sha_lt_raw ~ std_normal();
   //sha_st_var ~ exponential(prior_sha_st_var_exp); // Variance
-  sha_st_var ~ inv_gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
+  sha_st_var ~ gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
   // Correlation matrix
   if(form_prior_sha_st == 0){
     sha_st_cor ~ lkj_corr(prior_sha_st_cor_lkj[1]);
@@ -260,7 +274,7 @@ model{
   // Individual discrepancies
   // Note that we're assuming long-term discrepancies are drawn from a N(0,C) distribution
   // where C is independent of the model. This means we treat C outside the for loop.
-  ind_lt_var ~ inv_gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
+  ind_lt_var ~ gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
   //Long term correlations
   if(form_prior_ind_lt == 0){
     ind_lt_cor ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
@@ -270,20 +284,36 @@ model{
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
 
+  if(form_prior_ind_st == 3){
+    diagonal(prior_ind_st_cor_hierarchical_beta_params) ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
+    prior_ind_st_var_hierarchical_sigma_2 ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
+    //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
+    //JM 06/05/22: Now include hierarchical options
+    for (k in 1:(N-1)){
+      for (l in (k+1):N) {
+        prior_ind_st_cor_hierarchical_beta_params[k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
+                                                                prior_ind_st_cor_hierarchical_beta_hyper_params[2]);
+        prior_ind_st_cor_hierarchical_beta_params[l, k] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[3],
+                                                                prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
+        }
+    }
+    }
+
+
 
   for(i in 1:M){
     ind_lt_raw[i] ~ std_normal();
 
     //JM 06-05-2022: Extra magic step for hierarchical priors.
     if(form_prior_ind_st == 3){
-      prior_ind_st_var_hierarchical_alpha[i] ~ gamma(prior_ind_st_var_hierarchical_hyperparams[1],
-                                                prior_ind_st_var_hierarchical_hyperparams[2]);
-      prior_ind_st_var_hierarchical_beta [i]  ~ gamma(prior_ind_st_var_hierarchical_hyperparams[3],
-                                                  prior_ind_st_var_hierarchical_hyperparams[4]);
-    }else{
-      ind_st_var[i] ~ inv_gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
-    }
 
+      //JM 25-08-2022: Changed parametrisation of hierarchical option.
+      //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
+      log_ind_st_var[i] ~ std_normal();
+
+    }else{
+      ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
+    }
 
     // Correlation matrix
     if(form_prior_ind_st == 0){
@@ -293,18 +323,7 @@ model{
     } else if(form_prior_ind_st == 2){
       target += priors_cor_beta(ind_st_cor[i], N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2);
     } else if(form_prior_ind_st == 3){
-
-      ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
-      //JM 06/05/22: Now include hierarchical options
-      for (k in 1:(N-1)){
-        for (l in (i+1):N) {
-          prior_ind_st_cor_hierarchical_beta_params[i][k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
-                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[2]);
-          prior_ind_st_cor_hierarchical_beta_params[i][l, k] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[3],
-                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
-        }
-      }
-      target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params[i]);
+      target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params);
     }
 
   }

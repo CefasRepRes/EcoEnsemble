@@ -61,7 +61,7 @@
 #' `TruthPrior` returns an object of class `TruthPrior`.
 #' @rdname PriorConstructorFunctions
 #' @export
-EnsemblePrior <- function(d, ind_st_params, ind_lt_params, sha_st_params, sha_lt_params, truth_params = TruthPrior(d)){
+EnsemblePrior <- function(d, ind_st_params = IndSTPrior(), ind_lt_params = IndLTPrior(), sha_st_params = ShaSTPrior(), sha_lt_params = 5, truth_params = TruthPrior(d)){
 
   validate_prior(d, ind_st_params, ind_lt_params, sha_st_params, sha_lt_params, truth_params)
 

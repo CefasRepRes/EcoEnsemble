@@ -28,7 +28,8 @@
 #' ist_inW <- IndSTPrior("inv_wishart", list(2, 1/3),list(5, diag(5)))
 #' @rdname PriorConstructorFunctions
 #' @export
-IndSTPrior <- function(parametrisation_form = "hierarchical", var_params, cor_params, AR_params = c(1,1)){
+#'
+IndSTPrior <- function(parametrisation_form = "hierarchical", var_params= list(-1,0.5,4,2), cor_params = list(0.1, 0.1, 0.1, 0.1), AR_params = c(1,1)){
 
   validate_parametrisation_form(parametrisation_form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,
                                                                       CORRELATIONS_PRIOR_INV_WISHART,

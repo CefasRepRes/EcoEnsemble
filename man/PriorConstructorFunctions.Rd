@@ -18,22 +18,31 @@ EnsemblePrior(
   truth_params = TruthPrior(d)
 )
 
-IndLTPrior(parametrisation_form, var_params, cor_params)
+IndLTPrior(
+  parametrisation_form = "lkj",
+  var_params = list(1, 1),
+  cor_params = 1
+)
 
 IndSTPrior(
   parametrisation_form = "hierarchical",
-  var_params,
-  cor_params,
+  var_params = list(-1, 0.5, 4, 2),
+  cor_params = list(0.1, 0.1, 0.1, 0.1),
   AR_params = c(1, 1)
 )
 
-ShaSTPrior(parametrisation_form, var_params, cor_params, AR_params = c(1, 1))
+ShaSTPrior(
+  parametrisation_form = "lkj",
+  var_params = list(1, 1),
+  cor_params = 1,
+  AR_params = c(1, 1)
+)
 
 TruthPrior(
   d,
   initial_mean_sd = 10,
-  initial_vars = list(10, 1),
-  rw_covariance = list(d, diag(d))
+  initial_vars = list(10, 0.1),
+  rw_covariance = list(2 * d, diag(d))
 )
 }
 \arguments{
@@ -59,9 +68,9 @@ TruthPrior(
 
 \item{initial_mean_sd}{A \code{numeric} giving the standard deviation of the normal prior on the initial mean value of the random walk. This is the same standard deviation for each variable Default value is \code{10}.}
 
-\item{initial_vars}{A \code{list} of length \code{2} containing the shape and scale parameters (respectively) for the inverse gamma priors on the variance of the initial value of the truth. The default value is \code{list(10, 1)}.}
+\item{initial_vars}{A \code{list} of length \code{2} containing the shape and scale parameters (respectively) for the inverse gamma priors on the variance of the initial value of the truth. The default value is \code{list(10, 0.1)}.}
 
-\item{rw_covariance}{A \code{list} of length \code{2} containing the inverse-Wishart parameters for the covariance of the random walk of the truth. The default value is \code{list(d, diag(d))}.}
+\item{rw_covariance}{A \code{list} of length \code{2} containing the inverse-Wishart parameters for the covariance of the random walk of the truth. The default value is \code{list(2*d, diag(d))}.}
 }
 \value{
 \code{EnsemblePrior} returns an object of class \code{EnsemblePrior}.
@@ -86,11 +95,11 @@ Constructors for the \code{EnsemblePrior} class and related classes. These funct
 
 There are currently four supported prior distributions on covariance matrices. As in Spence et. al. (2018), the individual and shared short-term discrepancy covariances, \eqn{\Lambda_k} and \eqn{\Lambda_\eta}, as well as the individual long-term discrepancy covariance, \eqn{\Lambda_\gamma},  are decomposed into a vector of variances and a correlation matrix \deqn{\Lambda = \sqrt{\mathrm{diag}(\pi)}  P \sqrt{\mathrm{diag}(\pi)},} where \eqn{\pi} is the vector of variances for each variable of interest (VoI), and \eqn{P} is the correlation matrix.
 
-Selecting \code{'lkj'}, \code{'inv_wishart'}, \code{'beta'}, or \code{'hierarchical'} refers to setting LKJ, inverse Wishart, beta, or hierarchical prior distributions on the covariance matrix respectively. The variance parameters should be passed through as the \code{var_params} slot of the object and the correlation parameters should be passed through as the \code{cor_params}. For \code{'lkj'}, \code{'inv_wishart'}, and \code{'beta'} selections, variances are parameterised by inverse-gamma distributions, so the \code{var_params} slot should be a \code{list} of length two, where each element gives the shape and scale parameters for each VoI (either as a single value which is the same for each VoI or a \code{numeric} with the same length as the number of VoI). The correlations should be in the following form:
+Selecting \code{'lkj'}, \code{'inv_wishart'}, \code{'beta'}, or \code{'hierarchical'} refers to setting LKJ, inverse Wishart, beta, or hierarchical prior distributions on the covariance matrix respectively. The variance parameters should be passed through as the \code{var_params} slot of the object and the correlation parameters should be passed through as the \code{cor_params}. For \code{'lkj'}, \code{'inv_wishart'}, and \code{'beta'} selections, variances are parameterised by gamma distributions, so the \code{var_params} slot should be a \code{list} of length two, where each element gives the shape and rate parameters for each VoI (either as a single value which is the same for each VoI or a \code{numeric} with the same length as the number of VoI). The correlations should be in the following form:
 \itemize{
-\item If \code{'lkj'} is selected, then \code{cor_params} should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such  that the probability density is given by  (Lewandowski et. al. 2009) \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.} Variances are parameterised by inverse-gamma distributions.
-\item If \code{'inv_wishart'} is selected, then  \code{cor_params} should be a \code{list} containing a scalar value \eqn{\nu} (giving the degrees of freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix it produces (i.e \eqn{d \times d} where \eqn{d} is the number of VoI). The density of an inverse Wishart is given by  \deqn{f(W|\eta, S) = \frac{1}{2^{\eta d/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + d + 1)/2}  \exp \left(- \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),} where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(X \right)}} is the trace of \eqn{X}.  Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation  matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered. Variances are parameterised by inverse-gamma distributions.
-\item If \code{'beta'} is selected, then  \code{cor_params} should be a  \code{list} containing two symmetric \code{d}\eqn{\times}\code{d} matrices \eqn{A} and \eqn{B} giving the prior success parameters and prior failure parameters respectively. The correlation between the \code{i}th and \code{j}th VoI is \eqn{\rho_{i, j}} with \deqn{\frac{1}{\pi} \tan^{-1} \frac{\rho_{i, j}}{\sqrt{1-\rho_{i, j}^2}} + \frac{1}{2} \sim \mathrm{beta}(A_{i, j}, B_{i, j}).} Variances are parameterised by inverse-gamma distributions.
+\item If \code{'lkj'} is selected, then \code{cor_params} should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such  that the probability density is given by  (Lewandowski et. al. 2009) \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.} Variances are parameterised by gamma distributions.
+\item If \code{'inv_wishart'} is selected, then  \code{cor_params} should be a \code{list} containing a scalar value \eqn{\nu} (giving the degrees of freedom) and a symmetric, positive definite matrix \eqn{\Sigma} (giving the scale matrix). The dimensions of \eqn{\Sigma} should be the same as the correlation matrix it produces (i.e \eqn{d \times d} where \eqn{d} is the number of VoI). The density of an inverse Wishart is given by  \deqn{f(W|\eta, S) = \frac{1}{2^{\eta d/2} \Gamma_N \left( \frac{\eta}{2} \right)} |S|^{\eta/2} |W|^{-(\eta + d + 1)/2}  \exp \left(- \frac{1}{2} \mathrm{tr}\left(SW^{-1} \right) \right),} where \eqn{\Gamma_N} is the multivariate gamma function and \eqn{\mathrm{tr \left(X \right)}} is the trace of \eqn{X}.  Note that inverse Wishart distributions act over the space of all covariance matrices. When used for a correlation  matrix, only the subset of valid covariance matrices that are also valid correlation matrices are considered. Variances are parameterised by gamma distributions.
+\item If \code{'beta'} is selected, then  \code{cor_params} should be a  \code{list} containing two symmetric \code{d}\eqn{\times}\code{d} matrices \eqn{A} and \eqn{B} giving the prior success parameters and prior failure parameters respectively. The correlation between the \code{i}th and \code{j}th VoI is \eqn{\rho_{i, j}} with \deqn{\frac{1}{\pi} \tan^{-1} \frac{\rho_{i, j}}{\sqrt{1-\rho_{i, j}^2}} + \frac{1}{2} \sim \mathrm{beta}(A_{i, j}, B_{i, j}).} Variances are parameterised by gamma distributions.
 \item If \code{'hierarchical'} is selected, then variances are parameterised by hierarchical gamma distributions:
 \deqn{\pi_{k, i} \sim \mathrm{gamma}(a_{k, i}, b_{k, i})} with priors
 \deqn{a_{k, i} \sim \mathrm{gamma}(\alpha_\pi, \beta_\pi),}
@@ -104,7 +113,7 @@ The \code{cor_params} slot should be a \code{numeric} of length 4 giving the \eq
 
 Priors may also be specified for the autoregressive parameters for discrepancies modelled using autoregressive processes (i.e. for \code{IndSTPrior} and \code{ShaSTPrior} objects). These are parametrised via beta distributions such that the autoregressive parameter \eqn{R \in (-1,1)} satisfies \deqn{\frac{R+1}{2} \sim \mathrm{Beta}(\alpha, \beta)}.
 
-In addition to priors on the discrepancy terms, it is also possible to add prior information on the truth. We require priors on the truth at \eqn{t=0}. By default, a \eqn{N(0, 10)} prior is used on the initial values, and an Inv-Gamma\eqn{(10, 1)} prior is used for the initial variances, however these values can be configured by the \code{truth_params} argument. The covariance matrix of the random walk of the truth \eqn{\Lambda_y} can also be configured subject to an inverse-Wishart prior. The \code{truth_params} argument should be a \code{TruthPrior} object.
+In addition to priors on the discrepancy terms, it is also possible to add prior information on the truth. We require priors on the truth at \eqn{t=0}. By default, a \eqn{N(0, 10)} prior is used on the initial values, and a Gamma\eqn{(10, 1)} prior is used for the initial variances, however these values can be configured by the \code{truth_params} argument. The covariance matrix of the random walk of the truth \eqn{\Lambda_y} can also be configured subject to an inverse-Wishart prior. The \code{truth_params} argument should be a \code{TruthPrior} object.
 }
 \examples{
 #Defining priors for a model with 4 species.
@@ -124,27 +133,27 @@ priors <- EnsemblePrior(
 )
 
 ##### Different forms of the individual long term discrepancy priors
-#LKJ(10) priors on correlation matrices and Inv-Gamma(5, 3) priors on the variances
+#LKJ(10) priors on correlation matrices and gamma(5, 3) priors on the variances
 ist_lkj <- IndSTPrior("lkj", list(5, 3), 10)#
 
-#Same as above but with an additional Beta(2, 4) prior on the AR parameter
+#Same as above but with an additional beta(2, 4) prior on the AR parameter
 ist_lkk <- IndSTPrior("lkj", list(5, 3), 10, AR_params = c(2, 4))
 
 #Same as above but with different variance priors for 5 different variables of interest.
-#This encodes that there is an Inv-Gamma(1, 1) prior on the variance of the first variable,
-#an Inv-Gamma(23, 1) on the second variable etc...
+#This encodes that there is a gamma(1, 1) prior on the variance of the first variable,
+#a gamma(23, 1) on the second variable etc...
 ist_lkk <- IndSTPrior("lkj", list(c(1,23,24,6,87), c(1,1,1,1,5)), 10, AR_params = c(2, 4))
 
-#Hierarchical priors with Gamma(1,2) and Gamma(1, 2) on the variance hyperparameters and
-#Gamma(3,4), Gamma(5,6) on the correlation hyperparameters
+#Hierarchical priors with gamma(1,2) and gamma(1, 2) on the variance hyperparameters and
+#gamma(3,4), gamma(5,6) on the correlation hyperparameters
 ist_hie <- IndSTPrior("hierarchical", c(1,2,1,2), c(3,4,5,6))
 
-#Beta priors via the method of concordance. We have Inv-Gamma(5,3) priors on the variance
-# and Beta(40,40) on each of the correlations in the correlation matrix.
+#Beta priors via the method of concordance. We have gamma(5,3) priors on the variance
+# and beta(40,40) on each of the correlations in the correlation matrix.
 ist_bet <- IndSTPrior("beta", list(5, 3), list(matrix(40, 5, 5), matrix(40, 5, 5)))
 
-#Inverse Wishart correlation priors. Inv-Gamma(2, 1/3) priors are on the variancers and
-#Inv-Wishart(5, diag(5)) on the correlation matrices.
+#Inverse Wishart correlation priors. Gamma(2, 1/3) priors are on the variances and
+#inv-Wishart(5, diag(5)) on the correlation matrices.
 ist_inW <- IndSTPrior("inv_wishart", list(2, 1/3),list(5, diag(5)))
 
 ##### TruthPrior

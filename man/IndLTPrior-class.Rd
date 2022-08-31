@@ -8,7 +8,7 @@
 An \code{IndLTPrior} object encapsulates the prior information for the long-term discrepancies of the individual simulators within the ensemble model.
 }
 \details{
-Individual long-term discrepancies \eqn{\gamma_k} are drawn from a distribtion \deqn{\gamma_k \sim N(0, C_\gamma).} Accepted parametrisation forms for this discrepancy are \verb{"lkj", "beta",} or \code{"inv_wishart"}. See details of the \code{EnsemblePrior()} constructor for more details.
+Individual long-term discrepancies \eqn{\gamma_k} are drawn from a distribtion \deqn{\gamma_k \sim N(0, C_\gamma).} Accepted parametrisation forms for this discrepancy are \code{lkj}, \code{beta}, or \code{inv_wishart}. See details of the \code{EnsemblePrior()} constructor for more details.
 }
 \section{Slots}{
 
