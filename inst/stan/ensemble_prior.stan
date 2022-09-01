@@ -174,7 +174,7 @@ parameters{
    	//vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_alpha[form_prior_ind_st == 3 ? M : 0];
     //vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_beta[form_prior_ind_st == 3 ? M : 0];
     //vector [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_mu;
-    vector<lower=0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_sigma_2;
+    vector [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_mu_params;
 
 }
 transformed parameters{
@@ -218,7 +218,7 @@ transformed parameters{
   SIGMA[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu;
   for (i in 1:M){
     if(form_prior_ind_st == 3){
-      ind_st_var_2[i] = exp(diagonal(prior_ind_st_cor_hierarchical_beta_params) + sqrt(prior_ind_st_var_hierarchical_sigma_2) .* log_ind_st_var[i]);
+      ind_st_var_2[i] = exp(prior_ind_st_var_hierarchical_mu_params + sqrt(diagonal(prior_ind_st_cor_hierarchical_beta_params)) .* log_ind_st_var[i]);
     }else{
       ind_st_var_2[i] = ind_st_var[i];
     }
@@ -285,8 +285,8 @@ model{
   }
 
   if(form_prior_ind_st == 3){
-    diagonal(prior_ind_st_cor_hierarchical_beta_params) ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
-    prior_ind_st_var_hierarchical_sigma_2 ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
+    prior_ind_st_var_hierarchical_mu_params ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
+    diagonal(prior_ind_st_cor_hierarchical_beta_params) ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
     //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
     //JM 06/05/22: Now include hierarchical options
     for (k in 1:(N-1)){
@@ -306,7 +306,7 @@ model{
 
     //JM 06-05-2022: Extra magic step for hierarchical priors.
     if(form_prior_ind_st == 3){
-
+      target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
       //JM 25-08-2022: Changed parametrisation of hierarchical option.
       //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
       log_ind_st_var[i] ~ std_normal();
