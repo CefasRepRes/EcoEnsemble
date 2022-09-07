@@ -172,9 +172,8 @@ data{
 	vector <lower=0> [N] prior_sha_lt_sd; //sd for prior on error
 
 	//Random walk on y
-	vector <lower=0> [N] prior_y_init_mean_sd;
-  vector [N] prior_y_init_var_a;
-  vector [N] prior_y_init_var_b; // Initial variance of y
+	vector <lower=0> [N] prior_y_init_mean;
+  vector [N] prior_y_init_var;
   real<lower=N-1>	prior_sigma_t_inv_wish_nu; //inverse wishart
 	matrix[N, N] prior_sigma_t_inv_wish_sigma;//inverse wishart
 
@@ -259,8 +258,6 @@ parameters{
    * Random walk on y
    */
   cov_matrix [N] SIGMA_t;
-  vector [N] y_init_mean;
-  vector <lower=0> [N] y_init_var;
 
 }
 transformed parameters{
@@ -281,7 +278,7 @@ transformed parameters{
   //               for hierarchical things.
   //vector <lower=0>[N] ind_st_var_2[M];
 
-  vector [(M+2) * N] x_hat = append_row(y_init_mean,rep_vector(0.0,N * (M + 1)));
+  vector [(M+2) * N] x_hat = append_row(prior_y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
   //JM 28/02/22: Reparametrising the shared short-term variances by inverse gammas
   //matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
@@ -310,7 +307,7 @@ transformed parameters{
   }
 
   //SIGMA_init
-  SIGMA_init[1:N,1:N] = diag_matrix(y_init_var);
+  SIGMA_init[1:N,1:N] = diag_matrix(prior_y_init_var);
   SIGMA_init[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu ./ (1 - sha_st_ar_param * sha_st_ar_param');;
   for (i in 1:M){
     SIGMA_init[((i+1) * N + 1):((i+2)*N ),((i+1) * N + 1):((i+2)*N )] = SIGMA_x[i] ./ (1 - ind_st_ar_param[i] * ind_st_ar_param[i]');
@@ -330,9 +327,6 @@ model{
   /**
   * Priors
   */
-  //Random walk on y
-  y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
-  y_init_var  ~ gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
 
 

@@ -12,12 +12,12 @@
 #'
 #' @rdname PriorConstructorFunctions
 #' @export
-TruthPrior <- function(d, initial_mean_sd = 10, initial_vars = list(10, 0.1), rw_covariance = list(2*d, diag(d))){
+TruthPrior <- function(d, initial_mean = 0, initial_var = 100, rw_covariance = list(2*d, diag(d))){
 
   ret <- new('TruthPrior',
              d = d,
-             initial_mean_sd  = initial_mean_sd,
-             initial_vars  = initial_vars,
+             initial_mean  = initial_mean,
+             initial_var  = initial_var,
              rw_covariance = rw_covariance)
   return(ret)
 }
@@ -38,8 +38,8 @@ TruthPrior <- function(d, initial_mean_sd = 10, initial_vars = list(10, 0.1), rw
 setClass(
   "TruthPrior",
   slots = c(d = "numeric",
-            initial_mean_sd  = "numeric",
-            initial_vars  = "list",
+            initial_mean  = "numeric",
+            initial_var  = "numeric",
             rw_covariance = "list")
 )
 
@@ -51,17 +51,15 @@ generate_priors_stan_input_truth <- function(d, x){
   }
 
 
-  if(length(x@initial_mean_sd) == 1)
-    prior_y_init_mean_sd <- rep(x@initial_mean_sd, d)
-  if(length(x@initial_vars) == 2 && length(x@initial_vars[[1]]) == 1 && length(x@initial_vars[[2]]) == 1){
-    prior_y_init_var_a = rep(x@initial_vars[[1]], d)
-    prior_y_init_var_b = rep(x@initial_vars[[2]], d)
+  if(length(x@initial_mean) == 1)
+    prior_y_init_mean <- rep(x@initial_mean, d)
+  if(length(x@initial_var) == 1){
+    prior_y_init_var = rep(x@initial_var, d)
   }
 
   ret <- list(
-    prior_y_init_mean_sd = prior_y_init_mean_sd,
-    prior_y_init_var_a = prior_y_init_var_a ,
-    prior_y_init_var_b = prior_y_init_var_b,
+    prior_y_init_mean = prior_y_init_mean,
+    prior_y_init_var = prior_y_init_var,
     prior_sigma_t_inv_wish_nu = x@rw_covariance[[1]],
     prior_sigma_t_inv_wish_sigma = x@rw_covariance[[2]]
   )
