@@ -1,6 +1,6 @@
 #' @rdname PriorConstructorFunctions
 #' @export
-ShaSTPrior <- function(parametrisation_form = "lkj", var_params = list(1, 1), cor_params = 1, AR_params = c(1,1)){
+ShaSTPrior <- function(parametrisation_form = "lkj", var_params = list(1, 10), cor_params = 1, AR_params = c(2, 2)){
 
   validate_parametrisation_form(parametrisation_form)
   validate_prior_AR_params(AR_params)

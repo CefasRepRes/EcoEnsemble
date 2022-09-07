@@ -85,11 +85,18 @@ fit_ensemble_model <- function(observations, simulators, priors,
   ens_data <- EnsembleData(observations, simulators, priors)
   stan_input <- ens_data@stan_input
 
+  #Using hierarchical priors uses a different model. This speeds up the sampling enormously
+  mod <- stanmodels$ensemble_model
+  if(stan_input$form_prior_ind_st == 3){
+    mod <- stanmodels$ensemble_model_hierarchical
+  }
+
+
   samples <- NULL; point_estimate <- NULL
   if(full_sample){
-    samples <- rstan::sampling(stanmodels$ensemble_model, data=stan_input,...)
+    samples <- rstan::sampling(mod, data=stan_input,...)
   }else{
-    point_estimate <- rstan::optimizing(stanmodels$ensemble_model, data=stan_input,as_vector=FALSE, ...)
+    point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
   }
 
   return(EnsembleFit(ens_data, samples, point_estimate))

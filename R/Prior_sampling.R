@@ -34,11 +34,17 @@ prior_ensemble_model <- function(priors, M = 1,
   stan_input$M <- M
   stan_input$N <- priors@d
 
+  #Using hierarchical priors uses a different model. This speeds up the sampling enormously
+  mod <- stanmodels$ensemble_prior
+  if(stan_input$form_prior_ind_st == 3){
+    mod <- stanmodels$ensemble_prior_hierarchical
+  }
+
   samples <- NULL; point_estimate <- NULL
   if(full_sample){
-    samples <- rstan::sampling(stanmodels$ensemble_prior, data=stan_input,...)
+    samples <- rstan::sampling(mod, data=stan_input,...)
   }else{
-    point_estimate <- rstan::optimizing(stanmodels$ensemble_prior, data=stan_input,as_vector=FALSE, ...)
+    point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
   }
   return(list(samples=samples, point_estimate=point_estimate))
 }

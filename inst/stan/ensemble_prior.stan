@@ -41,27 +41,26 @@ functions{
 	  return ret;
   }
 }
+
 data{
   int <lower=0> N;   // Number of variables
   //int <lower=0> time;// How long the model is run for
-
   /**
    * Observations
    */
   /*vector [N] observations[time];
-  cov_matrix [N] obs_covariances;
+  cov_matrix [N] obs_covariances;*/
 
   /**
   * Simulators
   */
   int<lower=0> M; // number of models
-/*
-  matrix [time,M+1] observation_times; // times that observations happen
+  /*matrix [time,M+1] observation_times; // times that observations happen
   int<lower=0> model_num_species[M]; // might have to be one
   matrix[sum(model_num_species),N] Ms;  // the Ms -- this assumes that the observations are always the same
   matrix [time ,sum(model_num_species)] model_outputs; // vector of observations from the models
-  vector [sq_int(model_num_species, M)] model_covariances; // vector of covariance matrices -- this needs to be checked that the individual matrices are positive definite!
-*/
+  vector [sq_int(model_num_species, M)] model_covariances; // vector of covariance matrices -- this needs to be checked that the individual matrices are positive definite!*/
+
 	/**
 	 * Prior choice paramters:
 	 * These determine the form of the prior parametrisation using an integar representation.
@@ -97,9 +96,10 @@ data{
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_cor_hierarchical_beta_hyper_params;
   vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_var_hierarchical_hyperparams;
 
-  //JM 62/07 Now have beta priors on the AR parameters
+  //JM 22/07 Now have beta priors on the AR parameters
   real<lower=0> prior_ind_st_ar_alpha;
   real<lower=0> prior_ind_st_ar_beta;
+
 
   //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
@@ -120,7 +120,7 @@ data{
 	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st == 1 ? 1: 0]; //inverse wishart
 	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
-    //JM 26/07 Now have beta priors on the AR parameters
+  //JM 22/07 Now have beta priors on the AR parameters
   real<lower=0> prior_sha_st_ar_alpha;
   real<lower=0> prior_sha_st_ar_beta;
 
@@ -135,13 +135,14 @@ data{
 	matrix[N, N] prior_sigma_t_inv_wish_sigma;//inverse wishart
 
 }
+
 parameters{
   /**
    * Simulator discrepancies
    */
   // Individual
   vector <lower=-1,upper=1>[N] ind_st_ar_param[M];
-  vector <lower=0>[form_prior_ind_st != 3 ? N : 0] ind_st_var[M];
+  vector<lower=0>[N] ind_st_var[M];
   vector [form_prior_ind_st == 3 ? N : 0] log_ind_st_var[M];
 
   corr_matrix [N] ind_st_cor[M];
@@ -161,21 +162,6 @@ parameters{
   vector [N] y_init_mean;
   vector <lower=0> [N] y_init_var;
 
-  /**
-   * Hierarchical parameters
-   *
-   * Correlations:
-   * The hierarchical beta priors on individual short term discrepancy correlations are encoded by a matrix M and a vector v. In this scheme, the correlations c[i,j] have c[i, j] ~ Beta(a[i, j], b[i, j]). Since correlation matrices are symmetric we need only care about one section of the matrix when making calculations. So the matrix M has:
-   * M[i, j] = a[i, j] for i < j
-   * M[i, j] = b[i, j] for i > j
-   */
-   	matrix<lower = 0>[form_prior_ind_st == 3 ? N : 0, form_prior_ind_st == 3 ? N : 0] prior_ind_st_cor_hierarchical_beta_params; // a shape parameters for Beta distribution
-   	//Variances
-   	//vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_alpha[form_prior_ind_st == 3 ? M : 0];
-    //vector<lower = 0> [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_beta[form_prior_ind_st == 3 ? M : 0];
-    //vector [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_mu;
-    vector [form_prior_ind_st == 3 ? N : 0] prior_ind_st_var_hierarchical_mu_params;
-
 }
 transformed parameters{
   matrix [N,N] SIGMA_x[M];
@@ -190,15 +176,10 @@ transformed parameters{
   matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
   matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
 
-  //JM 25-08-2022: This is the hierarchical version, we have to do parametrisations after it.
-  vector <lower=0>[N] ind_st_var_2[M];
-
-
 
   vector [(M+2) * N] x_hat = append_row(y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  //JM 28/02/22: Reparametrising the shared short-term variances by inverse gammas
-  //matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
+
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
@@ -217,13 +198,8 @@ transformed parameters{
   SIGMA[1:N, 1:N ] = SIGMA_t;
   SIGMA[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu;
   for (i in 1:M){
-    if(form_prior_ind_st == 3){
-      ind_st_var_2[i] = exp(prior_ind_st_var_hierarchical_mu_params + sqrt(diagonal(prior_ind_st_cor_hierarchical_beta_params)) .* log_ind_st_var[i]);
-    }else{
-      ind_st_var_2[i] = ind_st_var[i];
-    }
+    ind_st_sd[i] = sqrt(ind_st_var[i]);
 
-    ind_st_sd[i] = sqrt(ind_st_var_2[i]);
     SIGMA_x[i] = diag_post_multiply(diag_pre_multiply(ind_st_sd[i],ind_st_cor[i]),ind_st_sd[i]);
 	  SIGMA[((i+1) * N + 1):((i+2)*N ),((i + 1) * N + 1):((i+2)*N )] = SIGMA_x[i];
   }
@@ -236,10 +212,7 @@ transformed parameters{
 
   }
 
-  //JM 28/02/22: Now do this earlier.
-  //ind_lt_sd = sqrt(ind_lt_var);
-  //ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
-  //ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
+
   lt_discrepancies[1:(2 * N)] = append_row(rep_vector(0.0,N), sha_lt);
   AR_params[1:(2 * N)] = append_row(rep_vector(1.0,N), sha_st_ar_param);
   for (i in 1:M){
@@ -252,6 +225,7 @@ model{
   /**
   * Priors
   */
+  //Random walk on y
   y_init_mean ~ normal(0, prior_y_init_mean_sd);    // Initial value of y
   y_init_var  ~ gamma(prior_y_init_var_a, prior_y_init_var_b); // Initial variance of y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
@@ -259,8 +233,10 @@ model{
 
   // Shared discrepancies
   sha_lt_raw ~ std_normal();
-  //sha_st_var ~ exponential(prior_sha_st_var_exp); // Variance
   sha_st_var ~ gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
+  //JM 22/07: Beta priors on the AR parameters
+  target += beta_lpdf((sha_st_ar_param + 1)/2 | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);
+
   // Correlation matrix
   if(form_prior_sha_st == 0){
     sha_st_cor ~ lkj_corr(prior_sha_st_cor_lkj[1]);
@@ -273,59 +249,24 @@ model{
 
   // Individual discrepancies
   // Note that we're assuming long-term discrepancies are drawn from a N(0,C) distribution
-  // where C is independent of the model. This means we treat C outside the for loop.
+  // where C is independent of the simulators. This means we treat C outside the for loop.
   ind_lt_var ~ gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
   //Long term correlations
   if(form_prior_ind_lt == 0){
     ind_lt_cor ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
   } else if(form_prior_ind_lt == 1){
     ind_lt_cor ~ inv_wishart(prior_ind_lt_cor_wish_nu[1], prior_ind_lt_cor_wish_sigma);
-  } else {
+  } else{
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
 
-  if(form_prior_ind_st == 3){
-    prior_ind_st_var_hierarchical_mu_params ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
-    diagonal(prior_ind_st_cor_hierarchical_beta_params) ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
-    //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
-    //JM 06/05/22: Now include hierarchical options
-    for (k in 1:(N-1)){
-      for (l in (k+1):N) {
-        prior_ind_st_cor_hierarchical_beta_params[k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
-                                                                prior_ind_st_cor_hierarchical_beta_hyper_params[2]);
-        prior_ind_st_cor_hierarchical_beta_params[l, k] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[3],
-                                                                prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
-        }
-    }
-    }
-
-
 
   for(i in 1:M){
+    //AR Parameters
+    target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
+
+
     ind_lt_raw[i] ~ std_normal();
-
-    //JM 06-05-2022: Extra magic step for hierarchical priors.
-    if(form_prior_ind_st == 3){
-      target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
-      //JM 25-08-2022: Changed parametrisation of hierarchical option.
-      //ind_st_var[i] ~ gamma(prior_ind_st_var_hierarchical_alpha[i], prior_ind_st_var_hierarchical_beta[i]);
-      log_ind_st_var[i] ~ std_normal();
-
-    }else{
-      ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);// Variance
-    }
-
-    // Correlation matrix
-    if(form_prior_ind_st == 0){
-      ind_st_cor[i] ~ lkj_corr(prior_ind_st_cor_lkj[1]);
-    } else if(form_prior_ind_st == 1){
-      ind_st_cor[i] ~ inv_wishart(prior_ind_st_cor_wish_nu[1], prior_ind_st_cor_wish_sigma);
-    } else if(form_prior_ind_st == 2){
-      target += priors_cor_beta(ind_st_cor[i], N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2);
-    } else if(form_prior_ind_st == 3){
-      target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params);
-    }
-
   }
 }
 
