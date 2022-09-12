@@ -82,20 +82,11 @@ data{
   /**
    * Prior parameters
    */
-  //Individual short-term
-  vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
-	vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
-	real prior_ind_st_cor_lkj[form_prior_ind_st == 0 ? 1 : 0]; // LKJ shape parameter
-  matrix[form_prior_ind_st == 1 ? N : 0, form_prior_ind_st == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st == 1 ? 1 : 0]; //inverse wishart
-	matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_1; // alpha shape parameter for Beta distribution
-  matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_2; // beta shape parameter for Beta distribution
 
-  //JM 06/05: Adding in hierarchical prior options.
   //Correlation: Each correlation matrix element is a Beta(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
   //Variance: This is done via variance ~ Gamma(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
-  vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_cor_hierarchical_beta_hyper_params;
-  vector [form_prior_ind_st == 3 ? 4 : 0] prior_ind_st_var_hierarchical_hyperparams;
+  vector [4] prior_ind_st_cor_hierarchical_beta_hyper_params;
+  vector [4] prior_ind_st_var_hierarchical_hyperparams;
 
   //JM 22/07 Now have beta priors on the AR parameters
   real<lower=0> prior_ind_st_ar_alpha;
@@ -107,8 +98,8 @@ data{
   vector [N] prior_ind_lt_var_b ; // scale parameter (beta) of inverse gamma
   real prior_ind_lt_cor_lkj[form_prior_ind_lt == 0 ? 1 : 0]; // LKJ shape parameter
   matrix[form_prior_ind_lt == 1 ? N : 0, form_prior_ind_lt == 1 ? N : 0] prior_ind_lt_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_lt_cor_wish_nu[form_prior_ind_lt == 1 ? 1 : 0]; //inverse wishart
-	matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_1; // alpha shape parameter for Beta distribution
+  real<lower=N-1>	prior_ind_lt_cor_wish_nu[form_prior_ind_lt == 1 ? 1 : 0]; //inverse wishart
+  matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_2; // beta shape parameter for Beta distribution
 
 
@@ -142,10 +133,7 @@ parameters{
    */
   // Individual
   vector <lower=-1,upper=1>[N] ind_st_ar_param[M];
-  //JM 25-08-2022: Changed parametrisation
-  //vector <lower=0>[N] ind_st_var[M];
-  vector [N] log_ind_st_var[M];
-
+  vector [N] log_ind_st_var[M];	
   corr_matrix [N] ind_st_cor[M];
   vector[N] ind_lt_raw[M];
   vector <lower=0> [N] ind_lt_var;
@@ -187,8 +175,7 @@ transformed parameters{
 
   vector [(M+2) * N] x_hat = append_row(prior_y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  //JM 28/02/22: Reparametrising the shared short-term variances by inverse gammas
-  //matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
+  
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
@@ -288,16 +275,12 @@ model{
     //AR Parameters
     target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
-
     ind_lt_raw[i] ~ std_normal();
 
     log_ind_st_var[i] ~ std_normal();
 
-
-
     // Correlation matrix
-
-      target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params);
+    target += priors_cor_hierarchical_beta(ind_st_cor[i], N, prior_ind_st_cor_hierarchical_beta_params);
 
 
   }

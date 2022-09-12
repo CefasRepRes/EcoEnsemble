@@ -126,8 +126,8 @@ data{
    * Prior parameters
    */
   //Individual short-term
-  vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
-	vector [form_prior_ind_st != 3 ? N : 0] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
+  vector [N] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
+	vector [N] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
 	real prior_ind_st_cor_lkj[form_prior_ind_st == 0 ? 1 : 0]; // LKJ shape parameter
   matrix[form_prior_ind_st == 1 ? N : 0, form_prior_ind_st == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
 	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st == 1 ? 1 : 0]; //inverse wishart
@@ -172,9 +172,9 @@ data{
 	vector <lower=0> [N] prior_sha_lt_sd; //sd for prior on error
 
 	//Random walk on y
-	vector <lower=0> [N] prior_y_init_mean;
-  vector [N] prior_y_init_var;
-  real<lower=N-1>	prior_sigma_t_inv_wish_nu; //inverse wishart
+	vector [N] prior_y_init_mean;
+	vector <lower=0> [N] prior_y_init_var;
+	real<lower=N-1>	prior_sigma_t_inv_wish_nu; //inverse wishart
 	matrix[N, N] prior_sigma_t_inv_wish_sigma;//inverse wishart
 
 }
@@ -237,13 +237,7 @@ parameters{
    */
   // Individual
   vector <lower=-1,upper=1>[N] ind_st_ar_param[M];
-  //JM 25-08-2022: Changed parametrisation
-  //JM 02-09-2022: Changed back - hierarchical now done seperately.
-  //vector <lower=0>[N] ind_st_var[M];
-  // vector <lower=0>[form_prior_ind_st != 3 ? N : 0] ind_st_var[M];
   vector<lower=0>[N] ind_st_var[M];
-  vector [form_prior_ind_st == 3 ? N : 0] log_ind_st_var[M];
-
   corr_matrix [N] ind_st_cor[M];
   vector[N] ind_lt_raw[M];
   vector <lower=0> [N] ind_lt_var;
@@ -265,23 +259,14 @@ transformed parameters{
   vector [N] ind_st_sd[M];
   vector [N] sha_lt = prior_sha_lt_sd .* sha_lt_raw;
   vector [N] ind_lt[M];
-  //JM 28/02/22: Initing with their values.
-  //vector [N] ind_lt_sd;
-  //matrix [N,N] ind_lt_covar;
-  //matrix [N,N] ind_lt_cov_cholesky;
   vector [N] ind_lt_sd = sqrt(ind_lt_var);
   matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
   matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
-
-  //JM 25-08-2022: This is the hierarchical version, we have to do parametrisations after it.
-  //JM 02-09-2022: 0-dimensional parameters cause problems, reverting this and having a seperate model
-  //               for hierarchical things.
-  //vector <lower=0>[N] ind_st_var_2[M];
-
+  
+  
   vector [(M+2) * N] x_hat = append_row(prior_y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  //JM 28/02/22: Reparametrising the shared short-term variances by inverse gammas
-  //matrix[N , N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_var,sha_st_cor),sha_st_var);
+  
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
@@ -327,6 +312,7 @@ model{
   /**
   * Priors
   */
+  //Random walk on y
   SIGMA_t ~ inv_wishart(prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma); // the random walk of y
 
 
@@ -356,14 +342,13 @@ model{
   } else if(form_prior_ind_lt == 1){
     ind_lt_cor ~ inv_wishart(prior_ind_lt_cor_wish_nu[1], prior_ind_lt_cor_wish_sigma);
   } else{
-    target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
+	  target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
 
 
   for(i in 1:M){
     //AR Parameters
     target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
-
 
     ind_lt_raw[i] ~ std_normal();
   }
