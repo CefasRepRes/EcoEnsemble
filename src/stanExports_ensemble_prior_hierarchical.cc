@@ -2,12 +2,12 @@
 
 #include <Rcpp.h>
 using namespace Rcpp ;
-#include "stanExports_KF_back.h"
+#include "stanExports_ensemble_prior_hierarchical.h"
 
-RCPP_MODULE(stan_fit4KF_back_mod) {
+RCPP_MODULE(stan_fit4ensemble_prior_hierarchical_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_KF_back")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_ensemble_prior_hierarchical")
 
     .constructor<SEXP,SEXP,SEXP>()
 

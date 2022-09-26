@@ -10,26 +10,13 @@ get_mcmc_ensemble_model()
 The \code{stanmodel} object encoding the ensemble model.
 }
 \description{
-Gets the unfit, compiled Stan object encoding the ensemble model. This allows for
+Gets the unfit, compiled \code{stanmodel} object encoding the ensemble model. This allows for
 manual fitting of the ensemble model directly using.
 }
 \examples{
 mod <- get_mcmc_ensemble_model()
 
-num_species <- 4
-priors <- EnsemblePrior(
- d = num_species,
- ind_st_params = list("lkj",  list(3, 2), 3),
- ind_lt_params = list(
-    "beta",
-    list(c(10,4,8, 7),c(2,3,1, 4)),
-    list(matrix(5, num_species, num_species),
-         matrix(0.5, num_species, num_species))
- ),
- sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
- sha_lt_params = 5,
- truth_params = list(10, list(3, 3), list(10, diag(num_species)))
-)
+priors <- EnsemblePrior(4)
 ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),

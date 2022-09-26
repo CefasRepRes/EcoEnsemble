@@ -21,10 +21,10 @@ A \code{data.frame} containing the single species stock assessment estimates of 
 biomass of Norway Pout, Herring, Cod, and Sole in the North Sea between 1984-2017.
 }
 \references{
-Herring Assessment Working Group for the Area South of 62 N (HAWG).Technical report,
+Herring Assessment Working Group for the Area South of 62 N (HAWG)(2020).Technical report,
 ICES Scientific Reports. ACOM:07. 960 pp, ICES, Copenhagen.
 
-Report of the Working Group on the Assessment of Demersal Stocks inthe North Sea and
-Skagerrak. Technical report, ICES Scientific Reports. ACOM:22.pp, ICES, Copenhagen.
+Report of the Working Group on the Assessment of Demersal Stocks in the North Sea and
+Skagerrak (2020). Technical report, ICES Scientific Reports. ACOM:22.pp, ICES, Copenhagen.
 }
 \keyword{datasets}

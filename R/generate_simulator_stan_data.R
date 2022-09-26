@@ -41,7 +41,8 @@ generate_simulator_stan_data <- function(observations, simulators){
     for(k in 1:length(times)){
       year = times[k]
       dat_for_year <- model_ouput[year == rownames(model_ouput), ]
-      if(nrow(dat_for_year) == 1){
+      if(nrow(dat_for_year) == 1 ||
+         length(dat_for_year) == 1){
         y_i[k, ] <- unlist(dat_for_year)
       }
     }
@@ -58,7 +59,8 @@ generate_simulator_stan_data <- function(observations, simulators){
   for(k in 1:length(times)){
     year = times[k]
     obs_for_year <- obs_data[year == rownames(obs_data), ]
-    if(nrow(obs_for_year) == 1){
+    if(nrow(obs_for_year) == 1 ||
+       length(obs_for_year) == 1){
       obs_data_all[k, ] <- unlist(obs_for_year)
     }
   }

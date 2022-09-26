@@ -3,7 +3,7 @@ title: "EcoEnsemble"
 subtitle: "An R package for combining ecosystem models"
 author: "James A. Martindale and Michael A. Spence"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{EcoEnsemble}
   %\VignetteEngine{knitr::rmarkdown}
@@ -648,30 +648,37 @@ In `EcoEnsemble`, we follow the approach of @spence_ff and decompose the covaria
 \end{equation}
 where $\mathbf{\pi}$ is the vector of variances of each species, and $P$ is the correlation matrix. Here we write $\Lambda$ for any of $\Lambda_k, \Lambda_\eta, C_\gamma$.
 
+
 There are three available prior parametrisations for covariance matrices. In each case, the variance terms are parametrised by inverse-gamma distributions, while the correlation matrices can be parametrised either by an LKJ distribution, an inverse-wishart distribution, or by Beta distributions.
 
-
-Configuring these options in `EcoEnsemble` package is most easily done using the `EnsemblePrior` constructor. We can set
+Configuring these options in `EcoEnsemble` package is most easily done using the `EnsemblePrior` constructor. A set of default priors is available which produce weakly informative priors that hold for a wide range of different datasets. We can set
 
 ``` {r}
-priors <- EnsemblePrior(
+#Setting priors for an ensemble model with 4 variables of interest.
+priors <- EnsemblePrior(4)
+```
+
+If desired, priors can be manually configured for finer control, for example we can set 
+
+``` {r}
+priors_custom <- EnsemblePrior(
                         d = 4,
-                        ind_st_params = list("lkj", list(25, 0.25), 30),
-                        ind_lt_params = list(
+                        ind_st_params = IndSTPrior("lkj", list(25, 0.25), 30),
+                        ind_lt_params = IndLTPrior(
                           "beta",
                           list(c(25, 25, 25, 10),c(0.25, 0.25, 0.25, 0.1)),
                           list(matrix(40, 4, 4), matrix(40, 4, 4))
                           ),
-                        sha_st_params = list("lkj", list(25, 0.25), 30),
-                        sha_lt_params = 5)
+                        sha_st_params = ShaSTPrior("lkj", list(25, 0.25), 30),
+                        sha_lt_params = 3)
 ```
 
 This is:
 
-* `ind_st_params` - The individual short-term discrepancies $\mathbf{z}_{k}^{(t)}$. `list("lkj", list(25, 0.25), 30)` encodes that we use $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ priors for the variances of all species and an $LKJ(30)$ prior on the correlation matrix.
-* `ind_lt_params` - The individual long-term discrepancies $\mathbf{\gamma_k}$ use an $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ prior for the variances of the first 3 species and an $\mathrm{\text{Inv-Gamma}(10, 0.1)}$ prior for the variance of the final species. The correlation matrix uses a $\mathrm{Beta}(40, 40)$ distribution for each of the off-diagonal elements.
-* `sha_st_params` - The shared short-term discrepancies $\mathbf{\eta}^{(t)}$ use $\mathrm{\text{Inv-Gamma}(25, 0.25)}$ priors for variances of all species and an $LKJ(30)$ prior on the correlation matrix.
-* `sha_lt_params` - Unlike the other discrepancies, the shared long-term discrepancy $\mathbf{\mu}$ is not decomposed into correlation matrices and variances. Instead, a Gaussian distribution is used as the prior on each of the species. `sha_lt_params` encodes that the standard deviation of this Gaussian prior is `5`.
+* `ind_st_params` - The individual short-term discrepancies $\mathbf{z}_{k}^{(t)}$. `IndSTPrior("lkj", list(25, 0.25), 30)` encodes that we use $\mathrm{\text{Gamma}(25, 0.25)}$ priors for the variances of all species and an $LKJ(30)$ prior on the correlation matrix.
+* `ind_lt_params` - The individual long-term discrepancies $\mathbf{\gamma_k}$ use an $\mathrm{\text{Gamma}(25, 0.25)}$ prior for the variances of the first 3 species and an $\mathrm{\text{Gamma}(10, 0.1)}$ prior for the variance of the final species. The correlation matrix uses a $\mathrm{Beta}(40, 40)$ distribution for each of the off-diagonal elements.
+* `sha_st_params` - The shared short-term discrepancies $\mathbf{\eta}^{(t)}$ use $\mathrm{\text{Gamma}(25, 0.25)}$ priors for variances of all species and an $LKJ(30)$ prior on the correlation matrix.
+* `sha_lt_params` - Unlike the other discrepancies, the shared long-term discrepancy $\mathbf{\mu}$ is not decomposed into correlation matrices and variances. Instead, a Gaussian distribution is used as the prior on each of the species. `sha_lt_params` encodes that the standard deviation of this Gaussian prior is `3`.
 
 
 ## Model fitting
@@ -740,133 +747,6 @@ plot(prior_samples)
 plot_priors_only
 ```
 
-## Prior sensitivity
-
-The choice of priors for the ensemble model can have an impact on the model outputs, we can create two priors, one much less restrictive than the other. We can see the effect of this choice by using the prior sampling functions given in the previous section.
-```{r label="looser_bounds", eval = FALSE}
-N_species <- 4
-
-priors <- EnsemblePrior(d = 4,
-                        ind_st_params = list("lkj", list(25, 0.25), 30),
-                        ind_lt_params = list(
-                          "beta",
-                          list(c(25, 25, 25, 10),c(0.25, 0.25, 0.25, 0.1)),
-                          list(matrix(40, 4, 4), matrix(40, 4, 4))
-                          ),
-                        sha_st_params = list("lkj", list(25, 0.25), 30),
-                        sha_lt_params = 5)
-#Generate samples with this prior
-prior_samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
-                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                   list(SSB_lm,  Sigma_lm,  "LeMans"),
-                                                   list(SSB_miz, Sigma_miz, "mizer"),
-                                                   list(SSB_fs,  Sigma_fs,  "FishSUMS")),
-                                 priors = priors)
-plot1 <- plot(prior_samples, variable = "Cod") + theme(legend.position = "none") 
-#Now define much looser priors and get samples from this
-priors_loose <- EnsemblePrior(d = 4,
-                              ind_st_params = list("lkj", list(1, 1), 3),
-                              ind_lt_params = list(
-                                "beta",
-                                list(1, 1),
-                                list(matrix(5,N_species, N_species), matrix(5, N_species, N_species)
-                                     )                                                   ),
-                              sha_st_params = list("lkj", list(10, 0.1), 3),
-                              sha_lt_params = 3)
-prior_samples_loose <- sample_prior(observations = list(SSB_obs, Sigma_obs),
-                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                   list(SSB_lm,  Sigma_lm,  "LeMans"),
-                                                   list(SSB_miz, Sigma_miz, "mizer"),
-                                                   list(SSB_fs,  Sigma_fs,  "FishSUMS")),
-                                 priors = priors_loose)
-plot2 <- plot(prior_samples_loose, variable = "Cod")+ theme(legend.position = "none")
-
-#Now compare the outputs for Cod
-plot_grid(plot1, plot2,nrow=2)
-```
-```{r plot_priors_comparison, fig.dim = c(7, 6), echo = FALSE, warning = FALSE}
-plot_priors_comparison
-```
-
-Notice that there are wider uncertainty bands on the first plot, which uses more restrictive priors for most discrepancy terms, but less restrictive priors for the shared long-term discrepancies (a $N(0, 5^2)$ prior instead of a $N(0, 3^2)$ prior). So while prior plots are a good visualisation for the prior predictive distribution of the truth, they do not give a full picture of all the information contained in the priors. We can now fit the Ensemble model using the two choices of priors.
-
-```{r fit_different_priors, eval = FALSE}
-fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                   list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                                   list(SSB_lm,  Sigma_lm, "LeMans"),
-                                                   list(SSB_miz, Sigma_miz, "mizer")),
-                                 priors = priors)
-sample <- generate_sample(fit, num_samples = 2000)
-#Now with the looser priors
-fit_loose <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                   list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                                   list(SSB_lm,  Sigma_lm, "LeMans"),
-                                                   list(SSB_miz, Sigma_miz, "mizer")),
-                                 priors = priors_loose)
-sample_loose <- generate_sample(fit_loose, num_samples = 2000)
-```
-
-
-Comparing the two graphs for Cod shows that the ensemble model is fairly insensitive to the choice of priors in this case. For models with less data availability, larger changes in uncertainty ranges would be expected.
-
-```{r label="final_plots", eval=FALSE}
-library(ggplot2)
-library(cowplot)
-#The initial run
-p1 <- plot(samples, variable = "Cod") + theme(legend.position = "none")
-#The run with looser priors
-p2 <- plot(sample_loose, variable = "Cod") + theme(legend.position = "none")
-
-plot_grid(p1, p2, get_legend(plot(samples, variable = "Cod")),nrow=3)
-
-```
-```{r fig.dim = c(7, 6), echo = FALSE, warning = FALSE}
-plot_prior_comparison
-```
-
-## Less data
-
-With less data available, the ensemble model is more sensitive to the choice of priors. We can fit the ensemble model using a subset of the data. Taking only the observations from 1990 to 2005, and simulator outputs from 1996 to 2030. With this reduced dataset, the ensemble model becomes more sensitive to the choice of priors.
-
-
-```{r label = "less_data_runs", eval = FALSE}
-#Only use a subset of the data
-SSB_obs_small <- SSB_obs[paste(1990:2005), ]
-SSB_ewe_small <- SSB_ewe[paste(1996:2030), ]
-SSB_miz_small <- SSB_miz[paste(1996:2030), ]
-SSB_lm_small <- SSB_lm  [paste(1996:2030), ]
-SSB_fs_small <- SSB_fs  [paste(1996:2030), ]
-
-#Fit the  ensemble with tighter priors
-fit_small <- fit_ensemble_model(observations = list(SSB_obs_small, Sigma_obs),
-                                simulators = list(list(SSB_ewe_small, Sigma_ewe, "EwE"),
-                                                  list(SSB_fs_small,  Sigma_fs, "FishSUMS"),
-                                                  list(SSB_lm_small,  Sigma_lm, "LeMans"),
-                                                  list(SSB_miz_small, Sigma_miz, "mizer")),
-                                priors = priors)
-samples_small <- generate_sample(fit_small)
-
-#Fit the ensemble with much looser priors
-fit_small_loose <- fit_ensemble_model(observations = list(SSB_obs_small, Sigma_obs),
-                                      simulators = list(list(SSB_ewe_small, Sigma_ewe, "EwE"),
-                                                  list(SSB_fs_small,  Sigma_fs, "FishSUMS"),
-                                                  list(SSB_lm_small,  Sigma_lm, "LeMans"),
-                                                  list(SSB_miz_small, Sigma_miz, "mizer")),
-                                priors = priors_loose)
-samples_small_loose <- generate_sample(fit_small_loose)
-```
-```{r label="plots_less_data", fig.dim = c(7, 4), eval=FALSE}
-p1 <- plot(samples_small, variable = "Cod") + theme(legend.position = "none")
-p2 <- plot(samples_small_loose, variable = "Cod") + theme(legend.position = "none")
-
-plot_grid(p1, p2, get_legend(plot(samples_small, variable = "Cod")),nrow=3)
-
-```
-```{r fig.dim = c(7, 8), echo = FALSE, warning = FALSE}
-plot_prior_comparison_less_data
-```
 
 ## Finer fitting control
 Using the wrapper functions `fit_ensemble_model, generate_sample` is the easiest way to generate samples from the ensemble model. However, for finer control, the model can be fit directly with `rstan`. To create data in the correct form of the model, simply create an `EnsembleData` object using the constructor.

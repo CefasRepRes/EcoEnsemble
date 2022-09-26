@@ -4,7 +4,13 @@
 \alias{prior_ensemble_model}
 \title{Generate samples of parameters from prior distribution}
 \usage{
-prior_ensemble_model(priors, M = 1, full_sample = TRUE, ...)
+prior_ensemble_model(
+  priors,
+  M = 1,
+  full_sample = TRUE,
+  control = list(adapt_delta = 0.95),
+  ...
+)
 }
 \arguments{
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
@@ -12,6 +18,8 @@ prior_ensemble_model(priors, M = 1, full_sample = TRUE, ...)
 \item{M}{A \code{numeric} that represents the number of simulators. The default is 1.}
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the prior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the prior density of the ensemble model.}
+
+\item{control}{If creating a full sample, this is a named \code{list} of paramaters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
 
 \item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }
@@ -23,21 +31,8 @@ Methods to generates samples of the parameters from the prior distribution of th
 }
 \examples{
 \donttest{
-num_species <- 4
-priors <- EnsemblePrior(
- d = num_species,
- ind_st_params = list("lkj",  list(3, 2), 3),
- ind_lt_params = list(
-   "beta",
-   list(c(10,4,8, 7),c(2,3,1, 4)),
-   list(matrix(5, num_species, num_species),
-        matrix(0.5, num_species, num_species))
- ),
- sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
- sha_lt_params = 5,
- truth_params = list(10, list(3, 3), list(10, diag(num_species)))
-)
-prior_density <- prior_ensemble_model(priors, M = 3)
+priors <- EnsemblePrior(4)
+prior_density <- prior_ensemble_model(priors, M = 4)
 }
 }
 \references{

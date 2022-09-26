@@ -4,7 +4,14 @@
 \alias{fit_ensemble_model}
 \title{Fits the ensemble model}
 \usage{
-fit_ensemble_model(observations, simulators, priors, full_sample = TRUE, ...)
+fit_ensemble_model(
+  observations,
+  simulators,
+  priors,
+  full_sample = TRUE,
+  control = list(adapt_delta = 0.95),
+  ...
+)
 }
 \arguments{
 \item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is is a \eqn{d \times d} \code{matrix} where \eqn{d} is the number of columns of the observations data frame / matrix. This matrix is the covariance matrix of the observations.}
@@ -14,6 +21,8 @@ fit_ensemble_model(observations, simulators, priors, full_sample = TRUE, ...)
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the posterior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the posterior density of the ensemble model.}
+
+\item{control}{If creating a full sample, this is a named \code{list} of paramaters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
 
 \item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }
@@ -25,26 +34,13 @@ An \code{EnsembleFit} object.
 }
 \examples{
 \donttest{
-num_species <- 4
-priors <- EnsemblePrior(
-    d = num_species,
-    ind_st_params = list("lkj",  list(3, 2), 3),
-    ind_lt_params = list(
-       "beta",
-       list(c(10,4,8, 7),c(2,3,1, 4)),
-       list(matrix(5, num_species, num_species),
-            matrix(0.5, num_species, num_species))
-    ),
-    sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
-    sha_lt_params = 5,
-    truth_params = list(10, list(3, 3), list(10, diag(num_species)))
-)
+
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                      list(SSB_lm,  Sigma_lm, "LeMans"),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = priors,
+                         priors = EnsemblePrior(4),
                          full_sample = FALSE) #Only optimise in this case
 #Run a full sample
 fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
@@ -52,8 +48,8 @@ fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                      list(SSB_lm,  Sigma_lm, "LeMans"),
                                      list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = priors,
-                         control=list(adapt_delta = 0.99)) # Additional Stan parameters.
+                         priors = EnsemblePrior(4),
+                         control = list(adapt_delta = 0.99)) # Additional Stan parameters.
 }
 }
 \references{

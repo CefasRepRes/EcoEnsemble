@@ -35,28 +35,14 @@
 #' @references Chris M.Strickland, Ian. W.Turner, RobertDenhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 #'@export
 #'@examples
-#'num_species <- 4
-#' priors <- EnsemblePrior(
-#'     d = num_species,
-#'     ind_st_params = list("lkj",  list(3, 2), 3),
-#'     ind_lt_params = list(
-#'        "beta",
-#'         list(c(10,4,8, 7),c(2,3,1, 4)),
-#'         list(matrix(5, num_species, num_species),
-#'              matrix(0.5, num_species, num_species))
-#'     ),
-#'     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
-#'     sha_lt_params = 5,
-#'     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
-#' )
 #'\donttest{
 #'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = priors)
-#'sample <- generate_sample(fit, num_samples = 2000)
+#'                          priors = EnsemblePrior(4))
+#'samples <- generate_sample(fit, num_samples = 2000)
 #'
 #'# A quicker way to get the MLE for the first sample from the ensemble
 #'transf_data <- get_transformed_data(fit)
@@ -73,8 +59,6 @@ generate_sample <- function(fit, num_samples = 1)
   full_sample <- !is.null(fit@samples)
 
   transformed_data <- get_transformed_data(fit)
-
-  rstan::expose_stan_functions(stanmodels$KF_back)
 
   if (full_sample){
     ex.fit <- rstan::extract(fit@samples)
@@ -106,12 +90,14 @@ generate_sample <- function(fit, num_samples = 1)
     sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle), ncol(mle), num_samples))
   }
 
+
+  #Clean up the Stan functions
+  #rm("As", "KalmanFilter_back", "KalmanFilter_seq_em", "priors_cor_beta", "priors_cor_hierarchical_beta", "sq_int")
+
   return(EnsembleSample(fit, mle, sample_ret))
 }
 
 
-# Fudge to get past "no visible binding for global variable" in R-CMD check
-utils::globalVariables(c("KalmanFilter_back"))
 
 #'@rdname get_stan_outputs
 #'@export
@@ -191,14 +177,16 @@ get_transformed_data <- function(fit){
 #'@export
 get_parameters <- function(ex.fit, x = 1){
   ret <- list()
-  if (is(ex.fit$x_hat,"matrix")){ ## It's a sample
+  is_sample<- is(ex.fit$x_hat,"matrix")
+
+  if (is_sample){
     ret$x_hat <- ex.fit$x_hat[x,]
     ret$SIGMA_init <- ex.fit$SIGMA_init[x,,]
     ret$AR_params <- ex.fit$AR_params[x,]
     ret$new_x <- ex.fit$x_hat[x,]
     ret$SIGMA <- ex.fit$SIGMA[x,,]
     ret$lt_discrepancies <- ex.fit$lt_discrepancies[x,]
-  }else{ ## It's optimised
+  }else{
     ret$x_hat <- ex.fit$x_hat
     ret$SIGMA_init <- ex.fit$SIGMA_init
     ret$AR_params <- ex.fit$AR_params
@@ -214,14 +202,14 @@ get_parameters <- function(ex.fit, x = 1){
 #'@export
 get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the fit
 {
-  if(!exists("KalmanFilter_back"))
-    rstan::expose_stan_functions(stanmodels$KF_back)
-
   params <- get_parameters(ex.fit,x)
 
   ret <- KalmanFilter_back(params$AR_params, params$lt_discrepancies, transformed_data$all_eigenvalues_cov,
                            params$SIGMA, transformed_data$bigM, params$SIGMA_init, params$x_hat,time,
                            transformed_data$new_data, transformed_data$observation_available)
+  if(sum(is.na(ret)) > 0){
+    browser()
+  }
   return(ret)
 }
 
@@ -230,9 +218,6 @@ get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the
 #'@export
 gen_sample <- function(x=1, ex.fit, transformed_data, time)
 {
-  if(!exists("KalmanFilter_back"))
-    rstan::expose_stan_functions(stanmodels$KF_back)
-
   params <- get_parameters(ex.fit, x)
 
   bigM = transformed_data$bigM
@@ -255,5 +240,8 @@ gen_sample <- function(x=1, ex.fit, transformed_data, time)
                                  params$SIGMA_init,
                                  params$x_hat, time, sam_y,
                                  observation_available)
+  if(sum(is.na(sam_x_hat)) > 0){
+    browser()
+  }
   return(list(sam_x=sam_x,sam_x_hat=sam_x_hat))
 }

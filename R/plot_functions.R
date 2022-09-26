@@ -13,13 +13,13 @@
 #'@export
 #'@examples
 #'\donttest{
-#'fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+#'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = priors)
-#'samples <- generate_sample(fit_sample, num_samples = 2000)
+#'                          priors = EnsemblePrior(4))
+#'samples <- generate_sample(fit)
 #'plot(samples)
 #'plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
 #'
@@ -29,9 +29,9 @@
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                                priors = priors,
+#'                                priors = EnsemblePrior(4),
 #'                                full_sample = FALSE)
-#'samples1 <- generate_sample(fit_point, num_samples = 2000)
+#'samples1 <- generate_sample(fit_point)
 #'plot(samples1, variable="Herring")
 #'}
 plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...){
@@ -48,8 +48,92 @@ plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...
   )
 }
 
+get_variable <- function(variable, observations){
+  ret <- variable
+  if(is.double(variable) || is.integer(variable)){
+    ret <- colnames(observations)[variable]
+    if (abs(variable - round(variable)) > .Machine$double.eps^0.5){
+      warning("Non-integer variable specified. variable will be taken as floor(variable). This is done by R, strange isn't it?!")
+    }
+  }
+
+  if (is.na(ret)
+      || !(ret %in% colnames(observations) )){
+    stop(paste0("Invalid variable. This should be the name of a variable or an index less than ",
+                ncol(observations) + 1))
+  }
+
+  return(ret)
+
+}
+
+construct_plot_dataframe <- function(samples, variable, quantiles){
+
+  fit <- samples@ensemble_fit
+  ensemble_data <- fit@ensemble_data
+  observations <- ensemble_data@observations[[1]]
+  simulators <- ensemble_data@simulators
+  stan_input <- ensemble_data@stan_input
+
+  #Observations
+  df <- tibble::rownames_to_column(observations)[, c("rowname", variable)]
+  colnames(df) <- c("Year", "Observations")
+
+  #Simulators
+  for (i in 1:length(simulators)) {
+    simulator <- simulators[[i]]
+
+    #Skip simulators that dont have the VoI
+    if (!(variable %in% colnames(simulator[[1]]))){
+      next
+    }
+
+    df_sim <- tibble::rownames_to_column(simulator[[1]], var = "Year")[, c("Year", variable)]
+    #Use the name if available
+    colnames(df_sim)[2] <- paste0("Simulator ", i)
+    if (length(simulator) == 3){
+      colnames(df_sim)[2] <- simulator[[3]]
+    }
+
+
+    df <- dplyr::full_join(df, df_sim, by = "Year")
+
+  }
+
+  #Ensemble
+  var_index = which(colnames(observations) == variable)
+  if(!is.null(fit@samples)){
+
+    # The ensemble outputs need to be the first columns to ensure they are coloured consistently when some variables are missing.
+    df <- apply(samples@mle[, var_index, ], 1, median, na.rm = TRUE) %>%
+      cbind(apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE)) %>%
+      cbind(apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE)) %>%
+      cbind(df) %>%
+      data.frame()
+
+    df$Year <- as.numeric(df$Year)
+    colnames(df)[1:3] <- c("Ensemble Model Prediction", "Lower", "Upper")
+
+    df <-  reshape2::melt(df, id.vars=c("Year", "Lower", "Upper"), variable.name="Simulator")
+
+    #We have zero-width ribbons for the models and observations to avoid clutterling the scene
+    df[df$Simulator != "Ensemble Model Prediction", c("Lower", "Upper")] <- df[df$Simulator != "Ensemble Model Prediction", "value"]
+
+  }else{
+    # df <- cbind(df, samples@mle[, var_index])
+    df <- cbind(samples@mle[, var_index], df)
+    df <- data.frame(df)
+    df$Year <- as.numeric(df$Year)
+    colnames(df)[1] <- "Ensemble Model Prediction"
+
+    df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
+
+  }
+  return(df)
+}
+
 # Fudge to get past "no visible binding for global variable" in R-CMD check
-utils::globalVariables(c("Year", "EnsembleLower", "EnsembleUpper", "value", "Simulator"))
+utils::globalVariables(c("Year", "Lower", "Upper", "value", "Simulator"))
 
 plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
 
@@ -59,64 +143,15 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
   simulators <- ensemble_data@simulators
   stan_input <- ensemble_data@stan_input
 
-  # Find which variable we are interested in
-  if(is.double(variable) || is.integer(variable)){
-    if (abs(variable - round(variable)) > .Machine$double.eps^0.5){
-      warning("Non-integer variable specified. variable will be taken as floor(variable). This is done by R, strange isn't it?!")
-    }
-    variable <- colnames(observations)[variable]
-  }
-  if (is.na(variable)
-      || !(variable %in% colnames(observations) )){
-    stop(paste0("Invalid variable. This should be the name of a species or an index less than ",
-                ncol(observations) + 1))
-  }
+  variable <- get_variable(variable, observations)
 
+  df <- construct_plot_dataframe(samples, variable, quantiles)
 
-  df <- tibble::rownames_to_column(observations)[, c("rowname", variable)]
-  colnames(df) <- c("Year", "Observations")
-  for (i in 1:length(simulators)) {
-    simulator <- simulators[[i]]
-
-    #Skip simulators that dont have the species
-    if (!(variable %in% colnames(simulator[[1]]))){
-      next
-    }
-    df_sim <- tibble::rownames_to_column(simulator[[1]], var = "Year")[, c("Year", variable)]
-    #Use the name if available
-    colnames(df_sim)[2] <- paste0("Simulator ", i)
-    if (length(simulator) == 3){
-      colnames(df_sim)[2] <- simulator[[3]]
-    }
-
-    df <- dplyr::full_join(df, df_sim, by = "Year")
-
-  }
   var_index = which(colnames(observations) == variable)
   if(!is.null(fit@samples)){
-    df <- cbind(df, apply(samples@mle[, var_index, ], 1, median))
-    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE))
-    df <- cbind(df, apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE))
-    df <- data.frame(df)
-    df$Year <- as.numeric(df$Year)
-    colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble Model Prediction", "EnsembleLower", "EnsembleUpper")
-
-    df_plot <-  reshape2::melt(df, id.vars=c("Year", "EnsembleLower", "EnsembleUpper"), variable.name="Simulator")
-
-    df_plot[df_plot$Simulator != "Ensemble Model Prediction", c("EnsembleLower", "EnsembleUpper")] <- c(NA, NA)
-    return(plot_values_sample_gg(df_plot, variable, ...))
-
-  }else{
-    df <- cbind(df, samples@mle[, var_index])
-    df <- data.frame(df)
-    df$Year <- as.numeric(df$Year)
-    colnames(df)[ncol(df)] <- "Ensemble Model Prediction"
-
-    df_plot <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
-    return(plot_values_optimised_gg(df_plot, variable, ...))
+    return(plot_values_sample_gg(df, variable))
   }
-
-
+  return(plot_values_optimised_gg(df, variable))
 }
 
 plot_values_optimised_gg<- function(df, title, ...){
@@ -125,5 +160,5 @@ plot_values_optimised_gg<- function(df, title, ...){
 }
 
 plot_values_sample_gg<- function(df, title, ...){
-    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`EnsembleLower`, ymax =`EnsembleUpper`, fill = `Simulator`), alpha=0.2))
+    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`Lower`, ymax =`Upper`, fill = `Simulator`), alpha=0.2))
 }

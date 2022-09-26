@@ -23,13 +23,13 @@ Plots the latent variables predicted by the ensemble model, along with simulator
 }
 \examples{
 \donttest{
-fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = priors)
-samples <- generate_sample(fit_sample, num_samples = 2000)
+                         priors = EnsemblePrior(4))
+samples <- generate_sample(fit)
 plot(samples)
 plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
 
@@ -39,9 +39,9 @@ fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
-                               priors = priors,
+                               priors = EnsemblePrior(4),
                                full_sample = FALSE)
-samples1 <- generate_sample(fit_point, num_samples = 2000)
+samples1 <- generate_sample(fit_point)
 plot(samples1, variable="Herring")
 }
 }

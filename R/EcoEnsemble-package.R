@@ -12,9 +12,14 @@
 #' @name EcoEnsemble-package
 #' @aliases EcoEnsemble
 #' @useDynLib EcoEnsemble, .registration = TRUE
-#' @import methods
-#' @import matrixcalc
 #' @import Rcpp
+#' @import methods
+#' @import dplyr
+#' @import ggplot2
+#' @import reshape2
+#' @import tibble
+#' @import cowplot
+#' @import matrixcalc
 #' @importFrom rstan sampling optimizing
 #'
 #' @references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. [https://mc-stan.org](https://mc-stan.org)

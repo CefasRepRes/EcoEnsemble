@@ -70,10 +70,10 @@
 #'   \item{`Cod`}{Spawning stock biomass of Cod, in log tonnes.}
 #'   \item{`Sole`}{Spawning stock biomass of Sole, in log tonnes.}
 #' }
-#' @references Herring Assessment Working Group for the Area South of 62 N (HAWG).Technical report,
+#' @references Herring Assessment Working Group for the Area South of 62 N (HAWG)(2020).Technical report,
 #' ICES Scientific Reports. ACOM:07. 960 pp, ICES, Copenhagen.
-#' @references Report of the Working Group on the Assessment of Demersal Stocks inthe North Sea and
-#' Skagerrak. Technical report, ICES Scientific Reports. ACOM:22.pp, ICES, Copenhagen.
+#' @references Report of the Working Group on the Assessment of Demersal Stocks in the North Sea and
+#' Skagerrak (2020). Technical report, ICES Scientific Reports. ACOM:22.pp, ICES, Copenhagen.
 "SSB_obs"
 
 
