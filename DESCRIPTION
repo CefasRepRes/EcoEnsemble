@@ -1,6 +1,6 @@
 Package: EcoEnsemble
 Title: A General Framework for Combining Ecosystem Models in R
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: 
     c(person(given = "James A.",
                 family = "Martindale",
@@ -43,21 +43,22 @@ SystemRequirements: GNU make
 Suggests: 
     rmarkdown,
     knitr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    mgcv
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Collate: 
+    'DiscrepancyPrior-IndLTPrior-class.R'
+    'DiscrepancyPrior-IndSTPrior-class.R'
+    'DiscrepancyPrior-ShaSTPrior-class.R'
+    'DiscrepancyPrior-TruthPrior-class.R'
     'EcoEnsemble-package.R'
     'EnsemblePrior-class.R'
     'EnsembleData-class.R'
     'EnsembleFit-class.R'
     'EnsembleSample-class.R'
-    'IndLTPrior-class.R'
-    'IndSTPrior-class.R'
     'Prior_sampling.R'
     'RcppExports.R'
-    'ShaSTPrior-class.R'
-    'TruthPrior-class.R'
     'data.R'
     'fit_ensemble.R'
     'generate_simulator_stan_data.R'

@@ -35,8 +35,13 @@ print(SSB_miz)
 |2050| 12.46509 |14.03027 |12.27422 |10.81003|
 
 
-To encode prior beliefs about how model discrepancies are related to one another, use the `EnsemblePrior()` constructor.
-<!-- TODO: Change this to hierarchical priors by default -->
+To encode prior beliefs about how model discrepancies are related to one another, use the `EnsemblePrior()` constructor. Default values are available.
+
+```{r}
+priors <- EnsemblePrior(4)
+```
+
+or custom priors can be specified.
 
 ``` {r}
 #Endoding prior beliefs. Details of the meanings of these terms can be found in the vignette or the documentation
@@ -55,6 +60,7 @@ priors <- EnsemblePrior(
   truth_params = TruthPrior(num_species, 10, list(3, 3), list(10, diag(num_species)))
 )
 ```
+
 This creates an `EnsemblePrior` object, which we can use to fit the ensemble model using the `fit_ensemble_model()` function and the data loaded with the package. When running a full MCMC sampling of the posterior, this step may take some time. Samples can then be generated from the resulting object using the `generate_sample()` function.
 
 

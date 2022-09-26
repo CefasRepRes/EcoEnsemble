@@ -54,54 +54,6 @@ correlation_prior <- function(params, form, type, allow_hierarchical){
   }
   return(ret)
 }
-#
-# generate_correlation_priors_stan_data <- function(prior_correlations){
-#   # Create the prior form identifier e.g. "lkj" becomes 0
-#   form_prior_ind_st <- correlation_form_prior(prior_correlations$ind_st_cor_form)
-#   form_prior_ind_lt <- correlation_form_prior(prior_correlations$ind_lt_cor_form)
-#   form_prior_sha_st <- correlation_form_prior(prior_correlations$sha_st_cor_form)
-#
-#   priors_data <- list(
-#     form_prior_ind_st = form_prior_ind_st,
-#     form_prior_ind_lt = form_prior_ind_lt,
-#     form_prior_sha_st = form_prior_sha_st
-#   )
-#
-#   priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_st_cor_params, form_prior_ind_st, "prior_ind_st_cor"))
-#   priors_data <- append(priors_data, correlation_prior(prior_correlations$ind_lt_cor_params, form_prior_ind_lt, "prior_ind_lt_cor"))
-#   priors_data <- append(priors_data, correlation_prior(prior_correlations$sha_st_cor_params, form_prior_sha_st, "prior_sha_st_cor"))
-#
-#   return(priors_data)
-# }
-#
-#
-#
-# # If only one of each inverse-gamma variable is provided, then repeat it for every species considered.
-# repeat_priors <- function(d, prior_params, nm, nm_var){
-#     if (is.list(prior_params) && length(prior_params) == 3 && is.list(prior_params[[2]]) && length(prior_params[[2]]) == 2){
-#       if(length(prior_params[[2]][[1]]) == 1 && length(prior_params[[2]][[2]]) == 1){
-#         if(d == 1){
-#           prior_params[[2]][[1]] <- array(prior_params[[2]][[1]], dim = 1)
-#           prior_params[[2]][[2]] <- array(prior_params[[2]][[2]], dim = 1)
-#
-#         }else{
-#           prior_params[[2]][[1]] <- rep(prior_params[[2]][[1]], d)
-#           prior_params[[2]][[2]] <- rep(prior_params[[2]][[2]], d)
-#
-#         }
-#       }
-#
-#       #JM: 06-05-2022 Short term parameters can be a different form, so don't do validation in this case
-#       #TODO: Change this to do proper validation.
-#       #if(length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d){
-#       if((length(prior_params[[2]][[1]]) != d || length(prior_params[[2]][[2]]) != d) && nm_var != "ind_st_params"){
-#         stop(paste0("Invalid inverse-gamma parameters for ", nm, " priors (the second element of the ", nm_var, " parameter). This should be a list of length 2, with each entry a numeric of length 1 or ", d, " specifying the shape and scale parameters of the inverse- gamma distributions."))
-#       }
-#
-#     }
-#   return(prior_params)
-# }
-
 
 #If the user only specifies one variance parameter common for each species, then we should repeat this for each species so that Stan can understand.
 repeat_variance_priors <- function(d, priors){

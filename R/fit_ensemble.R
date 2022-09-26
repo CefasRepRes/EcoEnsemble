@@ -7,20 +7,7 @@
 #'@examples
 #'mod <- get_mcmc_ensemble_model()
 #'
-#'num_species <- 4
-#'priors <- EnsemblePrior(
-#'  d = num_species,
-#'  ind_st_params = IndSTPrior("lkj",  list(3, 2), 3, AR_params = c(1,1)),
-#'  ind_lt_params = IndLTPrior(
-#'    "beta",
-#'    list(c(10,4,8, 7),c(2,3,1, 4)),
-#'    list(matrix(5, num_species, num_species),
-#'         matrix(0.5, num_species, num_species))
-#'  ),
-#'  sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
-#'  sha_lt_params = 5,
-#'  truth_params = TruthPrior(num_species, 10, list(3, 3), list(10, diag(num_species)))
-#')
+#'priors <- EnsemblePrior(4)
 #'ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
 #'                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
@@ -41,6 +28,7 @@ get_mcmc_ensemble_model <- function(){
 #'
 #'@inheritParams EnsembleData
 #'@param full_sample A `logical` that runs a full sampling of the posterior density of the ensemble model if `TRUE`. If `FALSE`, returns the point estimate which maximises the posterior density of the ensemble model.
+#'@param control If creating a full sample, this is a named `list` of paramaters to control Stan's sampling behaviour. See the documentation of the `stan()` function in the `rstan` package for details. The default value is `list(adapt_delta = 0.95)`. If optimizing, this value is ignored.
 #'@param ... Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.
 #'@inherit EnsembleData details
 #'@return An `EnsembleFit` object.
@@ -49,26 +37,13 @@ get_mcmc_ensemble_model <- function(){
 #'@export
 #'@examples
 #'\donttest{
-#' num_species <- 4
-#' priors <- EnsemblePrior(
-#'     d = num_species,
-#'     ind_st_params = list("lkj",  list(3, 2), 3),
-#'     ind_lt_params = list(
-#'        "beta",
-#'        list(c(10,4,8, 7),c(2,3,1, 4)),
-#'        list(matrix(5, num_species, num_species),
-#'             matrix(0.5, num_species, num_species))
-#'     ),
-#'     sha_st_params = list("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
-#'     sha_lt_params = 5,
-#'     truth_params = list(10, list(3, 3), list(10, diag(num_species)))
-#' )
+#'
 #' fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                      list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                      list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = priors,
+#'                          priors = EnsemblePrior(4),
 #'                          full_sample = FALSE) #Only optimise in this case
 #' #Run a full sample
 #' fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
@@ -76,11 +51,11 @@ get_mcmc_ensemble_model <- function(){
 #'                                      list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                      list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                      list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = priors,
-#'                          control=list(adapt_delta = 0.99)) # Additional Stan parameters.
+#'                          priors = EnsemblePrior(4),
+#'                          control = list(adapt_delta = 0.99)) # Additional Stan parameters.
 #'}
 fit_ensemble_model <- function(observations, simulators, priors,
-                               full_sample = TRUE, ...){
+                               full_sample = TRUE, control = list(adapt_delta = 0.95), ...){
 
   ens_data <- EnsembleData(observations, simulators, priors)
   stan_input <- ens_data@stan_input
@@ -94,7 +69,7 @@ fit_ensemble_model <- function(observations, simulators, priors,
 
   samples <- NULL; point_estimate <- NULL
   if(full_sample){
-    samples <- rstan::sampling(mod, data=stan_input,...)
+    samples <- rstan::sampling(mod, data=stan_input, control = control, ...)
   }else{
     point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
   }

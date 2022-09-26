@@ -45,7 +45,7 @@ functions{
 data{
   int <lower=0> N;   // Number of variables
   //int <lower=0> time;// How long the model is run for
-  
+
   /**
    * Observations
    */
@@ -255,6 +255,7 @@ model{
     //AR Parameters
     target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
+    ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);
     ind_lt_raw[i] ~ std_normal();
   }
 }

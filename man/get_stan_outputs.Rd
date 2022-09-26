@@ -61,28 +61,14 @@ Methods to generates samples of the latent variables from a fitted ensemble mode
 The samples are created using the methods described in Strickland et. al. (2009) and Durbin and Koopman (2002).
 }
 \examples{
-num_species <- 4
-priors <- EnsemblePrior(
- d = num_species,
- ind_st_params = IndSTPrior("lkj",  list(3, 2), 3, AR_params = c(1,1)),
- ind_lt_params = IndLTPrior(
-   "beta",
-   list(c(10,4,8, 7),c(2,3,1, 4)),
-   list(matrix(5, num_species, num_species),
-        matrix(0.5, num_species, num_species))
- ),
- sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(5, diag(num_species))),
- sha_lt_params = 5,
- truth_params = TruthPrior(num_species, 10, list(3, 3), list(10, diag(num_species)))
-)
 \donttest{
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
                                            list(SSB_lm,  Sigma_lm, "LeMans"),
                                            list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = priors)
-sample <- generate_sample(fit, num_samples = 2000)
+                         priors = EnsemblePrior(4))
+samples <- generate_sample(fit, num_samples = 2000)
 
 # A quicker way to get the MLE for the first sample from the ensemble
 transf_data <- get_transformed_data(fit)

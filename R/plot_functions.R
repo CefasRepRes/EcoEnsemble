@@ -13,13 +13,13 @@
 #'@export
 #'@examples
 #'\donttest{
-#'fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+#'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
 #'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = priors)
-#'samples <- generate_sample(fit_sample, num_samples = 2000)
+#'                          priors = EnsemblePrior(4))
+#'samples <- generate_sample(fit)
 #'plot(samples)
 #'plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
 #'
@@ -29,9 +29,9 @@
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
 #'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
 #'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                                priors = priors,
+#'                                priors = EnsemblePrior(4),
 #'                                full_sample = FALSE)
-#'samples1 <- generate_sample(fit_point, num_samples = 2000)
+#'samples1 <- generate_sample(fit_point)
 #'plot(samples1, variable="Herring")
 #'}
 plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...){
@@ -95,6 +95,7 @@ construct_plot_dataframe <- function(samples, variable, quantiles){
       colnames(df_sim)[2] <- simulator[[3]]
     }
 
+
     df <- dplyr::full_join(df, df_sim, by = "Year")
 
   }
@@ -102,24 +103,28 @@ construct_plot_dataframe <- function(samples, variable, quantiles){
   #Ensemble
   var_index = which(colnames(observations) == variable)
   if(!is.null(fit@samples)){
-    df <- df %>%
-      cbind(apply(samples@mle[, var_index, ], 1, median, na.rm = TRUE)) %>%
+
+    # The ensemble outputs need to be the first columns to ensure they are coloured consistently when some variables are missing.
+    df <- apply(samples@mle[, var_index, ], 1, median, na.rm = TRUE) %>%
       cbind(apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE)) %>%
       cbind(apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE)) %>%
+      cbind(df) %>%
       data.frame()
 
     df$Year <- as.numeric(df$Year)
-    colnames(df)[(ncol(df) - 2):ncol(df)] <- c("Ensemble Model Prediction", "Lower", "Upper")
+    colnames(df)[1:3] <- c("Ensemble Model Prediction", "Lower", "Upper")
 
     df <-  reshape2::melt(df, id.vars=c("Year", "Lower", "Upper"), variable.name="Simulator")
 
+    #We have zero-width ribbons for the models and observations to avoid clutterling the scene
     df[df$Simulator != "Ensemble Model Prediction", c("Lower", "Upper")] <- df[df$Simulator != "Ensemble Model Prediction", "value"]
 
   }else{
-    df <- cbind(df, samples@mle[, var_index])
+    # df <- cbind(df, samples@mle[, var_index])
+    df <- cbind(samples@mle[, var_index], df)
     df <- data.frame(df)
     df$Year <- as.numeric(df$Year)
-    colnames(df)[ncol(df)] <- "Ensemble Model Prediction"
+    colnames(df)[1] <- "Ensemble Model Prediction"
 
     df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
 

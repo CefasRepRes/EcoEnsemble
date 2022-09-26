@@ -262,11 +262,11 @@ transformed parameters{
   vector [N] ind_lt_sd = sqrt(ind_lt_var);
   matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
   matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
-  
-  
+
+
   vector [(M+2) * N] x_hat = append_row(prior_y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  
+
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
@@ -350,6 +350,7 @@ model{
     //AR Parameters
     target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
+    ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);
     ind_lt_raw[i] ~ std_normal();
   }
 

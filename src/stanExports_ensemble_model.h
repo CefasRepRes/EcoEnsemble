@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_ensemble_model");
-    reader.add_event(380, 378, "end", "model_ensemble_model");
+    reader.add_event(366, 364, "end", "model_ensemble_model");
     return reader;
 }
 template <typename T0__>
@@ -554,22 +554,22 @@ public:
             check_greater_or_equal(function__, "form_prior_sha_st", form_prior_sha_st, 0);
             check_less_or_equal(function__, "form_prior_sha_st", form_prior_sha_st, 2);
             current_statement_begin__ = 129;
-            validate_non_negative_index("prior_ind_st_var_a", "(logical_neq(form_prior_ind_st, 3) ? N : 0 )", (logical_neq(form_prior_ind_st, 3) ? N : 0 ));
-            context__.validate_dims("data initialization", "prior_ind_st_var_a", "vector_d", context__.to_vec((logical_neq(form_prior_ind_st, 3) ? N : 0 )));
-            prior_ind_st_var_a = Eigen::Matrix<double, Eigen::Dynamic, 1>((logical_neq(form_prior_ind_st, 3) ? N : 0 ));
+            validate_non_negative_index("prior_ind_st_var_a", "N", N);
+            context__.validate_dims("data initialization", "prior_ind_st_var_a", "vector_d", context__.to_vec(N));
+            prior_ind_st_var_a = Eigen::Matrix<double, Eigen::Dynamic, 1>(N);
             vals_r__ = context__.vals_r("prior_ind_st_var_a");
             pos__ = 0;
-            size_t prior_ind_st_var_a_j_1_max__ = (logical_neq(form_prior_ind_st, 3) ? N : 0 );
+            size_t prior_ind_st_var_a_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < prior_ind_st_var_a_j_1_max__; ++j_1__) {
                 prior_ind_st_var_a(j_1__) = vals_r__[pos__++];
             }
             current_statement_begin__ = 130;
-            validate_non_negative_index("prior_ind_st_var_b", "(logical_neq(form_prior_ind_st, 3) ? N : 0 )", (logical_neq(form_prior_ind_st, 3) ? N : 0 ));
-            context__.validate_dims("data initialization", "prior_ind_st_var_b", "vector_d", context__.to_vec((logical_neq(form_prior_ind_st, 3) ? N : 0 )));
-            prior_ind_st_var_b = Eigen::Matrix<double, Eigen::Dynamic, 1>((logical_neq(form_prior_ind_st, 3) ? N : 0 ));
+            validate_non_negative_index("prior_ind_st_var_b", "N", N);
+            context__.validate_dims("data initialization", "prior_ind_st_var_b", "vector_d", context__.to_vec(N));
+            prior_ind_st_var_b = Eigen::Matrix<double, Eigen::Dynamic, 1>(N);
             vals_r__ = context__.vals_r("prior_ind_st_var_b");
             pos__ = 0;
-            size_t prior_ind_st_var_b_j_1_max__ = (logical_neq(form_prior_ind_st, 3) ? N : 0 );
+            size_t prior_ind_st_var_b_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < prior_ind_st_var_b_j_1_max__; ++j_1__) {
                 prior_ind_st_var_b(j_1__) = vals_r__[pos__++];
             }
@@ -880,7 +880,6 @@ public:
             for (size_t j_1__ = 0; j_1__ < prior_y_init_mean_j_1_max__; ++j_1__) {
                 prior_y_init_mean(j_1__) = vals_r__[pos__++];
             }
-            check_greater_or_equal(function__, "prior_y_init_mean", prior_y_init_mean, 0);
             current_statement_begin__ = 176;
             validate_non_negative_index("prior_y_init_var", "N", N);
             context__.validate_dims("data initialization", "prior_y_init_var", "vector_d", context__.to_vec(N));
@@ -891,6 +890,7 @@ public:
             for (size_t j_1__ = 0; j_1__ < prior_y_init_var_j_1_max__; ++j_1__) {
                 prior_y_init_var(j_1__) = vals_r__[pos__++];
             }
+            check_greater_or_equal(function__, "prior_y_init_var", prior_y_init_var, 0);
             current_statement_begin__ = 177;
             context__.validate_dims("data initialization", "prior_sigma_t_inv_wish_nu", "double", context__.to_vec());
             prior_sigma_t_inv_wish_nu = double(0);
@@ -1072,44 +1072,40 @@ public:
             validate_non_negative_index("ind_st_ar_param", "N", N);
             validate_non_negative_index("ind_st_ar_param", "M", M);
             num_params_r__ += (N * M);
-            current_statement_begin__ = 244;
+            current_statement_begin__ = 240;
             validate_non_negative_index("ind_st_var", "N", N);
             validate_non_negative_index("ind_st_var", "M", M);
             num_params_r__ += (N * M);
-            current_statement_begin__ = 245;
-            validate_non_negative_index("log_ind_st_var", "(logical_eq(form_prior_ind_st, 3) ? N : 0 )", (logical_eq(form_prior_ind_st, 3) ? N : 0 ));
-            validate_non_negative_index("log_ind_st_var", "M", M);
-            num_params_r__ += ((logical_eq(form_prior_ind_st, 3) ? N : 0 ) * M);
-            current_statement_begin__ = 247;
+            current_statement_begin__ = 241;
             validate_non_negative_index("ind_st_cor", "N", N);
             validate_non_negative_index("ind_st_cor", "N", N);
             validate_non_negative_index("ind_st_cor", "M", M);
             num_params_r__ += (((N * (N - 1)) / 2) * M);
-            current_statement_begin__ = 248;
+            current_statement_begin__ = 242;
             validate_non_negative_index("ind_lt_raw", "N", N);
             validate_non_negative_index("ind_lt_raw", "M", M);
             num_params_r__ += (N * M);
-            current_statement_begin__ = 249;
+            current_statement_begin__ = 243;
             validate_non_negative_index("ind_lt_var", "N", N);
             num_params_r__ += N;
-            current_statement_begin__ = 250;
+            current_statement_begin__ = 244;
             validate_non_negative_index("ind_lt_cor", "N", N);
             validate_non_negative_index("ind_lt_cor", "N", N);
             num_params_r__ += ((N * (N - 1)) / 2);
-            current_statement_begin__ = 252;
+            current_statement_begin__ = 246;
             validate_non_negative_index("sha_st_ar_param", "N", N);
             num_params_r__ += N;
-            current_statement_begin__ = 253;
+            current_statement_begin__ = 247;
             validate_non_negative_index("sha_st_var", "N", N);
             num_params_r__ += N;
-            current_statement_begin__ = 254;
+            current_statement_begin__ = 248;
             validate_non_negative_index("sha_st_cor", "N", N);
             validate_non_negative_index("sha_st_cor", "N", N);
             num_params_r__ += ((N * (N - 1)) / 2);
-            current_statement_begin__ = 255;
+            current_statement_begin__ = 249;
             validate_non_negative_index("sha_lt_raw", "N", N);
             num_params_r__ += N;
-            current_statement_begin__ = 260;
+            current_statement_begin__ = 254;
             validate_non_negative_index("SIGMA_t", "N", N);
             validate_non_negative_index("SIGMA_t", "N", N);
             num_params_r__ += (N + ((N * (N - 1)) / 2));
@@ -1154,7 +1150,7 @@ public:
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_st_ar_param: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
-        current_statement_begin__ = 244;
+        current_statement_begin__ = 240;
         if (!(context__.contains_r("ind_st_var")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable ind_st_var missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("ind_st_var");
@@ -1178,31 +1174,7 @@ public:
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_st_var: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
-        current_statement_begin__ = 245;
-        if (!(context__.contains_r("log_ind_st_var")))
-            stan::lang::rethrow_located(std::runtime_error(std::string("Variable log_ind_st_var missing")), current_statement_begin__, prog_reader__());
-        vals_r__ = context__.vals_r("log_ind_st_var");
-        pos__ = 0U;
-        validate_non_negative_index("log_ind_st_var", "(logical_eq(form_prior_ind_st, 3) ? N : 0 )", (logical_eq(form_prior_ind_st, 3) ? N : 0 ));
-        validate_non_negative_index("log_ind_st_var", "M", M);
-        context__.validate_dims("parameter initialization", "log_ind_st_var", "vector_d", context__.to_vec(M,(logical_eq(form_prior_ind_st, 3) ? N : 0 )));
-        std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1> > log_ind_st_var(M, Eigen::Matrix<double, Eigen::Dynamic, 1>((logical_eq(form_prior_ind_st, 3) ? N : 0 )));
-        size_t log_ind_st_var_j_1_max__ = (logical_eq(form_prior_ind_st, 3) ? N : 0 );
-        size_t log_ind_st_var_k_0_max__ = M;
-        for (size_t j_1__ = 0; j_1__ < log_ind_st_var_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < log_ind_st_var_k_0_max__; ++k_0__) {
-                log_ind_st_var[k_0__](j_1__) = vals_r__[pos__++];
-            }
-        }
-        size_t log_ind_st_var_i_0_max__ = M;
-        for (size_t i_0__ = 0; i_0__ < log_ind_st_var_i_0_max__; ++i_0__) {
-            try {
-                writer__.vector_unconstrain(log_ind_st_var[i_0__]);
-            } catch (const std::exception& e) {
-                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable log_ind_st_var: ") + e.what()), current_statement_begin__, prog_reader__());
-            }
-        }
-        current_statement_begin__ = 247;
+        current_statement_begin__ = 241;
         if (!(context__.contains_r("ind_st_cor")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable ind_st_cor missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("ind_st_cor");
@@ -1230,7 +1202,7 @@ public:
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_st_cor: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
-        current_statement_begin__ = 248;
+        current_statement_begin__ = 242;
         if (!(context__.contains_r("ind_lt_raw")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable ind_lt_raw missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("ind_lt_raw");
@@ -1254,7 +1226,7 @@ public:
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_lt_raw: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
-        current_statement_begin__ = 249;
+        current_statement_begin__ = 243;
         if (!(context__.contains_r("ind_lt_var")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable ind_lt_var missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("ind_lt_var");
@@ -1271,7 +1243,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_lt_var: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 250;
+        current_statement_begin__ = 244;
         if (!(context__.contains_r("ind_lt_cor")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable ind_lt_cor missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("ind_lt_cor");
@@ -1292,7 +1264,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable ind_lt_cor: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 252;
+        current_statement_begin__ = 246;
         if (!(context__.contains_r("sha_st_ar_param")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sha_st_ar_param missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sha_st_ar_param");
@@ -1309,7 +1281,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sha_st_ar_param: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 253;
+        current_statement_begin__ = 247;
         if (!(context__.contains_r("sha_st_var")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sha_st_var missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sha_st_var");
@@ -1326,7 +1298,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sha_st_var: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 254;
+        current_statement_begin__ = 248;
         if (!(context__.contains_r("sha_st_cor")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sha_st_cor missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sha_st_cor");
@@ -1347,7 +1319,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sha_st_cor: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 255;
+        current_statement_begin__ = 249;
         if (!(context__.contains_r("sha_lt_raw")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sha_lt_raw missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sha_lt_raw");
@@ -1364,7 +1336,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sha_lt_raw: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 260;
+        current_statement_begin__ = 254;
         if (!(context__.contains_r("SIGMA_t")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable SIGMA_t missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("SIGMA_t");
@@ -1420,7 +1392,7 @@ public:
                 else
                     ind_st_ar_param.push_back(in__.vector_lub_constrain(-(1), 1, N));
             }
-            current_statement_begin__ = 244;
+            current_statement_begin__ = 240;
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > ind_st_var;
             size_t ind_st_var_d_0_max__ = M;
             ind_st_var.reserve(ind_st_var_d_0_max__);
@@ -1430,17 +1402,7 @@ public:
                 else
                     ind_st_var.push_back(in__.vector_lb_constrain(0, N));
             }
-            current_statement_begin__ = 245;
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > log_ind_st_var;
-            size_t log_ind_st_var_d_0_max__ = M;
-            log_ind_st_var.reserve(log_ind_st_var_d_0_max__);
-            for (size_t d_0__ = 0; d_0__ < log_ind_st_var_d_0_max__; ++d_0__) {
-                if (jacobian__)
-                    log_ind_st_var.push_back(in__.vector_constrain((logical_eq(form_prior_ind_st, 3) ? N : 0 ), lp__));
-                else
-                    log_ind_st_var.push_back(in__.vector_constrain((logical_eq(form_prior_ind_st, 3) ? N : 0 )));
-            }
-            current_statement_begin__ = 247;
+            current_statement_begin__ = 241;
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> > ind_st_cor;
             size_t ind_st_cor_d_0_max__ = M;
             ind_st_cor.reserve(ind_st_cor_d_0_max__);
@@ -1450,7 +1412,7 @@ public:
                 else
                     ind_st_cor.push_back(in__.corr_matrix_constrain(N));
             }
-            current_statement_begin__ = 248;
+            current_statement_begin__ = 242;
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > ind_lt_raw;
             size_t ind_lt_raw_d_0_max__ = M;
             ind_lt_raw.reserve(ind_lt_raw_d_0_max__);
@@ -1460,49 +1422,49 @@ public:
                 else
                     ind_lt_raw.push_back(in__.vector_constrain(N));
             }
-            current_statement_begin__ = 249;
+            current_statement_begin__ = 243;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ind_lt_var;
             (void) ind_lt_var;  // dummy to suppress unused var warning
             if (jacobian__)
                 ind_lt_var = in__.vector_lb_constrain(0, N, lp__);
             else
                 ind_lt_var = in__.vector_lb_constrain(0, N);
-            current_statement_begin__ = 250;
+            current_statement_begin__ = 244;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> ind_lt_cor;
             (void) ind_lt_cor;  // dummy to suppress unused var warning
             if (jacobian__)
                 ind_lt_cor = in__.corr_matrix_constrain(N, lp__);
             else
                 ind_lt_cor = in__.corr_matrix_constrain(N);
-            current_statement_begin__ = 252;
+            current_statement_begin__ = 246;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sha_st_ar_param;
             (void) sha_st_ar_param;  // dummy to suppress unused var warning
             if (jacobian__)
                 sha_st_ar_param = in__.vector_lub_constrain(-(1), 1, N, lp__);
             else
                 sha_st_ar_param = in__.vector_lub_constrain(-(1), 1, N);
-            current_statement_begin__ = 253;
+            current_statement_begin__ = 247;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sha_st_var;
             (void) sha_st_var;  // dummy to suppress unused var warning
             if (jacobian__)
                 sha_st_var = in__.vector_lb_constrain(0, N, lp__);
             else
                 sha_st_var = in__.vector_lb_constrain(0, N);
-            current_statement_begin__ = 254;
+            current_statement_begin__ = 248;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> sha_st_cor;
             (void) sha_st_cor;  // dummy to suppress unused var warning
             if (jacobian__)
                 sha_st_cor = in__.corr_matrix_constrain(N, lp__);
             else
                 sha_st_cor = in__.corr_matrix_constrain(N);
-            current_statement_begin__ = 255;
+            current_statement_begin__ = 249;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sha_lt_raw;
             (void) sha_lt_raw;  // dummy to suppress unused var warning
             if (jacobian__)
                 sha_lt_raw = in__.vector_constrain(N, lp__);
             else
                 sha_lt_raw = in__.vector_constrain(N);
-            current_statement_begin__ = 260;
+            current_statement_begin__ = 254;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> SIGMA_t;
             (void) SIGMA_t;  // dummy to suppress unused var warning
             if (jacobian__)
@@ -1510,164 +1472,164 @@ public:
             else
                 SIGMA_t = in__.cov_matrix_constrain(N);
             // transformed parameters
-            current_statement_begin__ = 264;
+            current_statement_begin__ = 258;
             validate_non_negative_index("SIGMA_x", "N", N);
             validate_non_negative_index("SIGMA_x", "N", N);
             validate_non_negative_index("SIGMA_x", "M", M);
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> > SIGMA_x(M, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>(N, N));
             stan::math::initialize(SIGMA_x, DUMMY_VAR__);
             stan::math::fill(SIGMA_x, DUMMY_VAR__);
-            current_statement_begin__ = 265;
+            current_statement_begin__ = 259;
             validate_non_negative_index("ind_st_sd", "N", N);
             validate_non_negative_index("ind_st_sd", "M", M);
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > ind_st_sd(M, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>(N));
             stan::math::initialize(ind_st_sd, DUMMY_VAR__);
             stan::math::fill(ind_st_sd, DUMMY_VAR__);
-            current_statement_begin__ = 266;
+            current_statement_begin__ = 260;
             validate_non_negative_index("sha_lt", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sha_lt(N);
             stan::math::initialize(sha_lt, DUMMY_VAR__);
             stan::math::fill(sha_lt, DUMMY_VAR__);
             stan::math::assign(sha_lt,elt_multiply(prior_sha_lt_sd, sha_lt_raw));
-            current_statement_begin__ = 267;
+            current_statement_begin__ = 261;
             validate_non_negative_index("ind_lt", "N", N);
             validate_non_negative_index("ind_lt", "M", M);
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > ind_lt(M, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>(N));
             stan::math::initialize(ind_lt, DUMMY_VAR__);
             stan::math::fill(ind_lt, DUMMY_VAR__);
-            current_statement_begin__ = 272;
+            current_statement_begin__ = 262;
             validate_non_negative_index("ind_lt_sd", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ind_lt_sd(N);
             stan::math::initialize(ind_lt_sd, DUMMY_VAR__);
             stan::math::fill(ind_lt_sd, DUMMY_VAR__);
             stan::math::assign(ind_lt_sd,stan::math::sqrt(ind_lt_var));
-            current_statement_begin__ = 273;
+            current_statement_begin__ = 263;
             validate_non_negative_index("ind_lt_covar", "N", N);
             validate_non_negative_index("ind_lt_covar", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> ind_lt_covar(N, N);
             stan::math::initialize(ind_lt_covar, DUMMY_VAR__);
             stan::math::fill(ind_lt_covar, DUMMY_VAR__);
             stan::math::assign(ind_lt_covar,diag_post_multiply(diag_pre_multiply(ind_lt_sd, ind_lt_cor), ind_lt_sd));
-            current_statement_begin__ = 274;
+            current_statement_begin__ = 264;
             validate_non_negative_index("ind_lt_cov_cholesky", "N", N);
             validate_non_negative_index("ind_lt_cov_cholesky", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> ind_lt_cov_cholesky(N, N);
             stan::math::initialize(ind_lt_cov_cholesky, DUMMY_VAR__);
             stan::math::fill(ind_lt_cov_cholesky, DUMMY_VAR__);
             stan::math::assign(ind_lt_cov_cholesky,cholesky_decompose(ind_lt_covar));
-            current_statement_begin__ = 281;
+            current_statement_begin__ = 267;
             validate_non_negative_index("x_hat", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> x_hat(((M + 2) * N));
             stan::math::initialize(x_hat, DUMMY_VAR__);
             stan::math::fill(x_hat, DUMMY_VAR__);
             stan::math::assign(x_hat,append_row(prior_y_init_mean, rep_vector(0.0, (N * (M + 1)))));
-            current_statement_begin__ = 282;
+            current_statement_begin__ = 268;
             validate_non_negative_index("SIGMA_init", "((M + 2) * N)", ((M + 2) * N));
             validate_non_negative_index("SIGMA_init", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> SIGMA_init(((M + 2) * N), ((M + 2) * N));
             stan::math::initialize(SIGMA_init, DUMMY_VAR__);
             stan::math::fill(SIGMA_init, DUMMY_VAR__);
             stan::math::assign(SIGMA_init,rep_matrix(0, ((M + 2) * N), ((M + 2) * N)));
-            current_statement_begin__ = 285;
+            current_statement_begin__ = 270;
             validate_non_negative_index("sha_st_sd", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sha_st_sd(N);
             stan::math::initialize(sha_st_sd, DUMMY_VAR__);
             stan::math::fill(sha_st_sd, DUMMY_VAR__);
             stan::math::assign(sha_st_sd,stan::math::sqrt(sha_st_var));
-            current_statement_begin__ = 286;
+            current_statement_begin__ = 271;
             validate_non_negative_index("SIGMA_mu", "N", N);
             validate_non_negative_index("SIGMA_mu", "N", N);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> SIGMA_mu(N, N);
             stan::math::initialize(SIGMA_mu, DUMMY_VAR__);
             stan::math::fill(SIGMA_mu, DUMMY_VAR__);
             stan::math::assign(SIGMA_mu,diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd));
-            current_statement_begin__ = 295;
+            current_statement_begin__ = 280;
             validate_non_negative_index("SIGMA", "((M + 2) * N)", ((M + 2) * N));
             validate_non_negative_index("SIGMA", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> SIGMA(((M + 2) * N), ((M + 2) * N));
             stan::math::initialize(SIGMA, DUMMY_VAR__);
             stan::math::fill(SIGMA, DUMMY_VAR__);
             stan::math::assign(SIGMA,rep_matrix(0, ((M + 2) * N), ((M + 2) * N)));
-            current_statement_begin__ = 296;
+            current_statement_begin__ = 281;
             validate_non_negative_index("lt_discrepancies", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> lt_discrepancies(((M + 2) * N));
             stan::math::initialize(lt_discrepancies, DUMMY_VAR__);
             stan::math::fill(lt_discrepancies, DUMMY_VAR__);
-            current_statement_begin__ = 297;
+            current_statement_begin__ = 282;
             validate_non_negative_index("AR_params", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> AR_params(((M + 2) * N));
             stan::math::initialize(AR_params, DUMMY_VAR__);
             stan::math::fill(AR_params, DUMMY_VAR__);
             // transformed parameters block statements
-            current_statement_begin__ = 300;
+            current_statement_begin__ = 285;
             stan::model::assign(SIGMA, 
                         stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::nil_index_list())), 
                         SIGMA_t, 
                         "assigning variable SIGMA");
-            current_statement_begin__ = 301;
+            current_statement_begin__ = 286;
             stan::model::assign(SIGMA, 
                         stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::nil_index_list())), 
                         SIGMA_mu, 
                         "assigning variable SIGMA");
-            current_statement_begin__ = 302;
+            current_statement_begin__ = 287;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 303;
+                current_statement_begin__ = 288;
                 stan::model::assign(ind_st_sd, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             stan::math::sqrt(get_base1(ind_st_var, i, "ind_st_var", 1)), 
                             "assigning variable ind_st_sd");
-                current_statement_begin__ = 305;
+                current_statement_begin__ = 290;
                 stan::model::assign(SIGMA_x, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             diag_post_multiply(diag_pre_multiply(get_base1(ind_st_sd, i, "ind_st_sd", 1), get_base1(ind_st_cor, i, "ind_st_cor", 1)), get_base1(ind_st_sd, i, "ind_st_sd", 1)), 
                             "assigning variable SIGMA_x");
-                current_statement_begin__ = 306;
+                current_statement_begin__ = 291;
                 stan::model::assign(SIGMA, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list())), 
                             get_base1(SIGMA_x, i, "SIGMA_x", 1), 
                             "assigning variable SIGMA");
             }
-            current_statement_begin__ = 310;
+            current_statement_begin__ = 295;
             stan::model::assign(SIGMA_init, 
                         stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::nil_index_list())), 
                         diag_matrix(prior_y_init_var), 
                         "assigning variable SIGMA_init");
-            current_statement_begin__ = 311;
+            current_statement_begin__ = 296;
             stan::model::assign(SIGMA_init, 
                         stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::nil_index_list())), 
                         elt_divide(SIGMA_mu, subtract(1, multiply(sha_st_ar_param, transpose(sha_st_ar_param)))), 
                         "assigning variable SIGMA_init");
-            current_statement_begin__ = 312;
+            current_statement_begin__ = 297;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 313;
+                current_statement_begin__ = 298;
                 stan::model::assign(SIGMA_init, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list())), 
                             elt_divide(get_base1(SIGMA_x, i, "SIGMA_x", 1), subtract(1, multiply(get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1), transpose(get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1))))), 
                             "assigning variable SIGMA_init");
             }
-            current_statement_begin__ = 318;
+            current_statement_begin__ = 303;
             stan::model::assign(lt_discrepancies, 
                         stan::model::cons_list(stan::model::index_min_max(1, (2 * N)), stan::model::nil_index_list()), 
                         append_row(rep_vector(0.0, N), sha_lt), 
                         "assigning variable lt_discrepancies");
-            current_statement_begin__ = 319;
+            current_statement_begin__ = 304;
             stan::model::assign(AR_params, 
                         stan::model::cons_list(stan::model::index_min_max(1, (2 * N)), stan::model::nil_index_list()), 
                         append_row(rep_vector(1.0, N), sha_st_ar_param), 
                         "assigning variable AR_params");
-            current_statement_begin__ = 320;
+            current_statement_begin__ = 305;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 321;
+                current_statement_begin__ = 306;
                 stan::model::assign(ind_lt, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             multiply(ind_lt_cov_cholesky, get_base1(ind_lt_raw, i, "ind_lt_raw", 1)), 
                             "assigning variable ind_lt");
-                current_statement_begin__ = 322;
+                current_statement_begin__ = 307;
                 stan::model::assign(lt_discrepancies, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list()), 
                             get_base1(ind_lt, i, "ind_lt", 1), 
                             "assigning variable lt_discrepancies");
-                current_statement_begin__ = 323;
+                current_statement_begin__ = 308;
                 stan::model::assign(AR_params, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list()), 
                             get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1), 
@@ -1676,7 +1638,7 @@ public:
             // validate transformed parameters
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 264;
+            current_statement_begin__ = 258;
             size_t SIGMA_x_k_0_max__ = M;
             size_t SIGMA_x_j_1_max__ = N;
             size_t SIGMA_x_j_2_max__ = N;
@@ -1691,7 +1653,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 265;
+            current_statement_begin__ = 259;
             size_t ind_st_sd_k_0_max__ = M;
             size_t ind_st_sd_j_1_max__ = N;
             for (size_t k_0__ = 0; k_0__ < ind_st_sd_k_0_max__; ++k_0__) {
@@ -1703,7 +1665,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 266;
+            current_statement_begin__ = 260;
             size_t sha_lt_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < sha_lt_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(sha_lt(j_1__))) {
@@ -1712,7 +1674,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sha_lt: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 267;
+            current_statement_begin__ = 261;
             size_t ind_lt_k_0_max__ = M;
             size_t ind_lt_j_1_max__ = N;
             for (size_t k_0__ = 0; k_0__ < ind_lt_k_0_max__; ++k_0__) {
@@ -1724,7 +1686,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 272;
+            current_statement_begin__ = 262;
             size_t ind_lt_sd_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < ind_lt_sd_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(ind_lt_sd(j_1__))) {
@@ -1733,7 +1695,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable ind_lt_sd: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 273;
+            current_statement_begin__ = 263;
             size_t ind_lt_covar_j_1_max__ = N;
             size_t ind_lt_covar_j_2_max__ = N;
             for (size_t j_1__ = 0; j_1__ < ind_lt_covar_j_1_max__; ++j_1__) {
@@ -1745,7 +1707,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 274;
+            current_statement_begin__ = 264;
             size_t ind_lt_cov_cholesky_j_1_max__ = N;
             size_t ind_lt_cov_cholesky_j_2_max__ = N;
             for (size_t j_1__ = 0; j_1__ < ind_lt_cov_cholesky_j_1_max__; ++j_1__) {
@@ -1757,7 +1719,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 281;
+            current_statement_begin__ = 267;
             size_t x_hat_j_1_max__ = ((M + 2) * N);
             for (size_t j_1__ = 0; j_1__ < x_hat_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(x_hat(j_1__))) {
@@ -1766,7 +1728,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable x_hat: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 282;
+            current_statement_begin__ = 268;
             size_t SIGMA_init_j_1_max__ = ((M + 2) * N);
             size_t SIGMA_init_j_2_max__ = ((M + 2) * N);
             for (size_t j_1__ = 0; j_1__ < SIGMA_init_j_1_max__; ++j_1__) {
@@ -1778,7 +1740,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 285;
+            current_statement_begin__ = 270;
             size_t sha_st_sd_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < sha_st_sd_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(sha_st_sd(j_1__))) {
@@ -1787,7 +1749,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sha_st_sd: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 286;
+            current_statement_begin__ = 271;
             size_t SIGMA_mu_j_1_max__ = N;
             size_t SIGMA_mu_j_2_max__ = N;
             for (size_t j_1__ = 0; j_1__ < SIGMA_mu_j_1_max__; ++j_1__) {
@@ -1799,7 +1761,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 295;
+            current_statement_begin__ = 280;
             size_t SIGMA_j_1_max__ = ((M + 2) * N);
             size_t SIGMA_j_2_max__ = ((M + 2) * N);
             for (size_t j_1__ = 0; j_1__ < SIGMA_j_1_max__; ++j_1__) {
@@ -1811,7 +1773,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 296;
+            current_statement_begin__ = 281;
             size_t lt_discrepancies_j_1_max__ = ((M + 2) * N);
             for (size_t j_1__ = 0; j_1__ < lt_discrepancies_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(lt_discrepancies(j_1__))) {
@@ -1820,7 +1782,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable lt_discrepancies: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 297;
+            current_statement_begin__ = 282;
             size_t AR_params_j_1_max__ = ((M + 2) * N);
             for (size_t j_1__ = 0; j_1__ < AR_params_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(AR_params(j_1__))) {
@@ -1830,46 +1792,48 @@ public:
                 }
             }
             // model body
-            current_statement_begin__ = 330;
+            current_statement_begin__ = 316;
             lp_accum__.add(inv_wishart_log<propto__>(SIGMA_t, prior_sigma_t_inv_wish_nu, prior_sigma_t_inv_wish_sigma));
-            current_statement_begin__ = 334;
+            current_statement_begin__ = 320;
             lp_accum__.add(std_normal_log<propto__>(sha_lt_raw));
-            current_statement_begin__ = 335;
+            current_statement_begin__ = 321;
             lp_accum__.add(gamma_log<propto__>(sha_st_var, prior_sha_st_var_a, prior_sha_st_var_b));
-            current_statement_begin__ = 337;
+            current_statement_begin__ = 323;
             lp_accum__.add(beta_log(divide(add(sha_st_ar_param, 1), 2), prior_sha_st_ar_alpha, prior_sha_st_ar_beta));
-            current_statement_begin__ = 340;
+            current_statement_begin__ = 326;
             if (as_bool(logical_eq(form_prior_sha_st, 0))) {
-                current_statement_begin__ = 341;
+                current_statement_begin__ = 327;
                 lp_accum__.add(lkj_corr_log<propto__>(sha_st_cor, get_base1(prior_sha_st_cor_lkj, 1, "prior_sha_st_cor_lkj", 1)));
             } else if (as_bool(logical_eq(form_prior_sha_st, 1))) {
-                current_statement_begin__ = 343;
+                current_statement_begin__ = 329;
                 lp_accum__.add(inv_wishart_log<propto__>(sha_st_cor, get_base1(prior_sha_st_cor_wish_nu, 1, "prior_sha_st_cor_wish_nu", 1), prior_sha_st_cor_wish_sigma));
             } else {
-                current_statement_begin__ = 345;
+                current_statement_begin__ = 331;
                 lp_accum__.add(priors_cor_beta(sha_st_cor, N, prior_sha_st_cor_beta_1, prior_sha_st_cor_beta_2, pstream__));
             }
-            current_statement_begin__ = 352;
+            current_statement_begin__ = 338;
             lp_accum__.add(gamma_log<propto__>(ind_lt_var, prior_ind_lt_var_a, prior_ind_lt_var_b));
-            current_statement_begin__ = 354;
+            current_statement_begin__ = 340;
             if (as_bool(logical_eq(form_prior_ind_lt, 0))) {
-                current_statement_begin__ = 355;
+                current_statement_begin__ = 341;
                 lp_accum__.add(lkj_corr_log<propto__>(ind_lt_cor, get_base1(prior_ind_lt_cor_lkj, 1, "prior_ind_lt_cor_lkj", 1)));
             } else if (as_bool(logical_eq(form_prior_ind_lt, 1))) {
-                current_statement_begin__ = 357;
+                current_statement_begin__ = 343;
                 lp_accum__.add(inv_wishart_log<propto__>(ind_lt_cor, get_base1(prior_ind_lt_cor_wish_nu, 1, "prior_ind_lt_cor_wish_nu", 1), prior_ind_lt_cor_wish_sigma));
             } else {
-                current_statement_begin__ = 359;
+                current_statement_begin__ = 345;
                 lp_accum__.add(priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2, pstream__));
             }
-            current_statement_begin__ = 363;
+            current_statement_begin__ = 349;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 365;
+                current_statement_begin__ = 351;
                 lp_accum__.add(beta_log(divide(add(get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1), 1), 2), prior_ind_st_ar_alpha, prior_ind_st_ar_beta));
-                current_statement_begin__ = 368;
+                current_statement_begin__ = 353;
+                lp_accum__.add(gamma_log<propto__>(get_base1(ind_st_var, i, "ind_st_var", 1), prior_ind_st_var_a, prior_ind_st_var_b));
+                current_statement_begin__ = 354;
                 lp_accum__.add(std_normal_log<propto__>(get_base1(ind_lt_raw, i, "ind_lt_raw", 1)));
             }
-            current_statement_begin__ = 376;
+            current_statement_begin__ = 362;
             lp_accum__.add(KalmanFilter_seq_em(AR_params, lt_discrepancies, all_eigenvalues_cov, SIGMA, bigM, SIGMA_init, x_hat, time, new_data, observation_available, pstream__));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -1893,7 +1857,6 @@ public:
         names__.resize(0);
         names__.push_back("ind_st_ar_param");
         names__.push_back("ind_st_var");
-        names__.push_back("log_ind_st_var");
         names__.push_back("ind_st_cor");
         names__.push_back("ind_lt_raw");
         names__.push_back("ind_lt_var");
@@ -1928,10 +1891,6 @@ public:
         dims__.resize(0);
         dims__.push_back(M);
         dims__.push_back(N);
-        dimss__.push_back(dims__);
-        dims__.resize(0);
-        dims__.push_back(M);
-        dims__.push_back((logical_eq(form_prior_ind_st, 3) ? N : 0 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(M);
@@ -2058,19 +2017,6 @@ public:
                 vars__.push_back(ind_st_var[k_0__](j_1__));
             }
         }
-        std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1> > log_ind_st_var;
-        size_t log_ind_st_var_d_0_max__ = M;
-        log_ind_st_var.reserve(log_ind_st_var_d_0_max__);
-        for (size_t d_0__ = 0; d_0__ < log_ind_st_var_d_0_max__; ++d_0__) {
-            log_ind_st_var.push_back(in__.vector_constrain((logical_eq(form_prior_ind_st, 3) ? N : 0 )));
-        }
-        size_t log_ind_st_var_j_1_max__ = (logical_eq(form_prior_ind_st, 3) ? N : 0 );
-        size_t log_ind_st_var_k_0_max__ = M;
-        for (size_t j_1__ = 0; j_1__ < log_ind_st_var_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < log_ind_st_var_k_0_max__; ++k_0__) {
-                vars__.push_back(log_ind_st_var[k_0__](j_1__));
-            }
-        }
         std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > ind_st_cor;
         size_t ind_st_cor_d_0_max__ = M;
         ind_st_cor.reserve(ind_st_cor_d_0_max__);
@@ -2152,164 +2098,164 @@ public:
         if (!include_tparams__ && !include_gqs__) return;
         try {
             // declare and define transformed parameters
-            current_statement_begin__ = 264;
+            current_statement_begin__ = 258;
             validate_non_negative_index("SIGMA_x", "N", N);
             validate_non_negative_index("SIGMA_x", "N", N);
             validate_non_negative_index("SIGMA_x", "M", M);
             std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > SIGMA_x(M, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(N, N));
             stan::math::initialize(SIGMA_x, DUMMY_VAR__);
             stan::math::fill(SIGMA_x, DUMMY_VAR__);
-            current_statement_begin__ = 265;
+            current_statement_begin__ = 259;
             validate_non_negative_index("ind_st_sd", "N", N);
             validate_non_negative_index("ind_st_sd", "M", M);
             std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1> > ind_st_sd(M, Eigen::Matrix<double, Eigen::Dynamic, 1>(N));
             stan::math::initialize(ind_st_sd, DUMMY_VAR__);
             stan::math::fill(ind_st_sd, DUMMY_VAR__);
-            current_statement_begin__ = 266;
+            current_statement_begin__ = 260;
             validate_non_negative_index("sha_lt", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> sha_lt(N);
             stan::math::initialize(sha_lt, DUMMY_VAR__);
             stan::math::fill(sha_lt, DUMMY_VAR__);
             stan::math::assign(sha_lt,elt_multiply(prior_sha_lt_sd, sha_lt_raw));
-            current_statement_begin__ = 267;
+            current_statement_begin__ = 261;
             validate_non_negative_index("ind_lt", "N", N);
             validate_non_negative_index("ind_lt", "M", M);
             std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1> > ind_lt(M, Eigen::Matrix<double, Eigen::Dynamic, 1>(N));
             stan::math::initialize(ind_lt, DUMMY_VAR__);
             stan::math::fill(ind_lt, DUMMY_VAR__);
-            current_statement_begin__ = 272;
+            current_statement_begin__ = 262;
             validate_non_negative_index("ind_lt_sd", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> ind_lt_sd(N);
             stan::math::initialize(ind_lt_sd, DUMMY_VAR__);
             stan::math::fill(ind_lt_sd, DUMMY_VAR__);
             stan::math::assign(ind_lt_sd,stan::math::sqrt(ind_lt_var));
-            current_statement_begin__ = 273;
+            current_statement_begin__ = 263;
             validate_non_negative_index("ind_lt_covar", "N", N);
             validate_non_negative_index("ind_lt_covar", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ind_lt_covar(N, N);
             stan::math::initialize(ind_lt_covar, DUMMY_VAR__);
             stan::math::fill(ind_lt_covar, DUMMY_VAR__);
             stan::math::assign(ind_lt_covar,diag_post_multiply(diag_pre_multiply(ind_lt_sd, ind_lt_cor), ind_lt_sd));
-            current_statement_begin__ = 274;
+            current_statement_begin__ = 264;
             validate_non_negative_index("ind_lt_cov_cholesky", "N", N);
             validate_non_negative_index("ind_lt_cov_cholesky", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ind_lt_cov_cholesky(N, N);
             stan::math::initialize(ind_lt_cov_cholesky, DUMMY_VAR__);
             stan::math::fill(ind_lt_cov_cholesky, DUMMY_VAR__);
             stan::math::assign(ind_lt_cov_cholesky,cholesky_decompose(ind_lt_covar));
-            current_statement_begin__ = 281;
+            current_statement_begin__ = 267;
             validate_non_negative_index("x_hat", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<double, Eigen::Dynamic, 1> x_hat(((M + 2) * N));
             stan::math::initialize(x_hat, DUMMY_VAR__);
             stan::math::fill(x_hat, DUMMY_VAR__);
             stan::math::assign(x_hat,append_row(prior_y_init_mean, rep_vector(0.0, (N * (M + 1)))));
-            current_statement_begin__ = 282;
+            current_statement_begin__ = 268;
             validate_non_negative_index("SIGMA_init", "((M + 2) * N)", ((M + 2) * N));
             validate_non_negative_index("SIGMA_init", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> SIGMA_init(((M + 2) * N), ((M + 2) * N));
             stan::math::initialize(SIGMA_init, DUMMY_VAR__);
             stan::math::fill(SIGMA_init, DUMMY_VAR__);
             stan::math::assign(SIGMA_init,rep_matrix(0, ((M + 2) * N), ((M + 2) * N)));
-            current_statement_begin__ = 285;
+            current_statement_begin__ = 270;
             validate_non_negative_index("sha_st_sd", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> sha_st_sd(N);
             stan::math::initialize(sha_st_sd, DUMMY_VAR__);
             stan::math::fill(sha_st_sd, DUMMY_VAR__);
             stan::math::assign(sha_st_sd,stan::math::sqrt(sha_st_var));
-            current_statement_begin__ = 286;
+            current_statement_begin__ = 271;
             validate_non_negative_index("SIGMA_mu", "N", N);
             validate_non_negative_index("SIGMA_mu", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> SIGMA_mu(N, N);
             stan::math::initialize(SIGMA_mu, DUMMY_VAR__);
             stan::math::fill(SIGMA_mu, DUMMY_VAR__);
             stan::math::assign(SIGMA_mu,diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd));
-            current_statement_begin__ = 295;
+            current_statement_begin__ = 280;
             validate_non_negative_index("SIGMA", "((M + 2) * N)", ((M + 2) * N));
             validate_non_negative_index("SIGMA", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> SIGMA(((M + 2) * N), ((M + 2) * N));
             stan::math::initialize(SIGMA, DUMMY_VAR__);
             stan::math::fill(SIGMA, DUMMY_VAR__);
             stan::math::assign(SIGMA,rep_matrix(0, ((M + 2) * N), ((M + 2) * N)));
-            current_statement_begin__ = 296;
+            current_statement_begin__ = 281;
             validate_non_negative_index("lt_discrepancies", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<double, Eigen::Dynamic, 1> lt_discrepancies(((M + 2) * N));
             stan::math::initialize(lt_discrepancies, DUMMY_VAR__);
             stan::math::fill(lt_discrepancies, DUMMY_VAR__);
-            current_statement_begin__ = 297;
+            current_statement_begin__ = 282;
             validate_non_negative_index("AR_params", "((M + 2) * N)", ((M + 2) * N));
             Eigen::Matrix<double, Eigen::Dynamic, 1> AR_params(((M + 2) * N));
             stan::math::initialize(AR_params, DUMMY_VAR__);
             stan::math::fill(AR_params, DUMMY_VAR__);
             // do transformed parameters statements
-            current_statement_begin__ = 300;
+            current_statement_begin__ = 285;
             stan::model::assign(SIGMA, 
                         stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::nil_index_list())), 
                         SIGMA_t, 
                         "assigning variable SIGMA");
-            current_statement_begin__ = 301;
+            current_statement_begin__ = 286;
             stan::model::assign(SIGMA, 
                         stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::nil_index_list())), 
                         SIGMA_mu, 
                         "assigning variable SIGMA");
-            current_statement_begin__ = 302;
+            current_statement_begin__ = 287;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 303;
+                current_statement_begin__ = 288;
                 stan::model::assign(ind_st_sd, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             stan::math::sqrt(get_base1(ind_st_var, i, "ind_st_var", 1)), 
                             "assigning variable ind_st_sd");
-                current_statement_begin__ = 305;
+                current_statement_begin__ = 290;
                 stan::model::assign(SIGMA_x, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             diag_post_multiply(diag_pre_multiply(get_base1(ind_st_sd, i, "ind_st_sd", 1), get_base1(ind_st_cor, i, "ind_st_cor", 1)), get_base1(ind_st_sd, i, "ind_st_sd", 1)), 
                             "assigning variable SIGMA_x");
-                current_statement_begin__ = 306;
+                current_statement_begin__ = 291;
                 stan::model::assign(SIGMA, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list())), 
                             get_base1(SIGMA_x, i, "SIGMA_x", 1), 
                             "assigning variable SIGMA");
             }
-            current_statement_begin__ = 310;
+            current_statement_begin__ = 295;
             stan::model::assign(SIGMA_init, 
                         stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::cons_list(stan::model::index_min_max(1, N), stan::model::nil_index_list())), 
                         diag_matrix(prior_y_init_var), 
                         "assigning variable SIGMA_init");
-            current_statement_begin__ = 311;
+            current_statement_begin__ = 296;
             stan::model::assign(SIGMA_init, 
                         stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::cons_list(stan::model::index_min_max((N + 1), (2 * N)), stan::model::nil_index_list())), 
                         elt_divide(SIGMA_mu, subtract(1, multiply(sha_st_ar_param, transpose(sha_st_ar_param)))), 
                         "assigning variable SIGMA_init");
-            current_statement_begin__ = 312;
+            current_statement_begin__ = 297;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 313;
+                current_statement_begin__ = 298;
                 stan::model::assign(SIGMA_init, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list())), 
                             elt_divide(get_base1(SIGMA_x, i, "SIGMA_x", 1), subtract(1, multiply(get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1), transpose(get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1))))), 
                             "assigning variable SIGMA_init");
             }
-            current_statement_begin__ = 318;
+            current_statement_begin__ = 303;
             stan::model::assign(lt_discrepancies, 
                         stan::model::cons_list(stan::model::index_min_max(1, (2 * N)), stan::model::nil_index_list()), 
                         append_row(rep_vector(0.0, N), sha_lt), 
                         "assigning variable lt_discrepancies");
-            current_statement_begin__ = 319;
+            current_statement_begin__ = 304;
             stan::model::assign(AR_params, 
                         stan::model::cons_list(stan::model::index_min_max(1, (2 * N)), stan::model::nil_index_list()), 
                         append_row(rep_vector(1.0, N), sha_st_ar_param), 
                         "assigning variable AR_params");
-            current_statement_begin__ = 320;
+            current_statement_begin__ = 305;
             for (int i = 1; i <= M; ++i) {
-                current_statement_begin__ = 321;
+                current_statement_begin__ = 306;
                 stan::model::assign(ind_lt, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             multiply(ind_lt_cov_cholesky, get_base1(ind_lt_raw, i, "ind_lt_raw", 1)), 
                             "assigning variable ind_lt");
-                current_statement_begin__ = 322;
+                current_statement_begin__ = 307;
                 stan::model::assign(lt_discrepancies, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list()), 
                             get_base1(ind_lt, i, "ind_lt", 1), 
                             "assigning variable lt_discrepancies");
-                current_statement_begin__ = 323;
+                current_statement_begin__ = 308;
                 stan::model::assign(AR_params, 
                             stan::model::cons_list(stan::model::index_min_max((((i + 1) * N) + 1), ((i + 2) * N)), stan::model::nil_index_list()), 
                             get_base1(ind_st_ar_param, i, "ind_st_ar_param", 1), 
@@ -2451,15 +2397,6 @@ public:
             for (size_t k_0__ = 0; k_0__ < ind_st_var_k_0_max__; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "ind_st_var" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-        }
-        size_t log_ind_st_var_j_1_max__ = (logical_eq(form_prior_ind_st, 3) ? N : 0 );
-        size_t log_ind_st_var_k_0_max__ = M;
-        for (size_t j_1__ = 0; j_1__ < log_ind_st_var_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < log_ind_st_var_k_0_max__; ++k_0__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "log_ind_st_var" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
         }
@@ -2670,15 +2607,6 @@ public:
             for (size_t k_0__ = 0; k_0__ < ind_st_var_k_0_max__; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "ind_st_var" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-        }
-        size_t log_ind_st_var_j_1_max__ = (logical_eq(form_prior_ind_st, 3) ? N : 0 );
-        size_t log_ind_st_var_k_0_max__ = M;
-        for (size_t j_1__ = 0; j_1__ < log_ind_st_var_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < log_ind_st_var_k_0_max__; ++k_0__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "log_ind_st_var" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
         }

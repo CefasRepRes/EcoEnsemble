@@ -7,21 +7,21 @@ using namespace Rcpp;
 Eigen::MatrixXd KalmanFilter_back(Eigen::VectorXd rhos, Eigen::VectorXd dee, Eigen::VectorXd R, Eigen::MatrixXd Q, Eigen::MatrixXd C,// parameters
                             Eigen::MatrixXd P, Eigen::VectorXd xhat, int Time, Eigen::MatrixXd y, Eigen::MatrixXd obs){
 
-  Eigen::MatrixXd xhat_b = Eigen::MatrixXd(Time, xhat.size());
+  Eigen::MatrixXd xhat_b = Eigen::MatrixXd::Zero(Time, xhat.size());
   Eigen::MatrixXd P_ = P;
   Eigen::MatrixXd P_s[Time];
   Eigen::MatrixXd A = rhos * rhos.transpose();
   Eigen::VectorXd xhat_ = xhat;
-  Eigen::MatrixXd xhat_s = Eigen::MatrixXd(Time, xhat.size());
+  Eigen::MatrixXd xhat_s = Eigen::MatrixXd::Zero(Time, xhat.size());
   Eigen::MatrixXd G[Time];
-  Eigen::MatrixXd G_(xhat.size(), y.cols());
-  Eigen::MatrixXd er(Time, y.cols());
+  Eigen::MatrixXd G_ = Eigen::MatrixXd::Zero(xhat.size(), y.cols());
+  Eigen::MatrixXd er = Eigen::MatrixXd::Zero(Time, y.cols());
   double est;
-  Eigen::MatrixXd Qs_inv(Time, y.cols());
+  Eigen::MatrixXd Qs_inv = Eigen::MatrixXd::Zero(Time, y.cols());
   /// smoothing bit
   Eigen::MatrixXd Identity = Eigen::MatrixXd::Identity(xhat.size(), xhat.size());
-  Eigen::MatrixXd L(xhat.size(), xhat.size());
-  Eigen::VectorXd r(xhat.size());
+  Eigen::MatrixXd L = Eigen::MatrixXd::Zero(xhat.size(), xhat.size());
+  Eigen::VectorXd r = Eigen::VectorXd::Zero(xhat.size());
   int k_i;
   int l_j;
 
