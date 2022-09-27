@@ -1,4 +1,4 @@
-EcoEnsemble 0.1.0
+EcoEnsemble 1.0.0
 =============
 
 * Initial release
