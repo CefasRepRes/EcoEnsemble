@@ -10,8 +10,13 @@ Authors@R:
             person(given = "Michael A.",
                 family = "Spence",
                 role = c("aut"),
-                comment = c(ORCID = "0000-0002-3445-7979")))
-Description: Fit and sample from the ensemble model described in Spence et al (2018): A general framework for combining ecosystem models<https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>.
+                email = "michael.spence@cefas.co.uk",
+                comment = c(ORCID = "0000-0002-3445-7979"))),
+            person(given = "Michael J.",
+                family = "Thomson",
+                role = c("aut"),
+                comment = c(ORCID = "0000-0003-0284-0129")))
+Description: Fit and sample from the ensemble model described in Spence et al (2018): "A general framework for combining ecosystem models"<https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
