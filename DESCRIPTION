@@ -1,5 +1,5 @@
 Package: EcoEnsemble
-Title: A General Framework for Combining Ecosystem Models in R
+Title: A General Framework for Combining Ecosystem Models
 Version: 1.0.0
 Authors@R: 
     c(person(given = "James A.",

@@ -208,7 +208,6 @@ dimnames(cov_model_4) <- list(SPECIES_NAMES, SPECIES_NAMES)
 
 Now we can fit the ensemble model, this time using vague default priors.
 ```{r fitting, eval = FALSE}
-options(mc.cores = parallel::detectCores())
 fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
                                             list(val_model_2, cov_model_2, "Model 2"),
@@ -285,6 +284,7 @@ p_NumberOfModels
 
 To quantify this effect, we plot how the variance of predictions beyond the range of observation data changes over time.
 ```{r quantify_variance, eval = FALSE}
+def.par <- par(no.readonly=TRUE) #old pars
 par(mfrow = c(d, 1))
 legend_ys <- c(0.4, 0.18, 0.12)
 for(i in 1:d){
@@ -296,10 +296,12 @@ for(i in 1:d){
   legend(1, legend_ys[i], legend = c("1 Model", "2 Models", "3 Models", "4 Models"),
           col = 1:4, lty = 1)
 }
+par(def.par)
 ```
 
 ```{r plot_variances, echo=FALSE, fig.dim = c(7,6)}
 load("data/SyntheticData_AddingModelsData.RData")
+def.par <- par(no.readonly=TRUE) #old pars
 par(mfrow = c(d, 1), mar = c(4, 4, 1.4, 1.4))
 legend_ys <- c(0.4, 0.18, 0.12)
 for(i in 1:d){
@@ -311,6 +313,7 @@ for(i in 1:d){
   legend(1, legend_ys[i], legend = c("1 Model", "2 Models", "3 Models", "4 Models"),
           col = 1:4, lty = 1)
 }
+par(def.par)
 ```
 
 As shown in the graphs, there is a marked reduction in the variance of predictions when more simulators are used in the ensemble.
