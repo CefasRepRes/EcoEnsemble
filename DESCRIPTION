@@ -1,17 +1,16 @@
 Package: EcoEnsemble
 Title: A General Framework for Combining Ecosystem Models
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
-    c(person(given = "James A.",
-                family = "Martindale",
-                role = c("aut"),
-                email = "james.martindale@cefas.co.uk",
-                comment = c(ORCID = "0000-0002-1913-5592")),
-            person(given = "Michael A.",
+    c(person(given = "Michael A.",
                 family = "Spence",
                 role = c("aut", "cre"),
-                email = "michael.spence@cefas.co.uk",
+                email = "michael.spence@cefas.gov.uk",
                 comment = c(ORCID = "0000-0002-3445-7979")),
+            person(given = "James A.",
+                family = "Martindale",
+                role = c("aut"),
+                comment = c(ORCID = "0000-0002-1913-5592")),
             person(given = "Michael J.",
                 family = "Thomson",
                 role = c("aut"),
