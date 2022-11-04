@@ -43,3 +43,7 @@ This is a false positive. These packages are used by the makefile which compiles
 This is a consequence of using Rstan which produces quite large binaries when compiled.
 
 Thanks to the https://github.com/insightsengineering/rbmi/blob/main/cran-comments.md for helping describe these notes.
+
+## Resubmission 3
+
+* Changed http://mc-stan.org/ to https://mc-stan.org/ in vignette.

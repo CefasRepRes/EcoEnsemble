@@ -371,7 +371,7 @@ references:
   - family: "Stan Development Team"
   title: "RStan: the R interface to Stan"
   year: 2020
-  url: http://mc-stan.org/
+  url: "https://mc-stan.org/"
   type: article
 ---
 ```{r include=FALSE}
