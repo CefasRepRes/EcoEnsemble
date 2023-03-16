@@ -47,3 +47,7 @@ Thanks to the https://github.com/insightsengineering/rbmi/blob/main/cran-comment
 ## Resubmission 3
 
 * Changed http://mc-stan.org/ to https://mc-stan.org/ in vignette.
+
+# Version 1.0.2
+
+* Changed .Rbuildignore so that it will be compatible with a future 'rstan' release.

@@ -1,7 +1,5 @@
-^EcoEnsemble\.Rproj$
+src/stanExports_*
+src/Makevars*
+src/EcoEnsemble_types.h
+^.*\.Rproj$
 ^\.Rproj\.user$
-^LICENSE\.md$
-^doc$
-^Meta$
-^cran-comments\.md$
-^CRAN-SUBMISSION$
