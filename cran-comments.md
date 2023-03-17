@@ -51,3 +51,30 @@ Thanks to the https://github.com/insightsengineering/rbmi/blob/main/cran-comment
 # Version 1.0.2
 
 * Changed .Rbuildignore so that it will be compatible with a future 'rstan' release.
+
+## R CMD check results
+There were no ERRORs or WARNINGS
+
+There were 3 NOTES
+
+* checking for GNU extensions in Makefiles ... NOTE GNU make is a SystemRequirements.
+
+This is a consequence of using Rstan which requires us to use GNU make to compile the Stan model as per their package usage instructions
+
+
+* checking installed package size ... NOTE installed size is 120.3Mb sub-directories of 1Mb or more: libs 119.3Mb
+
+This is a consequence of using Rstan which produces quite large binaries when compiled.
+
+Thanks to the https://github.com/insightsengineering/rbmi/blob/main/cran-comments.md for helping describe these notes.
+
+* checking CRAN incoming feasibility ... NOTE Maintainer: 'Michael A. Spence <michael.spence@cefas.gov.uk>'
+Found the following (possibly) invalid URLs:
+  URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310
+    From: DESCRIPTION
+          man/EcoEnsemble-package.Rd
+          README.md
+    Status: 403
+    Message: Forbidden
+    
+The URL remained from the previous CRAN submission. The URL links to the correct website.
