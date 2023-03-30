@@ -152,7 +152,7 @@ references:
   issued:
     year: 2018
 - id: mackinson
-  title: Evaluating the fishery and ecological consequences of the proposed {N}orth {S}ea multi-annual plan
+  title: Evaluating the fishery and ecological consequences of the proposed North Sea multi-annual plan
   author:
   - family: Mackinson
     given: Steven 
@@ -377,7 +377,7 @@ references:
 ```{r include=FALSE}
 #Load in the data and load the library
 library(EcoEnsemble)
-load("data/vignette_plots.Rdata")
+#load("data/vignette_plots.Rdata")
 ```
 
 # Introduction
@@ -705,7 +705,7 @@ Results can be shown by calling `plot` on an `EnsembleSample` object. This plots
 plot(samples)
 ```
 ```{r fig.dim = c(7, 4), echo=FALSE, warning = FALSE}
-plot_initial_outputs
+knitr::include_graphics("data/plot_initial_outputs.png")
 ```
 
 
@@ -717,9 +717,8 @@ plot(samples, variable = "Cod", quantiles = c(0.25, 0.75)) +
     ggplot2::scale_color_brewer(palette="Set2")  +
     ggplot2::ylab("SSB (log tonnes)")
 ```
-
 ```{r fig.dim = c(7, 4), echo=FALSE, warning = FALSE}
-plot_initial_customised
+knitr::include_graphics("data/plot_initial_customised.png")
 ```
 
 
@@ -744,7 +743,7 @@ The `sample_prior()` function produces an `EnsembleSample` object which can be p
 plot(prior_samples)
 ```
 ```{r fig.dim = c(7, 6), echo = FALSE, warning = FALSE}
-plot_priors_only
+knitr::include_graphics("data/plot_priors_only.png")
 ```
 
 
