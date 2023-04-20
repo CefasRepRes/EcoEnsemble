@@ -7,7 +7,7 @@
 #'@param full_sample A `logical` that runs a full sampling of the prior density of the ensemble model if `TRUE`. If `FALSE`, returns the point estimate which maximises the prior density of the ensemble model.
 #'@param control If creating a full sample, this is a named `list` of paramaters to control Stan's sampling behaviour. See the documentation of the `stan()` function in the `rstan` package for details. The default value is `list(adapt_delta = 0.95)`. If optimizing, this value is ignored.
 #'@param ... Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.
-#'@return A `list` containing two items named `samples` and `point_estimate`. If `full_sample==TRUE`, `samples` is a `stanfit` and `point_estimate` is a `NULL` object, else `samples` is a `NULL` and `point_estimate` is a `list` object.
+#'@return A `list` containing two items named `samples` and `point_estimate`. If `full_sample==TRUE`, `samples` is a `stanfit` and `point_estimate` is a `NULL` object, else `samples` is a `NULL` and `point_estimate` is a `list` object. It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation.
 #'@references Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
 #'@seealso \code{\linkS4class{EnsembleFit}}
 #'@export
@@ -25,6 +25,9 @@ prior_ensemble_model <- function(priors, M = 1,
   #Using hierarchical priors uses a different model. This speeds up the sampling enormously
   mod <- stanmodels$ensemble_prior
   if(stan_input$form_prior_ind_st == 3){
+    if(full_sample==FALSE){
+      stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+    }
     mod <- stanmodels$ensemble_prior_hierarchical
   }
 

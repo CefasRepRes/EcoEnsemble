@@ -63,18 +63,15 @@ The samples are created using the methods described in Strickland et. al. (2009)
 \examples{
 \donttest{
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                         simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                           list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                           list(SSB_lm,  Sigma_lm, "LeMans"),
-                                           list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = EnsemblePrior(4))
+               simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                 list(SSB_fs,  Sigma_fs, "FishSUMS"),
+                                 list(SSB_lm,  Sigma_lm, "LeMans"),
+                                 list(SSB_miz, Sigma_miz, "Mizer")),
+               priors = EnsemblePrior(4,
+               ind_st_params = IndSTPrior(parametrisation_form = "lkj",
+               var_params= list(1,1), cor_params = 10, AR_params = c(2, 2))),
+               full_sample = FALSE) #Only optimise in this case
 samples <- generate_sample(fit, num_samples = 2000)
-
-# A quicker way to get the MLE for the first sample from the ensemble
-transf_data <- get_transformed_data(fit)
-ex.fit <- rstan::extract(fit@samples)
-mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
-                     time = fit@ensemble_data@stan_input$time, simplify = F)
 }
 }
 \references{

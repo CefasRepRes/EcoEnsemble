@@ -13,26 +13,17 @@
 #'@export
 #'@examples
 #'\donttest{
-#'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-#'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-#'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
-#'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
-#'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = EnsemblePrior(4))
-#'samples <- generate_sample(fit)
-#'plot(samples)
-#'plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
-#'
-#'
-#'fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-#'                               simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-#'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
-#'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
-#'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                                priors = EnsemblePrior(4),
-#'                                full_sample = FALSE)
-#'samples1 <- generate_sample(fit_point)
-#'plot(samples1, variable="Herring")
+#' priors <- EnsemblePrior(4)
+#' prior_density <- prior_ensemble_model(priors, M = 4)
+#' samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
+#'              simulators = list(list(SSB_miz, Sigma_miz),
+#'                                list(SSB_ewe, Sigma_ewe),
+#'                                list(SSB_fs, Sigma_fs),
+#'                                list(SSB_lm, Sigma_lm)),
+#'              priors = priors,
+#'              sam_priors = prior_density)
+#' plot(samples) #Plot the prior predictive density.
+#' plot(samples, variable="Herring")
 #'}
 plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...){
   if(!is.null(variable)){
@@ -102,10 +93,10 @@ construct_plot_dataframe <- function(samples, variable, quantiles){
 
   #Ensemble
   var_index = which(colnames(observations) == variable)
-  if(!is.null(fit@samples)){
+  if(!is.null(samples@samples)){
 
     # The ensemble outputs need to be the first columns to ensure they are coloured consistently when some variables are missing.
-    df <- apply(samples@mle[, var_index, ], 1, median, na.rm = TRUE) %>%
+    df <- apply(samples@samples[, var_index, ], 1, median, na.rm = TRUE) %>%
       cbind(apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE)) %>%
       cbind(apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE)) %>%
       cbind(df) %>%
@@ -148,7 +139,7 @@ plot_single <- function(samples, variable=1, quantiles=c(0.05, 0.95), ...){
   df <- construct_plot_dataframe(samples, variable, quantiles)
 
   var_index = which(colnames(observations) == variable)
-  if(!is.null(fit@samples)){
+  if(!is.null(samples@samples)){
     return(plot_values_sample_gg(df, variable))
   }
   return(plot_values_optimised_gg(df, variable))

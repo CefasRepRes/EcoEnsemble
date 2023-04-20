@@ -13,25 +13,25 @@ references:
   title: A general framework for combining ecosystem models.
   author:
   - family: Spence
-    given: M.A.
+    given: Michael A.
   - family: Blanchard
-    given: J.L.
+    given: Julia L.
   - family: Rossberg
-    given: A.G.
+    given: Axel G.
   - family: Heath
-    given: M.R.
+    given: Michael R.
   - family: Heymans
-    given: J.J.
+    given: J. J.
   - family: Mackinson
-    given: S.
+    given: Steven
   - family: Serpetti
-    given: N.
+    given: Natalia
   - family: Speirs
-    given: D.C.
+    given: Douglas C.
   - family: Thorpe
-    given: R.B.
+    given: Robert B.
   - family: Blackwell
-    given: P.G.
+    given: Paul G.
   container-title: Fish and Fisheries
   volume: 19
   page: 1013-1042
@@ -192,9 +192,7 @@ references:
   author: 
    - family: Blanchard
      given: Julia L.
-   - family: 
-     given: NA
-   - family: rsen
+   - family: Andersen
      given: Ken H.
    - family: Scott
      given: Finlay
@@ -361,7 +359,8 @@ references:
      given: Hadley
   title: "ggplot2: Elegant Graphics for Data Analysis"
   publisher: Springer-Verlag New York
-  year: 2016
+  issued: 
+    year: 2016
   type: book
   isbn: "978-3-319-24277-4"
   url: "https://ggplot2.tidyverse.org"
@@ -370,7 +369,8 @@ references:
   author:
   - family: "Stan Development Team"
   title: "RStan: the R interface to Stan"
-  year: 2020
+  issued: 
+    year: 2020
   url: "https://mc-stan.org/"
   type: article
 ---

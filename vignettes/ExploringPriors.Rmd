@@ -383,9 +383,7 @@ samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
 plot(samples)
 ```
 ```{r echo =FALSE,fig.dim=c(7,6)}
-load("data/ExploringPriors_PriorPredictivePlot.RData")
-p_priors
-par(def.par)
+knitr::include_graphics("data/p_priors.png")
 ```
 
 # References

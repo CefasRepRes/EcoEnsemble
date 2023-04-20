@@ -36,20 +36,14 @@ An \code{EnsembleFit} object.
 \donttest{
 
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                         simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                     list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                     list(SSB_lm,  Sigma_lm, "LeMans"),
-                                     list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = EnsemblePrior(4),
-                         full_sample = FALSE) #Only optimise in this case
-#Run a full sample
-fit1 <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                         simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                     list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                     list(SSB_lm,  Sigma_lm, "LeMans"),
-                                     list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = EnsemblePrior(4),
-                         control = list(adapt_delta = 0.99)) # Additional Stan parameters.
+               simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                 list(SSB_fs,  Sigma_fs, "FishSUMS"),
+                                 list(SSB_lm,  Sigma_lm, "LeMans"),
+                                 list(SSB_miz, Sigma_miz, "Mizer")),
+               priors = EnsemblePrior(4,
+               ind_st_params = IndSTPrior(parametrisation_form = "lkj",
+               var_params= list(1,1), cor_params = 10, AR_params = c(2, 2))),
+               full_sample = FALSE) #Only optimise in this case
 }
 }
 \references{

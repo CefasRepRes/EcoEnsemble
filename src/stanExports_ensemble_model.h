@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_ensemble_model");
-    reader.add_event(366, 364, "end", "model_ensemble_model");
+    reader.add_event(373, 371, "end", "model_ensemble_model");
     return reader;
 }
 template <typename T0__>
@@ -1832,8 +1832,19 @@ public:
                 lp_accum__.add(gamma_log<propto__>(get_base1(ind_st_var, i, "ind_st_var", 1), prior_ind_st_var_a, prior_ind_st_var_b));
                 current_statement_begin__ = 354;
                 lp_accum__.add(std_normal_log<propto__>(get_base1(ind_lt_raw, i, "ind_lt_raw", 1)));
+                current_statement_begin__ = 355;
+                if (as_bool(logical_eq(form_prior_ind_st, 0))) {
+                    current_statement_begin__ = 356;
+                    lp_accum__.add(lkj_corr_log<propto__>(get_base1(ind_st_cor, i, "ind_st_cor", 1), get_base1(prior_ind_st_cor_lkj, 1, "prior_ind_st_cor_lkj", 1)));
+                } else if (as_bool(logical_eq(form_prior_ind_st, 1))) {
+                    current_statement_begin__ = 358;
+                    lp_accum__.add(inv_wishart_log<propto__>(get_base1(ind_st_cor, i, "ind_st_cor", 1), get_base1(prior_ind_st_cor_wish_nu, 1, "prior_ind_st_cor_wish_nu", 1), prior_ind_st_cor_wish_sigma));
+                } else {
+                    current_statement_begin__ = 360;
+                    lp_accum__.add(priors_cor_beta(get_base1(ind_st_cor, i, "ind_st_cor", 1), N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2, pstream__));
+                }
             }
-            current_statement_begin__ = 362;
+            current_statement_begin__ = 369;
             lp_accum__.add(KalmanFilter_seq_em(AR_params, lt_discrepancies, all_eigenvalues_cov, SIGMA, bigM, SIGMA_init, x_hat, time, new_data, observation_available, pstream__));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());

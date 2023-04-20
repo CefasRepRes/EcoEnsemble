@@ -257,6 +257,13 @@ model{
 
     ind_st_var[i] ~ gamma(prior_ind_st_var_a, prior_ind_st_var_b);
     ind_lt_raw[i] ~ std_normal();
+	if (form_prior_ind_st == 0){
+	  ind_st_cor[i] ~ lkj_corr(prior_ind_st_cor_lkj[1]);
+    } else if(form_prior_ind_st == 1){
+	  ind_st_cor[i] ~ inv_wishart(prior_ind_st_cor_wish_nu[1], prior_ind_st_cor_wish_sigma);
+	} else{
+	  target += priors_cor_beta(ind_st_cor[i], N, prior_ind_st_cor_beta_1, prior_ind_st_cor_beta_2);
+	}
   }
 }
 

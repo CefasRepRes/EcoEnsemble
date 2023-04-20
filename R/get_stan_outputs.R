@@ -36,19 +36,16 @@
 #'@export
 #'@examples
 #'\donttest{
-#'fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-#'                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-#'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
-#'                                            list(SSB_lm,  Sigma_lm, "LeMans"),
-#'                                            list(SSB_miz, Sigma_miz, "Mizer")),
-#'                          priors = EnsemblePrior(4))
-#'samples <- generate_sample(fit, num_samples = 2000)
-#'
-#'# A quicker way to get the MLE for the first sample from the ensemble
-#'transf_data <- get_transformed_data(fit)
-#'ex.fit <- rstan::extract(fit@@samples)
-#'mle_sample <- get_mle(1, ex.fit = ex.fit, transformed_data = transformed_data,
-#'                      time = fit@@ensemble_data@@stan_input$time, simplify = F)
+#' fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+#'                simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+#'                                  list(SSB_fs,  Sigma_fs, "FishSUMS"),
+#'                                  list(SSB_lm,  Sigma_lm, "LeMans"),
+#'                                  list(SSB_miz, Sigma_miz, "Mizer")),
+#'                priors = EnsemblePrior(4,
+#'                ind_st_params = IndSTPrior(parametrisation_form = "lkj",
+#'                var_params= list(1,1), cor_params = 10, AR_params = c(2, 2))),
+#'                full_sample = FALSE) #Only optimise in this case
+#' samples <- generate_sample(fit, num_samples = 2000)
 #'}
 generate_sample <- function(fit, num_samples = 1)
 {
@@ -207,9 +204,9 @@ get_mle <- function(x=1, ex.fit, transformed_data, time) ## get the MLE from the
   ret <- KalmanFilter_back(params$AR_params, params$lt_discrepancies, transformed_data$all_eigenvalues_cov,
                            params$SIGMA, transformed_data$bigM, params$SIGMA_init, params$x_hat,time,
                            transformed_data$new_data, transformed_data$observation_available)
-  if(sum(is.na(ret)) > 0){
-    browser()
-  }
+  #if(sum(is.na(ret)) > 0){
+  #  browser()
+  #}
   return(ret)
 }
 
@@ -240,8 +237,8 @@ gen_sample <- function(x=1, ex.fit, transformed_data, time)
                                  params$SIGMA_init,
                                  params$x_hat, time, sam_y,
                                  observation_available)
-  if(sum(is.na(sam_x_hat)) > 0){
-    browser()
-  }
+  #if(sum(is.na(sam_x_hat)) > 0){
+  #  browser()
+  #}
   return(list(sam_x=sam_x,sam_x_hat=sam_x_hat))
 }

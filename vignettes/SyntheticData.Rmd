@@ -241,8 +241,7 @@ ggplot(df, aes(x=`Year`, y=`value`)) +
 ```
 
 ```{r plot_truth, echo = FALSE, fig.dim = c(7, 4)}
-load("data/SyntheticData_Plots.RData")
-p_truth
+knitr::include_graphics("data/p_truth.png")
 ```
 
 Here we see that the ensemble model is able to effectively capture the true value. 
@@ -279,7 +278,7 @@ plot_grid(
   plot(samples   , variable=1) + ggtitle("4 Models") + theme(legend.position = "none"))
 ```
 ```{r model_comparison, echo = FALSE, fig.dim = c(7, 6)}
-p_NumberOfModels
+knitr::include_graphics("data/p_NumberOfModels.png")
 ```
 
 To quantify this effect, we plot how the variance of predictions beyond the range of observation data changes over time.

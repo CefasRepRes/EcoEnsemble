@@ -23,25 +23,16 @@ Plots the latent variables predicted by the ensemble model, along with simulator
 }
 \examples{
 \donttest{
-fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                         simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                           list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                           list(SSB_lm,  Sigma_lm, "LeMans"),
-                                           list(SSB_miz, Sigma_miz, "Mizer")),
-                         priors = EnsemblePrior(4))
-samples <- generate_sample(fit)
-plot(samples)
-plot(samples, variable = "Cod", quantiles=c(0.2, 0.8))
-
-
-fit_point <-fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                           list(SSB_fs,  Sigma_fs, "FishSUMS"),
-                                           list(SSB_lm,  Sigma_lm, "LeMans"),
-                                           list(SSB_miz, Sigma_miz, "Mizer")),
-                               priors = EnsemblePrior(4),
-                               full_sample = FALSE)
-samples1 <- generate_sample(fit_point)
-plot(samples1, variable="Herring")
+priors <- EnsemblePrior(4)
+prior_density <- prior_ensemble_model(priors, M = 4)
+samples <- sample_prior(observations = list(SSB_obs, Sigma_obs),
+             simulators = list(list(SSB_miz, Sigma_miz),
+                               list(SSB_ewe, Sigma_ewe),
+                               list(SSB_fs, Sigma_fs),
+                               list(SSB_lm, Sigma_lm)),
+             priors = priors,
+             sam_priors = prior_density)
+plot(samples) #Plot the prior predictive density.
+plot(samples, variable="Herring")
 }
 }

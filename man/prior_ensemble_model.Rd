@@ -24,7 +24,7 @@ prior_ensemble_model(
 \item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }
 \value{
-A \code{list} containing two items named \code{samples} and \code{point_estimate}. If \code{full_sample==TRUE}, \code{samples} is a \code{stanfit} and \code{point_estimate} is a \code{NULL} object, else \code{samples} is a \code{NULL} and \code{point_estimate} is a \code{list} object.
+A \code{list} containing two items named \code{samples} and \code{point_estimate}. If \code{full_sample==TRUE}, \code{samples} is a \code{stanfit} and \code{point_estimate} is a \code{NULL} object, else \code{samples} is a \code{NULL} and \code{point_estimate} is a \code{list} object. It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation.
 }
 \description{
 Methods to generates samples of the parameters from the prior distribution of the ensemble model.

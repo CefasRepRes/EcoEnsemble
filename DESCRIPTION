@@ -1,6 +1,6 @@
 Package: EcoEnsemble
 Title: A General Framework for Combining Ecosystem Models
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: 
     c(person(given = "Michael A.",
                 family = "Spence",
