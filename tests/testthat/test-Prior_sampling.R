@@ -1,5 +1,5 @@
 test_that("prior test",{
-  testthat::skip_on_cran()
+	testthat::skip_on_cran()
   priors1 <- EnsemblePrior(4,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2)))
   set.seed(1234)
   prior_density <- prior_ensemble_model(priors1, M = 4)

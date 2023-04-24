@@ -35,12 +35,18 @@ test_that("test with simulated data set",{
                                            ),
                                            priors = EnsemblePrior(d),
                                            control = list(adapt_delta = 0.9),chains=1,iter=4))
-
+  priors2 <- EnsemblePrior(2,
+	ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
+  , AR_params = c(2, 2)),
+	ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
+  ),
+	sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))
+  ))
   suppressWarnings(fit.opt <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                                simulators = list(list(val_model_1, cov_model_1, "Model 1"),
                                                                  list(val_model_2, cov_model_2, "Model 2")
                                                ),
-                                               priors = EnsemblePrior(d),full_sample = F))
+                                               priors = priors2,full_sample = F))
 
   samples <- generate_sample(fit)
   expect_true(ggplot2::is.ggplot(plot(samples,quantiles = c(0.05, 0.95))))

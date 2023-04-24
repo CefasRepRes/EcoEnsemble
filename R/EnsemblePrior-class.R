@@ -9,7 +9,7 @@
 #' @param truth_params A `TruthPrior` object specifying priors for the processes on the truth \eqn{y^{(t)}}. The default value is `TruthPrior(d)`.
 #' @details
 #'`IndSTPrior` and `ShaSTPrior` discrepancy prior parameter objects contain 4 slots corresponding to:
-#' 1. `parametrisation_form` - A `character` specifying how the priors are parametrised. Currently supported priors are `'LKJ'`, `'inv_wishart'`, `'beta'`, or `'hierarchical'` (`'hierarchical'` is only supported for `IndSTPrior` objects).
+#' 1. `parametrisation_form` - A `character` specifying how the priors are parametrised. Currently supported priors are `'lkj'`, `'inv_wishart'`, `'beta'`, or `'hierarchical'` (`'hierarchical'` is only supported for `IndSTPrior` objects).
 #' 2. `var_params` - The prior parameters for the discrepancy variances, either a `list` of length `2` or a `numeric` of length `4`. See below.
 #' 3. `cor_params` - The correlation matrix parameters, either a `list` of length `2` or a `numeric` of length `4`. See below.
 #' 4. `AR_params` - Parameters for the autoregressive parameter as a `numeric` of length `2`.

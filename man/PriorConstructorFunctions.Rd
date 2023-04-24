@@ -87,7 +87,7 @@ Constructors for the \code{EnsemblePrior} class and related classes. These funct
 \details{
 \code{IndSTPrior} and \code{ShaSTPrior} discrepancy prior parameter objects contain 4 slots corresponding to:
 \enumerate{
-\item \code{parametrisation_form} - A \code{character} specifying how the priors are parametrised. Currently supported priors are \code{'LKJ'}, \code{'inv_wishart'}, \code{'beta'}, or \code{'hierarchical'} (\code{'hierarchical'} is only supported for \code{IndSTPrior} objects).
+\item \code{parametrisation_form} - A \code{character} specifying how the priors are parametrised. Currently supported priors are \code{'lkj'}, \code{'inv_wishart'}, \code{'beta'}, or \code{'hierarchical'} (\code{'hierarchical'} is only supported for \code{IndSTPrior} objects).
 \item \code{var_params} - The prior parameters for the discrepancy variances, either a \code{list} of length \code{2} or a \code{numeric} of length \code{4}. See below.
 \item \code{cor_params} - The correlation matrix parameters, either a \code{list} of length \code{2} or a \code{numeric} of length \code{4}. See below.
 \item \code{AR_params} - Parameters for the autoregressive parameter as a \code{numeric} of length \code{2}.
