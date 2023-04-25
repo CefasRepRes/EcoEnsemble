@@ -106,9 +106,9 @@ priors1 <- EnsemblePrior(2,
                                              priors = priors1,
                                              control = list(adapt_delta = 0.9),chains=1,iter=4))
   priors1 <- EnsemblePrior(2,
-                           ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                           ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
                            ),
-                           sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
+                           sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))))
   suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                              simulators = list(list(val_model_1, cov_model_1, "Model 1"),
                                                                list(val_model_2, cov_model_2, "Model 2")

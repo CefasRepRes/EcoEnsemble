@@ -1,7 +1,7 @@
 ---
 title: "Exploring priors"
 author: "Michael A. Spence, James A. Martindale and Michael J. Thomson"
-date: "2022-09-06"
+date: "2023-04-24"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ExploringPriors}
