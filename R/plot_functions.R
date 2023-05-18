@@ -93,17 +93,19 @@ construct_plot_dataframe <- function(samples, variable, quantiles){
 
   #Ensemble
   var_index = which(colnames(observations) == variable)
+  df$Year <- as.numeric(df$Year)
+  times <- sort(unique(df$Year))
   if(!is.null(samples@samples)){
 
     # The ensemble outputs need to be the first columns to ensure they are coloured consistently when some variables are missing.
-    df <- apply(samples@samples[, var_index, ], 1, median, na.rm = TRUE) %>%
-      cbind(apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE)) %>%
-      cbind(apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE)) %>%
-      cbind(df) %>%
-      data.frame()
+    df_ensemble <-cbind(times, apply(samples@samples[, var_index, ], 1, median, na.rm = TRUE),
+                        apply(samples@samples[, var_index, ], 1, quantile, min(quantiles), na.rm = TRUE),
+                        apply(samples@samples[, var_index, ], 1, quantile, max(quantiles), na.rm = TRUE))%>%
+                        data.frame()
 
-    df$Year <- as.numeric(df$Year)
-    colnames(df)[1:3] <- c("Ensemble Model Prediction", "Lower", "Upper")
+
+    colnames(df_ensemble) <- c("Year","Ensemble Model Prediction", "Lower", "Upper")
+    df <- merge(df_ensemble,df)
 
     df <-  reshape2::melt(df, id.vars=c("Year", "Lower", "Upper"), variable.name="Simulator")
 
@@ -111,11 +113,10 @@ construct_plot_dataframe <- function(samples, variable, quantiles){
     df[df$Simulator != "Ensemble Model Prediction", c("Lower", "Upper")] <- df[df$Simulator != "Ensemble Model Prediction", "value"]
 
   }else{
-    # df <- cbind(df, samples@mle[, var_index])
-    df <- cbind(samples@mle[, var_index], df)
-    df <- data.frame(df)
-    df$Year <- as.numeric(df$Year)
-    colnames(df)[1] <- "Ensemble Model Prediction"
+    df_ensemble <-data.frame(times, samples@mle[, var_index])
+
+    colnames(df_ensemble) <- c("Year","Ensemble Model Prediction")
+    df <- merge(df_ensemble,df)
 
     df <-  reshape2::melt(df, id.vars=c("Year"), variable.name="Simulator")
 
