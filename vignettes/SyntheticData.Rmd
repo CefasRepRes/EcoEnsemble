@@ -36,7 +36,8 @@ d <- 3 # The number of variables.
 priors <- EnsemblePrior(d,
                         ind_st_params = IndSTPrior(AR_params=c(10,2)), 
                         ind_lt_params = IndLTPrior("beta",
-                                                   cor_params = list(matrix(5, d, d), matrix(1, d, d))),
+                                                   cor_params = list(matrix(5, d, d), 
+                                                                     matrix(1, d, d))),
                         sha_st_params = ShaSTPrior(AR_params=c(10,2)),
 )
 ```
@@ -98,13 +99,15 @@ latent <- matrix(NA, Time, (M+2)*d)
 
 #Priors on initial values
 latent[1, 1:d] <- rnorm(d, 0, 1)
-latent[1, -(1:d)] <- t(chol(ex.fit$SIGMA_init[true_par,-(1:d) ,-(1:d)])) %*% rnorm((M+1)*d, 0, 1)
+latent[1, -(1:d)] <- t(chol(ex.fit$SIGMA_init[true_par,-(1:d) ,-(1:d)]))
+                                          %*% rnorm((M+1)*d, 0, 1)
 
 #Find all the latent values of the dynamic linear model
 SIGMA <- ex.fit$SIGMA[true_par,,]
 SIGMA_chol <- t(chol(SIGMA))
 for (t in 2:Time) {
-  latent[t,] <- ex.fit$AR_params[true_par,] * latent[t-1,] + SIGMA_chol %*% rnorm((M+2)*d, 0, 1)
+  latent[t,] <- ex.fit$AR_params[true_par,] * latent[t-1,] + SIGMA_chol 
+                                          %*% rnorm((M+2)*d, 0, 1)
 }
 
 #The truth is simply the first d values

@@ -82,7 +82,8 @@ plot(invWishartDensity,main="",xlab=expression(lambda),xlim=c(0,2))
 which in 2050 leads to
 ```{r eval = FALSE}
 sd.2050 <- sqrt(33*ex.fit.iw$Sigma[,1,1])
-plot(density(sqrt(33*ex.fit.iw$Sigma[,1,1])),main="",xlab="standard deviation in 2050",xlim=c(0,5))
+plot(density(sqrt(33*ex.fit.iw$Sigma[,1,1])),main="",
+     xlab="standard deviation in 2050",xlim=c(0,5))
 ```
 ```{r plotSDDensity, echo = FALSE}
 plot(density(sd.2050),main="",xlab="standard deviation in 2050",xlim=c(0,5))
@@ -91,7 +92,8 @@ plot(density(sd.2050),main="",xlab="standard deviation in 2050",xlim=c(0,5))
 For example, this means that the SSB of cod in 2050, assuming in 2017 it is exactly the value from the assessment (@ices_ns), will be
 ```{r}
 x <- seq(5,20,length.out=1000)
-plot(x,colMeans(sapply(x, function(xs){dnorm(xs,tail(SSB_obs$Cod,n=1),sd.2050)})),type="l",axes=F,ylab="density",xlab="Cod in 2050 (1000 tonnes)")
+plot(x,colMeans(sapply(x, function(xs){dnorm(xs,tail(SSB_obs$Cod,n=1),sd.2050)})),
+     type="l",axes=F,ylab="density",xlab="Cod in 2050 (1000 tonnes)")
 labsx <- log(signif(exp(seq(5,20,length.out=7)),1))
 axis(1,at=labsx,labels=c(exp(labsx)/1000))
 axis(2)
@@ -151,7 +153,8 @@ plot(density(sqrt(2 * pis)),xlab="Standard deviation",ylab="Density",main="")
 and the distribution of the absolute difference is
 ```{r}
 xs <- seq(0,5,length.out=1000)
-plot(xs,2*colMeans(sapply(xs, function(x){dnorm(x,0,sqrt(2 * pis))})),type="l",axes=T,ylab="density",xlab="Difference of two models")
+plot(xs,2*colMeans(sapply(xs, function(x){dnorm(x,0,sqrt(2*pis))})),
+     type="l",axes=T,ylab="density",xlab="Difference of two models")
 ```
 
 We do not expect the models to differ by much than one order of magnitude and therefore we used this prior.
@@ -227,11 +230,13 @@ ex.fit <- extract(fit_cor)
 def.par <- par(no.readonly=TRUE) #Old pars to reset afterwards
 par(mfrow=c(2,2))
 plot(density(ex.fit$beta_pars[,1,2]),xlab=expression(alpha[rho]),main="")
-plot(density(log(ex.fit$beta_pars[,1,2]/ex.fit$beta_pars[,2,1])),main="",xlab="Expected log odds")
+plot(density(log(ex.fit$beta_pars[,1,2]/ex.fit$beta_pars[,2,1])),main="",
+     xlab="Expected log odds")
 plot(density(ex.fit$rho[,1,1,2]),xlab=expression(rho),main="")
 xs <- seq(-1,1,length.out=100)
 lines(xs,dbeta((xs+1)/2,2,2)/2,col="red")
-plot(density(apply(ex.fit$rho[,,1,2],1,var)),xlim=c(0,0.35),main="",xlab=expression(var(rho)))
+plot(density(apply(ex.fit$rho[,,1,2],1,var)),xlim=c(0,0.35),main="",
+     xlab=expression(var(rho)))
 par(def.par)
 ```
 
@@ -293,7 +298,8 @@ par(mfrow=c(2,2))
 plot(density(ex.fit$gamma_mean[,1]),main="",xlab=expression(mu[pi]))
 plot(density(ex.fit$gamma_var[,1]),xlim=c(0,1),main="",xlab=expression(sigma[pi]^2))
 plot(density(ex.fit$sha_st_var[,1,1]),xlim=c(0,1),main="",xlab=expression(pi["k,i"]^2))
-plot(density(apply(ex.fit$sha_st_var[,,1],1,var)),xlim=c(0,0.2),xlab=expression(var(pi["k,i"]^2)) ,main="")
+plot(density(apply(ex.fit$sha_st_var[,,1],1,var)),xlim=c(0,0.2),
+     xlab=expression(var(pi["k,i"]^2)) ,main="")
 par(def.par)
 ```
 ```{r echo = FALSE,fig.dim=c(7, 6)}
@@ -305,7 +311,7 @@ plot(sha_st_var,xlim=c(0,1),main="",xlab=expression(pi["k,i"]^2))
 plot(sha_st_var_var,xlim=c(0,0.2),xlab=expression(var(pi["k,i"]^2)) ,main="")
 ```
 
-The top left plot shows the marginal distribution of$\mu_{\pi,i}$ and the top right plot being $\sigma^2_{\pi,i}$. The bottom left plot shows the prior distribution of $pi_{k,i}^2$. For the same reason that describes the variance of the random walk on the truth, we felt that $\sigma^2_{\pi,i}$ should not be larger than 0.2. For a similar reason to the correlation parameters, the variance of $\sigma^2_{\pi,i}$ will also be small.
+The top left plot shows the marginal distribution of $\mu_{\pi,i}$ and the top right plot being $\sigma^2_{\pi,i}$. The bottom left plot shows the prior distribution of $pi_{k,i}^2$. For the same reason that describes the variance of the random walk on the truth, we felt that $\sigma^2_{\pi,i}$ should not be larger than 0.2. For a similar reason to the correlation parameters, the variance of $\sigma^2_{\pi,i}$ will also be small.
 
 For the auto regressive parameter, $r_{k,i}$, we set a boundary avoiding prior
 \begin{equation*}
@@ -367,7 +373,8 @@ hist(rbeta(1e5,2,2)*2 - 1,probability = T,xlab=expression(r["k,i"]),main="")
 The prior predictive distribution is then
 ```{r,eval=FALSE,fig.dim=c(7,6)}
 priors <- EnsemblePrior(4,
-                        ind_st_params = IndSTPrior("hierarchical",list(-3,1,8,4),list(0.1,0.1,0.1,0.1),AR_params=c(2,2)),
+                        ind_st_params =IndSTPrior("hierarchical",list(-3,1,8,4),
+                                                  list(0.1,0.1,0.1,0.1),AR_params=c(2,2)),
                         ind_lt_params = IndLTPrior("lkj",list(1,1),1),
                         sha_st_params = ShaSTPrior("lkj",list(1,10),1,AR_params=c(2,2)),
                         sha_lt_params = 5
