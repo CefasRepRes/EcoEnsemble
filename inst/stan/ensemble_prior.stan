@@ -33,7 +33,7 @@ functions{
     return log_prior;
   }
 
-  int sq_int(int[] model_num_species, int M){
+  int sq_int(array[] int model_num_species, int M){
     int ret = 0;
     for (i in 1:M){
 	    ret += model_num_species[i] * model_num_species[i];
@@ -49,7 +49,7 @@ data{
   /**
    * Observations
    */
-  /*vector [N] observations[time];
+  /*array[time] vector [N] observations;
   cov_matrix [N] obs_covariances;*/
 
   /**
@@ -57,7 +57,7 @@ data{
   */
   int<lower=0> M; // number of models
   /*matrix [time,M+1] observation_times; // times that observations happen
-  int<lower=0> model_num_species[M]; // might have to be one
+  array[M] int<lower=0> model_num_species; // might have to be one
   matrix[sum(model_num_species),N] Ms;  // the Ms -- this assumes that the observations are always the same
   matrix [time ,sum(model_num_species)] model_outputs; // vector of observations from the models
   vector [sq_int(model_num_species, M)] model_covariances; // vector of covariance matrices -- this needs to be checked that the individual matrices are positive definite!*/
@@ -85,9 +85,9 @@ data{
   //Individual short-term
   vector [N] prior_ind_st_var_a; // shape parameter (alpha) of inverse gamma
 	vector [N] prior_ind_st_var_b; // scale parameter (beta) of inverse gamma
-	real prior_ind_st_cor_lkj[form_prior_ind_st == 0 ? 1 : 0]; // LKJ shape parameter
+	array[form_prior_ind_st == 0 ? 1 : 0] real prior_ind_st_cor_lkj; // LKJ shape parameter
   matrix[form_prior_ind_st == 1 ? N : 0, form_prior_ind_st == 1 ? N : 0] prior_ind_st_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_st_cor_wish_nu[form_prior_ind_st == 1 ? 1 : 0]; //inverse wishart
+	array[form_prior_ind_st == 1 ? 1 : 0] real<lower=N-1>	prior_ind_st_cor_wish_nu; //inverse wishart
 	matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_ind_st == 2 ? N : 0, form_prior_ind_st == 2 ? N : 0] prior_ind_st_cor_beta_2; // beta shape parameter for Beta distribution
 
@@ -105,9 +105,9 @@ data{
   //Individual long-term
   vector [N] prior_ind_lt_var_a ; // shape parameter (alpha) of inverse gamma
   vector [N] prior_ind_lt_var_b ; // scale parameter (beta) of inverse gamma
-  real prior_ind_lt_cor_lkj[form_prior_ind_lt == 0 ? 1 : 0]; // LKJ shape parameter
+  array[form_prior_ind_lt == 0 ? 1 : 0] real prior_ind_lt_cor_lkj; // LKJ shape parameter
   matrix[form_prior_ind_lt == 1 ? N : 0, form_prior_ind_lt == 1 ? N : 0] prior_ind_lt_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_ind_lt_cor_wish_nu[form_prior_ind_lt == 1 ? 1 : 0]; //inverse wishart
+	array[form_prior_ind_lt == 1 ? 1 : 0] real<lower=N-1>	prior_ind_lt_cor_wish_nu; //inverse wishart
 	matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_ind_lt == 2 ? N : 0, form_prior_ind_lt == 2 ? N : 0] prior_ind_lt_cor_beta_2; // beta shape parameter for Beta distribution
 
@@ -116,9 +116,9 @@ data{
 	//real<lower=0> prior_sha_st_var_exp; // Scale parameter of exponential
 	vector [N] prior_sha_st_var_a ; // shape parameter (alpha) of inverse gamma
   vector [N] prior_sha_st_var_b ; // scale parameter (beta) of inverse gamma
-	real prior_sha_st_cor_lkj[form_prior_sha_st == 0 ? 1: 0]; // LKJ shape parameter
+	array[form_prior_sha_st == 0 ? 1: 0] real prior_sha_st_cor_lkj; // LKJ shape parameter
 	matrix[form_prior_sha_st == 1 ? N: 0,form_prior_sha_st == 1 ? N: 0] prior_sha_st_cor_wish_sigma;//inverse wishart
-	real<lower=N-1>	prior_sha_st_cor_wish_nu[form_prior_sha_st == 1 ? 1: 0]; //inverse wishart
+	array[form_prior_sha_st == 1 ? 1: 0] real<lower=N-1>	prior_sha_st_cor_wish_nu; //inverse wishart
 	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
   //JM 22/07 Now have beta priors on the AR parameters
@@ -141,10 +141,10 @@ parameters{
    * Simulator discrepancies
    */
   // Individual
-  vector <lower=-1,upper=1>[N] ind_st_ar_param[M];
-  vector<lower=0>[N] ind_st_var[M];
-  corr_matrix [N] ind_st_cor[M];
-  vector[N] ind_lt_raw[M];
+  array[M] vector <lower=-1,upper=1>[N] ind_st_ar_param;
+  array[M] vector<lower=0>[N] ind_st_var;
+  array[M] corr_matrix [N] ind_st_cor;
+  array[M] vector[N] ind_lt_raw;
   vector <lower=0> [N] ind_lt_var;
   corr_matrix [N] ind_lt_cor;
   // Shared
@@ -160,10 +160,10 @@ parameters{
 
 }
 transformed parameters{
-  matrix [N,N] SIGMA_x[M];
-  vector [N] ind_st_sd[M];
+  array[M] matrix [N,N] SIGMA_x;
+  array[M] vector [N] ind_st_sd;
   vector [N] sha_lt = prior_sha_lt_sd .* sha_lt_raw;
-  vector [N] ind_lt[M];
+  array[M] vector [N] ind_lt;
   vector [N] ind_lt_sd = sqrt(ind_lt_var);
   matrix [N,N] ind_lt_covar = diag_post_multiply(diag_pre_multiply(ind_lt_sd,ind_lt_cor),ind_lt_sd);
   matrix [N,N] ind_lt_cov_cholesky = cholesky_decompose(ind_lt_covar);
