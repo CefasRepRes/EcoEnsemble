@@ -168,3 +168,13 @@ checking package dependencies ... ERROR
 Packages required and available but unsuitable versions: 'rstan', 'rstan'
 
 I discussed this issue here https://github.com/CefasRepRes/EcoEnsemble/pull/2, where it was proposed that the problem was with the binaries on the Mac release check and it would sort itself out when they are updated. I presume that once updated there will be two Notes, like in all the other versions.
+
+* From previous submission I have changed:
+
+The Description field contains
+     models"<https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310>.
+   Please use permanent DOI markup for linking to publications as in <doi:prefix/suffix>.
+
+to:
+
+models: models"<doi:10.1111/faf.12310>.
