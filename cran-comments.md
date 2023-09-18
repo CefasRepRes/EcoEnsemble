@@ -143,3 +143,28 @@ Found the following (possibly) invalid URLs:
     
 The URL remained from the previous CRAN submission. The URL links to the correct website.
 
+# Version 1.0.5
+
+* Changed `EcoEnsemble` so that it will be compatible with a future the recent `rstan` release (2.26.0).
+
+## R CMD check results
+
+* For the win release there was one NOTE
+
+checking CRAN incoming feasibility ... NOTE Maintainer: 'Michael A. Spence <michael.spence@cefas.gov.uk>'
+Found the following (possibly) invalid URLs:
+  URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310
+    From: DESCRIPTION
+          man/EcoEnsemble-package.Rd
+          README.md
+    Status: 403
+    Message: Forbidden
+    
+The URL remained from the previous CRAN submission. The URL links to the correct website.
+
+* The Mac release gave an error:
+
+checking package dependencies ... ERROR
+Packages required and available but unsuitable versions: 'rstan', 'rstan'
+
+I discussed this issue here https://github.com/CefasRepRes/EcoEnsemble/pull/2, where it was proposed that the problem was with the binaries on the Mac release check and it would sort itself out when they are updated. I presume that once updated there will be two Notes, like in all the other versions.
