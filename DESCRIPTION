@@ -22,6 +22,8 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Biarch: true
+URL: https://github.com/CefasRepRes/EcoEnsemble
+BugReports: https://github.com/CefasRepRes/EcoEnsemble/issues
 Depends: 
     R (>= 3.5.0)
 Imports: 
