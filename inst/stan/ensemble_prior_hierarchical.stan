@@ -33,6 +33,17 @@ functions{
     return log_prior;
   }
 
+  real beta_conj_prior(real alpha, real betas, real p, real q, real k){
+    // is ((gamma(a + b))/(gamma(a) * gamma(b))) ^ k * p^a * q^b
+    // (gamma(a + b))/(gamma(a) * gamma(b)) = beta_lpdf(0.5,a,b) - 0.5 ^ (a + b - 2)
+    real ret = alpha * log(p) + betas * log(q) - k * lbeta(alpha,betas);
+    return ret;
+  }
+
+  /**
+   * Extra functions...
+   */
+
   int sq_int(array[] int model_num_species, int M){
     int ret = 0;
     for (i in 1:M){
@@ -64,17 +75,19 @@ data{
 
 	/**
 	 * Prior choice paramters:
-	 * These determine the form of the prior parametrisation using an integar representation.
+	 * These determine the form of the prior parametrisation using an integer representation.
 	 * Choices 0,1,2 use a decomposition into a diagonal variance matrix and a correlation matrix,
 	 * with inverse-gamma distributions on the variance terms.
 	 *      0 - LKJ correlation matrix
 	 *      1 - Inverse Wishart correlation matrix
 	 *      2 - Beta distributions on correlation matrix entries.
 	 *      ONLY IMPLEMENTED FOR SHORT-TERM: 3 - Hierarchical beta priors
-	 *      NOT IMPLEMENTED: 4 - Inverse Wishart covariance matrix
+	 *      4 - Beta conjugate prior
+	 *      NOT IMPLEMENTED: 5 - Inverse Wishart covariance matrix
+	 *
 	 *
 	 */
-	 int<lower=0, upper=3> form_prior_ind_st;
+	 int<lower=0, upper=4> form_prior_ind_st;
 	 int<lower=0, upper=2> form_prior_ind_lt;
 	 int<lower=0, upper=2> form_prior_sha_st;
 
@@ -85,7 +98,7 @@ data{
 
   //Correlation: Each correlation matrix element is a Beta(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
   //Variance: This is done via variance ~ Gamma(a, b) with a~ Gamma(l,m), b ~ Gamma(n, o) The elements of this vector are: (1) l (2) m (3) n (4) o
-  vector [4] prior_ind_st_cor_hierarchical_beta_hyper_params;
+  vector [form_prior_ind_st == 3 ? 4 : 3] prior_ind_st_cor_hierarchical_beta_hyper_params;
   vector [4] prior_ind_st_var_hierarchical_hyperparams;
 
   //JM 22/07 Now have beta priors on the AR parameters
@@ -133,7 +146,7 @@ parameters{
    */
   // Individual
   array[M] vector <lower=-1,upper=1>[N] ind_st_ar_param;
-  array[M] vector [N] log_ind_st_var;	
+  array[M] vector [N] log_ind_st_var;
   array[M] corr_matrix [N] ind_st_cor;
   array[M] vector[N] ind_lt_raw;
   vector <lower=0> [N] ind_lt_var;
@@ -175,7 +188,7 @@ transformed parameters{
 
   vector [(M+2) * N] x_hat = append_row(prior_y_init_mean,rep_vector(0.0,N * (M + 1)));
   matrix [(M+2) * N,(M+2) * N] SIGMA_init = rep_matrix(0,(M+2) * N,(M+2) * N );
-  
+
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
@@ -261,6 +274,7 @@ model{
     //Hierarchical options
 	prior_ind_st_var_hierarchical_mu_params ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
     diagonal(prior_ind_st_cor_hierarchical_beta_params) ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
+    if (form_prior_ind_st==3){
       for (k in 1:(N-1)){
         for (l in (k+1):N) {
           prior_ind_st_cor_hierarchical_beta_params[k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
@@ -269,6 +283,14 @@ model{
                                                                      prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
         }
       }
+    }else if(form_prior_ind_st==4){
+      for (k in 1:(N-1)){
+        for (l in (k+1):N) {
+		/// MS to edit to include the new prior -- see conjugate prior wikipedia
+		      target += beta_conj_prior(prior_ind_st_cor_hierarchical_beta_params[k, l],prior_ind_st_cor_hierarchical_beta_params[l, k],prior_ind_st_cor_hierarchical_beta_hyper_params[1],prior_ind_st_cor_hierarchical_beta_hyper_params[2],prior_ind_st_cor_hierarchical_beta_hyper_params[3]);
+        }
+      }
+    }
 
 
   for(i in 1:M){

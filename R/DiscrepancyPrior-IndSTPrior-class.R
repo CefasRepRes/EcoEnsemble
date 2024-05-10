@@ -23,10 +23,13 @@
 #' #Beta priors via the method of concordance. We have gamma(5,3) priors on the variance
 #' # and beta(40,40) on each of the correlations in the correlation matrix.
 #' ist_bet <- IndSTPrior("beta", list(5, 3), list(matrix(40, 5, 5), matrix(40, 5, 5)))
-#'
+#' #'
 #' #Inverse Wishart correlation priors. Gamma(2, 1/3) priors are on the variances and
 #' #inv-Wishart(5, diag(5)) on the correlation matrices.
 #' ist_inW <- IndSTPrior("inv_wishart", list(2, 1/3),list(5, diag(5)))
+#' @rdname PriorConstructorFunctions
+#' @export
+#'
 #' @rdname PriorConstructorFunctions
 #' @export
 #'
@@ -35,7 +38,8 @@ IndSTPrior <- function(parametrisation_form = "hierarchical", var_params= list(-
   validate_parametrisation_form(parametrisation_form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,
                                                                       CORRELATIONS_PRIOR_INV_WISHART,
                                                                       CORRELATIONS_PRIOR_BETA,
-                                                                      CORRELATIONS_PRIOR_HIERARCHICAL))
+                                                                      CORRELATIONS_PRIOR_HIERARCHICAL,
+                                                                      CORRELATIONS_PRIOR_BETA_CONJUGATE))
   validate_prior_AR_params(AR_params)
 
   # if(is.numeric(cor_params))
@@ -88,7 +92,7 @@ generate_priors_stan_input_ind_st <- function(d, x){
     prior_ind_st_var_b = numeric(0),
     prior_ind_st_var_hierarchical_hyperparams = numeric(0)
   )
-  if(cor_form == CORRELATIONS_PRIOR_HIERARCHICAL){
+  if(cor_form == CORRELATIONS_PRIOR_HIERARCHICAL || cor_form == CORRELATIONS_PRIOR_BETA_CONJUGATE){
     var_priors$prior_ind_st_var_hierarchical_hyperparams <- unlist(x@var_params)
   }else{
     repeated_var_params <- repeat_variance_priors(d, x)
