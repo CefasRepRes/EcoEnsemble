@@ -18,8 +18,23 @@
 #'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains = 1)
 #'}
 
-get_mcmc_ensemble_model <- function(){
-  return(stanmodels$ensemble_model)
+get_mcmc_ensemble_model <- function(priors, likelihood = TRUE){
+
+  st_pf <- priors@ind_st_params@parametrisation_form
+
+  if (st_pf == "hierarchical") {
+    if (likelihood) {
+      return(stanmodels$ensemble_model_hierarchical)
+    } else {
+      return(stanmodels$ensemble_prior_hierarchical)
+    }
+  } else {
+    if (likelihood) {
+      return(stanmodels$ensemble_model)
+    } else {
+      return(stanmodels$ensemble_prior)
+    }
+  }
 }
 
 #'Fits the ensemble model
