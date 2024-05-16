@@ -1,13 +1,16 @@
 #'Return the compiled ensemble model Stan object.
 #'
 #'Gets the unfit, compiled `stanmodel` object encoding the ensemble model. This allows for
-#'manual fitting of the ensemble model directly using.
+#'manual fitting of the ensemble model directly using \code{rstan::sampling}.
+#'
+#'@param priors An `EnsemblePrior` object specifying the prior distributions for the ensemble for which the compiled `stanmodel` object will be obtained.
+#'@param likelihood A `logical` that returns the compiled `stanmodel` object including the likelihood (the Kalman filter) for given priors if `TRUE`. If `FALSE` returns the compiled `stanmodel` object without the likelihood for sampling from the prior.
 #'@return The `stanmodel` object encoding the ensemble model.
 #'@export
 #'@examples
-#'mod <- get_mcmc_ensemble_model()
-#'
 #'priors <- EnsemblePrior(4)
+#'mod <- get_mcmc_ensemble_model(priors)
+#'
 #'ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
 #'                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
 #'                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
@@ -18,8 +21,23 @@
 #'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains = 1)
 #'}
 
-get_mcmc_ensemble_model <- function(){
-  return(stanmodels$ensemble_model)
+get_mcmc_ensemble_model <- function(priors, likelihood = TRUE){
+
+  st_pf <- priors@ind_st_params@parametrisation_form
+
+  if (st_pf == "hierarchical") {
+    if (likelihood) {
+      return(stanmodels$ensemble_model_hierarchical)
+    } else {
+      return(stanmodels$ensemble_prior_hierarchical)
+    }
+  } else {
+    if (likelihood) {
+      return(stanmodels$ensemble_model)
+    } else {
+      return(stanmodels$ensemble_prior)
+    }
+  }
 }
 
 #'Fits the ensemble model

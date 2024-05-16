@@ -178,3 +178,7 @@ The Description field contains
 to:
 
 models: models"<doi:10.1111/faf.12310>.
+
+# Version 1.0.6
+
+* Extended `get_mcmc_ensemble_model` to return all stanmodels in package

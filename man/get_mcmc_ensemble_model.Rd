@@ -4,19 +4,24 @@
 \alias{get_mcmc_ensemble_model}
 \title{Return the compiled ensemble model Stan object.}
 \usage{
-get_mcmc_ensemble_model()
+get_mcmc_ensemble_model(priors, likelihood = TRUE)
+}
+\arguments{
+\item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble for which the compiled \code{stanmodel} object will be obtained.}
+
+\item{likelihood}{A \code{logical} that returns the compiled \code{stanmodel} object including the likelihood (the Kalman filter) for given priors if \code{TRUE}. If \code{FALSE} returns the compiled \code{stanmodel} object without the likelihood for sampling from the prior.}
 }
 \value{
 The \code{stanmodel} object encoding the ensemble model.
 }
 \description{
 Gets the unfit, compiled \code{stanmodel} object encoding the ensemble model. This allows for
-manual fitting of the ensemble model directly using.
+manual fitting of the ensemble model directly using \code{rstan::sampling}.
 }
 \examples{
-mod <- get_mcmc_ensemble_model()
-
 priors <- EnsemblePrior(4)
+mod <- get_mcmc_ensemble_model(priors)
+
 ensemble_data <- EnsembleData(observations = list(SSB_obs, Sigma_obs),
                              simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                            list(SSB_fs,  Sigma_fs, "FishSUMS"),
