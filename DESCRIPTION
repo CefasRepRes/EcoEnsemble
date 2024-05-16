@@ -1,6 +1,6 @@
 Package: EcoEnsemble
 Title: A General Framework for Combining Ecosystem Models
-Version: 1.0.5
+Version: 1.0.6
 Authors@R: 
     c(person(given = "Michael A.",
                 family = "Spence",
@@ -20,7 +20,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Biarch: true
 URL: https://github.com/CefasRepRes/EcoEnsemble
 BugReports: https://github.com/CefasRepRes/EcoEnsemble/issues
