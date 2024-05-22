@@ -33,9 +33,11 @@ functions{
     return log_prior;
   }
 
-  real beta_conj_prior(real alpha, real betas, real p, real q, real k){
-    // is ((gamma(a + b))/(gamma(a) * gamma(b))) ^ k * p^a * q^b
-    // (gamma(a + b))/(gamma(a) * gamma(b)) = beta_lpdf(0.5,a,b) - 0.5 ^ (a + b - 2)
+  real beta_conj_prior(real alpha, real betas, real r, real s, real k){
+    rl = 1/(1 + exp(-r));
+    sl = 1/(1 + exp(-s));
+    p = (sl * rl)^k;
+    q = (sl * (1 - rl))^k;
     real ret = alpha * log(p) + betas * log(q) - k * lbeta(alpha,betas);
     return ret;
   }
@@ -84,7 +86,6 @@ data{
 	 *      ONLY IMPLEMENTED FOR SHORT-TERM: 3 - Hierarchical beta priors
 	 *      4 - Beta conjugate prior
 	 *      NOT IMPLEMENTED: 5 - Inverse Wishart covariance matrix
-	 *
 	 *
 	 */
 	 int<lower=0, upper=4> form_prior_ind_st;

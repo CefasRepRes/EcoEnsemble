@@ -19,7 +19,7 @@ prior_ensemble_model(
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the prior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the prior density of the ensemble model.}
 
-\item{control}{If creating a full sample, this is a named \code{list} of paramaters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
+\item{control}{If creating a full sample, this is a named \code{list} of parameters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
 
 \item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }

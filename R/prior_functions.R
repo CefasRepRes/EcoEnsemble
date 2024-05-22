@@ -41,7 +41,6 @@ correlation_prior <- function(params, form, type, allow_hierarchical){
     ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- numeric(0)
   }
 
-
   if (form == CORRELATIONS_PRIOR_LKJ){
     ret[[paste0(type, "_lkj")]] <- array(params, 1)
   }else if(form == CORRELATIONS_PRIOR_INV_WISHART){

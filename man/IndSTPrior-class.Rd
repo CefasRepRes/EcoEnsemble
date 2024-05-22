@@ -8,7 +8,7 @@
 An \code{IndSTPrior} object encapsulates the prior information for the short-term discrepancies of the individual simulators within the ensemble model.
 }
 \details{
-Individual short-term discrepancies \eqn{z_k^{(t)}} are modelled as an AR(1) process so that \deqn{z_k^{(t+1)} \sim N(R_k z_k^{(t)}, \Lambda_k).} Accepted parametrisation forms for this discrepancy are \code{lkj}, \code{beta}, \code{inv_wishart}, or \code{hierarchical}. See details of the \code{EnsemblePrior()} constructor for more details.
+Individual short-term discrepancies \eqn{z_k^{(t)}} are modelled as an AR(1) process so that \deqn{z_k^{(t+1)} \sim N(R_k z_k^{(t)}, \Lambda_k).} Accepted parametrisation forms for this discrepancy are \code{lkj}, \code{beta}, \code{inv_wishart}, \code{hierarchical} or \code{hierarchical_beta_conjugate}. See details of the \code{EnsemblePrior()} constructor for more details.
 }
 \section{Slots}{
 

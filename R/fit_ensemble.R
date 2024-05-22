@@ -58,6 +58,9 @@ fit_ensemble_model <- function(observations, simulators, priors,
   mod <- stanmodels$ensemble_model
   if(stan_input$form_prior_ind_st == 3){
     mod <- stanmodels$ensemble_model_hierarchical
+    if(!full_sample){
+      stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+    }
   }
 
 

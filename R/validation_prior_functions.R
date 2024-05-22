@@ -32,9 +32,9 @@ validate_prior_compatibility <- function(type_str, params, d) {
 
 
 
-validate_parametrisation_form <- function(form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,CORRELATIONS_PRIOR_INV_WISHART,CORRELATIONS_PRIOR_BETA,CORRELATIONS_PRIOR_BETA_CONJUGATE)){
+validate_parametrisation_form <- function(form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,CORRELATIONS_PRIOR_INV_WISHART,CORRELATIONS_PRIOR_BETA,CORRELATIONS_PRIOR_HIERARCHICAL,CORRELATIONS_PRIOR_BETA_CONJUGATE)){
   if(!isTRUE(correlation_form_prior(form) %in% valid_forms)){
-    stop("Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' option is only available for individual short-term discrepancies. Prior choice: ", form)
+    stop("Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: ", form)
   }
 
 }

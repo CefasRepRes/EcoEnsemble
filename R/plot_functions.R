@@ -32,7 +32,7 @@ plot.EnsembleSample <- function(x, variable = NULL, quantiles=c(0.05, 0.95), ...
 
   d <- x@ensemble_fit@ensemble_data@priors@d
   plots_all <- lapply(1:d, function(i){plot_single(x, i, quantiles, ...) + ggplot2::theme(legend.position = "none")})
-  legend <- cowplot::get_legend(plot_single(x, 1))
+  legend <- cowplot::get_plot_component(plot_single(x, 1), "guide-box-right")
   plots_all <- append(plots_all, list(legend))
   return(
     do.call(cowplot::plot_grid, plots_all)
@@ -152,5 +152,5 @@ plot_values_optimised_gg<- function(df, title, ...){
 }
 
 plot_values_sample_gg<- function(df, title, ...){
-    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`Lower`, ymax =`Upper`, fill = `Simulator`), alpha=0.2))
+    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`Lower`, ymax =`Upper`, fill = `Simulator`), alpha=0.2)) + ggplot2::theme(legend.position = "right")
 }
