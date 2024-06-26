@@ -23,16 +23,18 @@ validate_prior_compatibility <- function(type_str, params, d) {
              !(dim(cor_params[[1]])[1] == d) ||
              !(dim(cor_params[[2]])[1] == d))){
     stop("Invalid beta parameters for ", type_str, " correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
-  }else if (form == "hierarchical"& length(cor_params) !=4){
+  }else if (form == "hierarchical"& length(cor_params) != 4){
     stop("Invalid parameters for ", type_str, " correlation matrix priors. This should be a list of length 4.")
+  }else if (form == "hierarchical_beta_conjugate" & length(cor_params) != 3){
+    stop("Invalid parameters for ", type_str, " correlation matrix priors. This should be a list of length 3.")
   }
 }
 
 
 
-validate_parametrisation_form <- function(form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,CORRELATIONS_PRIOR_INV_WISHART,CORRELATIONS_PRIOR_BETA)){
+validate_parametrisation_form <- function(form, valid_forms = c(CORRELATIONS_PRIOR_LKJ,CORRELATIONS_PRIOR_INV_WISHART,CORRELATIONS_PRIOR_BETA,CORRELATIONS_PRIOR_HIERARCHICAL,CORRELATIONS_PRIOR_BETA_CONJUGATE)){
   if(!isTRUE(correlation_form_prior(form) %in% valid_forms)){
-    stop("Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', or 'hierarchical'. The 'hierarchical' option is only available for individual short-term discrepancies. Prior choice: ", form)
+    stop("Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: ", form)
   }
 
 }

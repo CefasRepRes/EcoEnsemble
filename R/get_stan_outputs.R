@@ -55,7 +55,12 @@ generate_sample <- function(fit, num_samples = 1)
   # If we have samples, then a full MCMC was run
   full_sample <- !is.null(fit@samples)
 
-  transformed_data <- get_transformed_data(fit)
+  if ("MM" %in% names(stan_input)) {
+    transformed_data <- get_transformed_data_dri(fit)
+  }
+  else {
+    transformed_data <- get_transformed_data(fit)
+  }
 
   if (full_sample){
     ex.fit <- rstan::extract(fit@samples)

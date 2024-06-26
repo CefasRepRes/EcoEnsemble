@@ -3,6 +3,7 @@ CORRELATIONS_PRIOR_LKJ <- 0
 CORRELATIONS_PRIOR_INV_WISHART <- 1
 CORRELATIONS_PRIOR_BETA <- 2
 CORRELATIONS_PRIOR_HIERARCHICAL <- 3
+CORRELATIONS_PRIOR_BETA_CONJUGATE <- 4
 
 correlation_form_prior <- function(prior_choice){
   return(
@@ -10,7 +11,8 @@ correlation_form_prior <- function(prior_choice){
            "lkj" = CORRELATIONS_PRIOR_LKJ,
            "inv_wishart" = CORRELATIONS_PRIOR_INV_WISHART,
            "beta" = CORRELATIONS_PRIOR_BETA,
-           "hierarchical" = CORRELATIONS_PRIOR_HIERARCHICAL)
+           "hierarchical" = CORRELATIONS_PRIOR_HIERARCHICAL,
+           "hierarchical_beta_conjugate" = CORRELATIONS_PRIOR_BETA_CONJUGATE)
   )
 }
 
@@ -39,7 +41,6 @@ correlation_prior <- function(params, form, type, allow_hierarchical){
     ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- numeric(0)
   }
 
-
   if (form == CORRELATIONS_PRIOR_LKJ){
     ret[[paste0(type, "_lkj")]] <- array(params, 1)
   }else if(form == CORRELATIONS_PRIOR_INV_WISHART){
@@ -49,6 +50,9 @@ correlation_prior <- function(params, form, type, allow_hierarchical){
     ret[[paste0(type, "_beta_1")]] <- params[[1]]
     ret[[paste0(type, "_beta_2")]] <- params[[2]]
   }else if(form == CORRELATIONS_PRIOR_HIERARCHICAL
+           && allow_hierarchical){
+    ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- unlist(params)
+  }else if(form == CORRELATIONS_PRIOR_BETA_CONJUGATE
            && allow_hierarchical){
     ret[[paste0(type, "_hierarchical_beta_hyper_params")]] <- unlist(params)
   }

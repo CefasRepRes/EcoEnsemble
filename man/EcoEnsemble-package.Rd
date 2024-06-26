@@ -21,3 +21,21 @@ Stan Development Team (2020). RStan: the R interface to Stan. R package version 
 
 Spence, M. A., J. L. Blanchard, A. G. Rossberg, M. R. Heath, J. J. Heymans, S. Mackinson, N. Serpetti, D. C. Speirs, R. B. Thorpe, and P. G. Blackwell. 2018. "A General Framework for Combining Ecosystem Models." Fish and Fisheries 19: 1013-42. \url{https://onlinelibrary.wiley.com/doi/abs/10.1111/faf.12310}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/CefasRepRes/EcoEnsemble}
+  \item Report bugs at \url{https://github.com/CefasRepRes/EcoEnsemble/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Michael A. Spence \email{michael.spence@cefas.gov.uk} (\href{https://orcid.org/0000-0002-3445-7979}{ORCID})
+
+Authors:
+\itemize{
+  \item James A. Martindale (\href{https://orcid.org/0000-0002-1913-5592}{ORCID})
+  \item Michael J. Thomson (\href{https://orcid.org/0000-0003-0284-0129}{ORCID})
+}
+
+}

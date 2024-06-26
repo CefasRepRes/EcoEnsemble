@@ -114,7 +114,6 @@ data{
 	 *      1 - Inverse Wishart correlation matrix
 	 *      2 - Beta distributions on correlation matrix entries.
 	 *      ONLY IMPLEMENTED FOR SHORT-TERM: 3 - Hierarchical beta priors
-	 *      NOT IMPLEMENTED: 4 - Inverse Wishart covariance matrix
 	 *
 	 */
 	 int<lower=0, upper=3> form_prior_ind_st;
