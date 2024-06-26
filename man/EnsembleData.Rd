@@ -4,7 +4,7 @@
 \alias{EnsembleData}
 \title{Constructor for the \code{EnsembleData} class}
 \usage{
-EnsembleData(observations, simulators, priors)
+EnsembleData(observations, simulators, priors, drivers = FALSE, MMod)
 }
 \arguments{
 \item{observations}{A \code{list} of length 2 containing observations and a covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving observations of each output of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is is a \eqn{d \times d} \code{matrix} where \eqn{d} is the number of columns of the observations data frame / matrix. This matrix is the covariance matrix of the observations.}
@@ -12,6 +12,10 @@ EnsembleData(observations, simulators, priors)
 \item{simulators}{A \code{list} with length equal to the number of simulators. For each simulator, there is a \code{list} of 2 objects containing the simulator output and covariance matrix. The first element is a \code{data.frame} or \code{matrix} with each column giving a simulator outputs of interest and each row a time. Rows should be named with the times and columns should be named the variables. The second element is a \eqn{n_k \times n_k} \code{matrix} where \eqn{n_k} is the number of columns of the simulators output data frame / matrix. This matrix is the covariance matrix of the simulator outputs.}
 
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
+
+\item{drivers}{A logical indicating whether drivers have been used in combination with models. Default value is FALSE.}
+
+\item{MMod}{Not currently implemented.}
 }
 \value{
 An object of class \code{EnsembleData}

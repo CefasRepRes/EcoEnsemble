@@ -11,6 +11,7 @@ sample_prior(
   sam_priors,
   num_samples = 1,
   full_sample = TRUE,
+  drivers = FALSE,
   ...
 )
 }
@@ -26,6 +27,8 @@ sample_prior(
 \item{num_samples}{A \code{numeric} specifying the number of samples to be generated. The default is 1.}
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the prior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the prior density of the ensemble model.}
+
+\item{drivers}{A logical indicating whether drivers have been used in combination with models. Default value is FALSE.}
 
 \item{...}{Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.}
 }
