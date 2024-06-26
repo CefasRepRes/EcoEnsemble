@@ -34,10 +34,10 @@ functions{
   }
 
   real beta_conj_prior(real alpha, real betas, real r, real s, real k){
-    rl = 1/(1 + exp(-r));
-    sl = 1/(1 + exp(-s));
-    p = (sl * rl)^k;
-    q = (sl * (1 - rl))^k;
+    real rl = 1/(1 + exp(-r));
+    real sl = 1/(1 + exp(-s));
+    real p = (sl * rl)^k;
+    real q = (sl * (1 - rl))^k;
     real ret = alpha * log(p) + betas * log(q) - k * lbeta(alpha,betas);
     return ret;
   }

@@ -1,52 +1,14 @@
-#'@rdname get_stan_outputs
-#'@export
-generate_sample_withdrivers <- function(fit, num_samples = 1)
-{
-
-  stan_input <- fit@ensemble_data@stan_input
-
-  # If we have samples, then a full MCMC was run
-  full_sample <- !is.null(fit@samples)
-
-  transformed_data <- get_transformed_data_dri(fit)
-
-  if (full_sample){
-    ex.fit <- rstan::extract(fit@samples)
-    num_samples <- nrow(ex.fit$x_hat)
-    mle <- sapply(1:num_samples, get_mle, ex.fit = ex.fit, transformed_data = transformed_data,
-                  time = stan_input$time, simplify = F)
-  }else {
-    ex.fit <- fit@point_estimate$par
-    mle <- get_mle(x=1, ex.fit, transformed_data = transformed_data,
-                   time = stan_input$time)
+which_fun_subset <- function(i, j, mod_to_esm){
+  ret <- 0
+  num <- 0
+  while (num < j){
+    ret <- ret + 1
+    if (mod_to_esm[i,ret] == ret){
+      num <- num + 1
+    }
   }
-
-  sammy <- sapply(1:num_samples, gen_sample, ex.fit = ex.fit,
-                  transformed_data = transformed_data,
-                  time = stan_input$time, simplify = F)
-
-
-  if (full_sample){
-    tmp <- mapply(function(x,y){
-      y - x$sam_x_hat + x$sam_x
-    }, y = mle,
-    x = sammy)
-    sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
-    mle <-array(as.numeric(unlist(mle)),dim=c(nrow(mle[[1]]),ncol(mle[[1]]),num_samples))
-  }else{
-    tmp<-lapply(sammy,function(x,y){
-      y - x$sam_x_hat + x$sam_x
-    }, y = mle)
-    sample_ret <-array(as.numeric(unlist(tmp)),dim=c(nrow(mle), ncol(mle), num_samples))
-  }
-
-
-  #Clean up the Stan functions
-  #rm("As", "KalmanFilter_back", "KalmanFilter_seq_em", "priors_cor_beta", "priors_cor_hierarchical_beta", "sq_int")
-
-  return(EnsembleSample(fit, mle, sample_ret))
+  return(ret)
 }
-
 
 
 #'@rdname get_stan_outputs
@@ -86,7 +48,7 @@ get_transformed_data_dri <- function(fit){
       bigM[(N + 1):(N + model_num_species[1]), (2*N + 1):(3*N)] <- Ms[1:model_num_species[1],]
       bigM[(N + 1):(N + model_num_species[1]), ((M + 2)*N + (which_fun_subset(1, 1, mod_to_dri)-1)*N + 1):((M + 2)*N + which_fun_subset(1, 1, mod_to_dri)*N)] <- Ms[1:model_num_species[1],]
 
-      tmp_eigen <- eigen(matrix(model_covariances[1:sq_int(model_num_species,1)],model_num_species[1],model_num_species[1]),symmetric=T)
+      tmp_eigen <- eigen(matrix(model_covariances[1:(model_num_species[1]^2)],model_num_species[1],model_num_species[1]),symmetric=T)
       all_eigenvalues_cov[(N + 1):(N + model_num_species[1])] <- tmp_eigen$values
       all_eigenvectors_cov[(N + 1):(N + model_num_species[1]),(N + 1):(N + model_num_species[1])] <- tmp_eigen$vectors
 
@@ -99,17 +61,17 @@ get_transformed_data_dri <- function(fit){
           bigM[start_index:end_index, (N + 1):(2*N)] <- Ms_transformation
           bigM[start_index:end_index, (2*N + 1):(3*N)] <- Ms_transformation
           bigM[start_index:end_index, ((M + 2)*N + (which_fun_subset(1, j, mod_to_dri)-1)*N + 1):((M + 2)*N + which_fun_subset(1, j, mod_to_dri)*N)] <- Ms_transformation
-          tmp_eigen <- eigen(matrix(model_covariances[(sq_int(model_num_species,j-1) + 1):sq_int(model_num_species,j)],model_num_species[j],model_num_species[j]),symmetric=T)
+          tmp_eigen <- eigen(matrix(model_covariances[(sum(model_num_species[1:(j-1)]^2) + 1):sum(model_num_species[1:j]^2)],model_num_species[j],model_num_species[j]),symmetric=T)
           all_eigenvalues_cov[start_index:end_index] <- tmp_eigen$values
           all_eigenvectors_cov[start_index:end_index, start_index:end_index] <- tmp_eigen$vectors
         }
       }
     }
     else {
-      bigM[(N + 1):(N + model_num_species[1]), 1:N] <- Ms[1:model_num_species[1],];
-      bigM[(N + 1):(N + model_num_species[1]), (N + 1):(2*N)] <- Ms[1:model_num_species[1],];
-      bigM[(N + 1):(N + model_num_species[1]), (2*N + 1):(3*N)] <- Ms[1:model_num_species[1],];
-      tmp_eigen <- eigen(matrix(model_covariances[1:sq_int(model_num_species,1)],model_num_species[1],model_num_species[1]),symmetric=T)
+      bigM[(N + 1):(N + model_num_species[1]), 1:N] <- Ms[1:model_num_species[1],]
+      bigM[(N + 1):(N + model_num_species[1]), (N + 1):(2*N)] <- Ms[1:model_num_species[1],]
+      bigM[(N + 1):(N + model_num_species[1]), (2*N + 1):(3*N)] <- Ms[1:model_num_species[1],]
+      tmp_eigen <- eigen(matrix(model_covariances[1:(model_num_species[1]^2)],model_num_species[1],model_num_species[1]),symmetric=T)
       all_eigenvalues_cov[(N + 1):(N + model_num_species[1])] <- tmp_eigen$values
       all_eigenvectors_cov[(N + 1):(N + model_num_species[1]),(N + 1):(N + model_num_species[1])] <- tmp_eigen$vectors
     }
@@ -121,9 +83,9 @@ get_transformed_data_dri <- function(fit){
           Ms_transformation <- Ms[(start_index - N):(end_index - N),]
           bigM[start_index:end_index,1:N] <- Ms_transformation;
           bigM[start_index:end_index,(N+1):(2*N)] <- Ms_transformation;
-          bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] <- Ms_transformation;
+          bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] <- Ms_transformation
           bigM[start_index:end_index, ((M + 1)*N + (which_fun_subset(i, 1, mod_to_dri)-1)*N + 1):((M + 1)*N + which_fun_subset(i, 1, mod_to_dri)*N)] <- Ms_transformation
-          tmp_eigen <- eigen(matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)])) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + 1)], model_num_species[sum(n_dri[1:(i-1)]) + 1], model_num_species[sum(n_dri[1:(i-1)]) + 1]),symmetric=T)
+          tmp_eigen <- eigen(matrix(model_covariances[(sum(model_num_species[1:sum(n_dri[1:(i-1)])]^2) + 1):sum(model_num_species[1:(sum(n_dri[1:(i-1)]) + 1)]^2)], model_num_species[sum(n_dri[1:(i-1)]) + 1], model_num_species[sum(n_dri[1:(i-1)]) + 1]),symmetric=T)
           all_eigenvalues_cov[start_index:end_index] <- tmp_eigen$values
           all_eigenvectors_cov[start_index:end_index, start_index:end_index] <- tmp_eigen$vectors
         }
@@ -137,7 +99,7 @@ get_transformed_data_dri <- function(fit){
               bigM[start_index:end_index,(N+1):(2*N)] <- Ms_transformation
               bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] = Ms_transformation
               bigM[start_index:end_index, ((M + 2)*N + (which_fun_subset(i, j, mod_to_dri)-1)*N + 1):((M + 2)*N + which_fun_subset(i, j, mod_to_dri)*N)] <- Ms_transformation
-              tmp_eigen <- eigen(matrix(model_covariances[(sq_int(model_num_species, sum(n_esms[1:(i-1)]) + (j-1)) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + j)], model_num_species[sum(n_dri[1:(i-1)]) + j], model_num_species[sum(n_dri[1:(i-1)]) + j]),symmetric=T)
+              tmp_eigen <- eigen(matrix(model_covariances[(sum(model_num_species[1:(sum(n_dri[1:(i-1)]) + (j-1))]^2) + 1):sum(model_num_species[1:(sum(n_dri[1:(i-1)]) + j)]^2)], model_num_species[sum(n_dri[1:(i-1)]) + j], model_num_species[sum(n_dri[1:(i-1)]) + j]),symmetric=T)
               all_eigenvalues_cov[start_index:end_index] <- tmp_eigen$values
               all_eigenvectors_cov[start_index:end_index, start_index:end_index] <- tmp_eigen$vectors
             }
@@ -152,7 +114,7 @@ get_transformed_data_dri <- function(fit){
           bigM[start_index:end_index,1:N] <- Ms_transformation
           bigM[start_index:end_index,(N+1):(2*N)] <- Ms_transformation
           bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] <- Ms_transformation
-          tmp_eigen <- eigen(matrix(model_covariances[(sq_int(model_num_species,i-1) + 1):(sq_int(model_num_species,i))],model_num_species[i],model_num_species[i]),symmetric=T)
+          tmp_eigen <- eigen(matrix(model_covariances[(sum(model_num_species[1:(i-1)]^2) + 1):sum(model_num_species[1:i]^2)],model_num_species[i],model_num_species[i]),symmetric=T)
           all_eigenvalues_cov[start_index:end_index] <- tmp_eigen$values
           all_eigenvectors_cov[start_index:end_index, start_index:end_index] <- tmp_eigen$vectors
         }

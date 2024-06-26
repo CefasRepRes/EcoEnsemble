@@ -21,8 +21,10 @@
 #' ist_hie <- IndSTPrior("hierarchical", list(1,2,10,1), list(3,4,5,6))
 #'
 #' #Hierarchical priors with gamma(1,2) and gamma(10, 1) on the variance hyperparameters and
-#' #the beta conjugate prior with parameters (p = 0.75, q = 0.75, k = 0.2) on the correlation hyperparameters
-#' ist_hie_beta_conj <- IndSTPrior("hierarchical_beta_conjugate", list(1,2,10,1), list(0.75, 0.75, 0.2))
+#' #the beta conjugate prior with parameters (p = 0.75, q = 0.75, k = 0.2) on the
+#' #correlation hyperparameters
+#' ist_hie_beta_conj <- IndSTPrior("hierarchical_beta_conjugate",
+#' list(1,2,10,1), list(0.75,0.75,0.2))
 #'
 #' #Inverse Wishart correlation priors. Gamma(2, 1/3) priors are on the variances and
 #' #inv-Wishart(5, diag(5)) on the correlation matrices.

@@ -7,6 +7,7 @@
 prior_ensemble_model(
   priors,
   M = 1,
+  MM = NULL,
   full_sample = TRUE,
   control = list(adapt_delta = 0.95),
   ...
@@ -16,6 +17,8 @@ prior_ensemble_model(
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 
 \item{M}{A \code{numeric} that represents the number of simulators. The default is 1.}
+
+\item{MM}{A \code{numeric} that represents the number of drivers. The default is \code{NULL}.}
 
 \item{full_sample}{A \code{logical} that runs a full sampling of the prior density of the ensemble model if \code{TRUE}. If \code{FALSE}, returns the point estimate which maximises the prior density of the ensemble model.}
 

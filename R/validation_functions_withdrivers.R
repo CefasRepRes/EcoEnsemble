@@ -5,6 +5,7 @@ validate_data_dri <- function(observations, simulators, priors, MMod){
     stop(paste0("Simulator data should be passed through as a list, with each element also a list corresponding to each model. For each sublist corresponding to a model, the first element should be a further list containing the data for each of the allowed driver combinations with the model, and the second element a list containing the corresponding covariances. The third element element is the optional model name and the fourth element is a list of optional driver names (for each allowed combination)."))
   }
 
+  M <- length(simulators)
   if (!missing(MMod)){
     MM <- max(unique(unlist(MMod)))
     n_dri <- sapply(MMod, length)
@@ -43,7 +44,7 @@ validate_data_dri <- function(observations, simulators, priors, MMod){
       if(length(simulator) >= 3){
         sim_name <- simulator[[3]]
         dri_name <- paste0(" + ","driver [[", j,"]]")
-        if (length(simulator) = 4){
+        if (length(simulator) == 4){
           dri_name <- paste0(" + ", simulator[[4]][[j]])
         }
         sim_name <- paste0(sim_name, dri_name)

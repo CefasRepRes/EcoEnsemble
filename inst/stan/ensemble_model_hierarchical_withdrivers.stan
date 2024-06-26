@@ -77,10 +77,10 @@ functions{
   }
 
   real beta_conj_prior(real alpha, real betas, real r, real s, real k){
-    rl = 1/(1 + exp(-r));
-    sl = 1/(1 + exp(-s));
-    p = (sl * rl)^k;
-    q = (sl * (1 - rl))^k;
+    real rl = 1/(1 + exp(-r));
+    real sl = 1/(1 + exp(-s));
+    real p = (sl * rl)^k;
+    real q = (sl * (1 - rl))^k;
     real ret = alpha * log(p) + betas * log(q) - k * lbeta(alpha,betas);
     return ret;
   }
@@ -135,7 +135,7 @@ data{
 
   matrix[sum(model_num_species), N] Ms;
   matrix [time, sum(model_num_species)] model_outputs;
-  vector [sq_int(model_num_species, sum(n_esms))] model_covariances;
+  vector [sq_int(model_num_species, sum(n_dri))] model_covariances;
 
 	/**
 	 * Prior choice paramters:
@@ -187,11 +187,6 @@ data{
 	array[form_prior_sha_st == 1 ? 1: 0] real<lower=N-1>	prior_sha_st_cor_wish_nu; //inverse wishart
 	matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_1; // alpha shape parameter for Beta distribution
   matrix [form_prior_sha_st == 2 ? N: 0,form_prior_sha_st == 2 ? N: 0] prior_sha_st_cor_beta_2; // beta shape parameter for Beta distribution
-  //JM 22/07 Now have beta priors on the AR parameters
-  real<lower=0> prior_sha_st_ar_alpha;
-  real<lower=0> prior_sha_st_ar_beta;
-
-  */
   //JM 22/07 Now have beta priors on the AR parameters
   real<lower=0> prior_sha_st_ar_alpha;
   real<lower=0> prior_sha_st_ar_beta;
@@ -257,7 +252,7 @@ transformed data{
   		    bigM[start_index:end_index,1:N] = Ms_transformation;
     		  bigM[start_index:end_index,(N+1):(2*N)] = Ms_transformation;
   	   	  bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] = Ms_transformation;
-  	   	  bigM[start_index:end_index, ((M + 1)*N + (which_fun_subset(i, 1, mod_to_dri)-1)*N + 1):((M + 1)*N + which_fun_subset(i, 1, M, MM, mod_to_dri)*N)] = Ms_transformation;
+  	   	  bigM[start_index:end_index, ((M + 1)*N + (which_fun_subset(i, 1, mod_to_dri)-1)*N + 1):((M + 1)*N + which_fun_subset(i, 1, mod_to_dri)*N)] = Ms_transformation;
           all_eigenvalues_cov[start_index:end_index] = eigenvalues_sym(to_matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)])) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + 1)], model_num_species[sum(n_dri[1:(i-1)]) + 1], model_num_species[sum(n_dri[1:(i-1)]) + 1]));
           all_eigenvectors_cov[start_index:end_index, start_index:end_index] = eigenvectors_sym(to_matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)])) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + 1)], model_num_species[sum(n_dri[1:(i-1)]) + 1], model_num_species[sum(n_dri[1:(i-1)]) + 1]));
         }
@@ -270,8 +265,8 @@ transformed data{
   		        bigM[start_index:end_index,1:N] = Ms_transformation;
     		      bigM[start_index:end_index,(N+1):(2*N)] = Ms_transformation;
               bigM[start_index:end_index,((i + 1)*N + 1):((i + 2) * N)] = Ms_transformation;
-  	   	      bigM[start_index:end_index, ((M + 2)*N + (which_fun_subset(i, j, mod_to_dri)-1)*N + 1):((M + 2)*N + which_fun_subset(i, j, M, MM, mod_to_dri)*N)] = Ms_transformation;
-              all_eigenvalues_cov[start_index:end_index] = eigenvalues_sym(to_matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)]) + (j-1)) + 1):sq_int(model_num_species, sum(n_esms[1:(i-1)]) + j)], model_num_species[sum(n_dri[1:(i-1)]) + j], model_num_species[sum(n_dri[1:(i-1)]) + j]));
+  	   	      bigM[start_index:end_index, ((M + 2)*N + (which_fun_subset(i, j, mod_to_dri)-1)*N + 1):((M + 2)*N + which_fun_subset(i, j, mod_to_dri)*N)] = Ms_transformation;
+              all_eigenvalues_cov[start_index:end_index] = eigenvalues_sym(to_matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)]) + (j-1)) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + j)], model_num_species[sum(n_dri[1:(i-1)]) + j], model_num_species[sum(n_dri[1:(i-1)]) + j]));
               all_eigenvectors_cov[start_index:end_index, start_index:end_index] = eigenvectors_sym(to_matrix(model_covariances[(sq_int(model_num_species, sum(n_dri[1:(i-1)]) + (j-1)) + 1):sq_int(model_num_species, sum(n_dri[1:(i-1)]) + j)], model_num_species[sum(n_dri[1:(i-1)]) + j], model_num_species[sum(n_dri[1:(i-1)]) + j]));
             }
           }
@@ -478,6 +473,7 @@ model{
   // Note that we're assuming long-term discrepancies are drawn from a N(0,C) distribution
   // where C is independent of the simulators. This means we treat C outside the for loop.
   ind_lt_var ~ gamma(prior_ind_lt_var_a,prior_ind_lt_var_b); // Variance
+  ind_lt_var_dri ~ gamma(prior_ind_lt_var_a,prior_ind_lt_var_b);
   //Long term correlations
   if(form_prior_ind_lt == 0){  // recommend lkj_corr or beta
     ind_lt_cor ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
@@ -486,6 +482,16 @@ model{
   } else{
     target += priors_cor_beta(ind_lt_cor, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
   }
+
+  //Long term correlations -- Drivers
+  if(form_prior_ind_lt == 0){  // recommend lkj_corr or beta
+    ind_lt_cor_dri ~ lkj_corr(prior_ind_lt_cor_lkj[1]);
+  } else if(form_prior_ind_lt == 1){
+    ind_lt_cor_dri ~ inv_wishart(prior_ind_lt_cor_wish_nu[1], prior_ind_lt_cor_wish_sigma);
+  } else{
+    target += priors_cor_beta(ind_lt_cor_dri, N, prior_ind_lt_cor_beta_1, prior_ind_lt_cor_beta_2);
+  }
+
 
 
       //Hierarchical options
@@ -528,7 +534,17 @@ model{
 
    //Hierarchical options -- Drivers
 	prior_ind_st_var_hierarchical_mu_params_dri ~ normal(prior_ind_st_var_hierarchical_hyperparams[1],prior_ind_st_var_hierarchical_hyperparams[2]);
-    diagonal(prior_ind_st_cor_hierarchical_beta_params_esm) ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
+    diagonal(prior_ind_st_cor_hierarchical_beta_params_dri) ~ inv_gamma(prior_ind_st_var_hierarchical_hyperparams[3],prior_ind_st_var_hierarchical_hyperparams[4]);
+    if (form_prior_ind_st==3){
+      for (k in 1:(N-1)){
+        for (l in (k+1):N) {
+          prior_ind_st_cor_hierarchical_beta_params_dri[k, l] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[1],
+                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[2]);
+          prior_ind_st_cor_hierarchical_beta_params_dri[l, k] ~ gamma(prior_ind_st_cor_hierarchical_beta_hyper_params[3],
+                                                                     prior_ind_st_cor_hierarchical_beta_hyper_params[4]);
+        }
+      }
+    }else if(form_prior_ind_st==4){
       for (k in 1:(N-1)){
         for (l in (k+1):N) {
 		/// MS to edit to include the new prior -- see conjugate prior wikipedia -- done, need to calculate new parameters (3 in total)
@@ -537,6 +553,7 @@ model{
 
         }
       }
+    }
 
 
   for(i in 1:MM){
@@ -550,7 +567,7 @@ model{
 
 
     // Correlation matrix
-	target += priors_cor_hierarchical_beta(ind_st_cor_dri[i], N, prior_ind_st_cor_hierarchical_beta_params);
+	target += priors_cor_hierarchical_beta(ind_st_cor_dri[i], N, prior_ind_st_cor_hierarchical_beta_params_dri);
 
 
   }

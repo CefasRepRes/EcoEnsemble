@@ -27,3 +27,4 @@ test_that("Ensemble prior test",{
   prior2 <- EnsemblePrior(d=d,ind_st_params = iST,ind_lt_params = iLT,sha_st_params = sST,truth_params = tp)
   expect_equal(prior1,prior2)
 })
+

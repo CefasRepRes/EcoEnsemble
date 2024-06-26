@@ -4,6 +4,7 @@
 #'
 #'@param priors An `EnsemblePrior` object specifying the prior distributions for the ensemble.
 #'@param M A `numeric` that represents the number of simulators. The default is 1.
+#'@param MM A `numeric` that represents the number of drivers. The default is `NULL`.
 #'@param full_sample A `logical` that runs a full sampling of the prior density of the ensemble model if `TRUE`. If `FALSE`, returns the point estimate which maximises the prior density of the ensemble model.
 #'@param control If creating a full sample, this is a named `list` of parameters to control Stan's sampling behaviour. See the documentation of the `stan()` function in the `rstan` package for details. The default value is `list(adapt_delta = 0.95)`. If optimizing, this value is ignored.
 #'@param ... Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.
@@ -16,19 +17,31 @@
 #' priors <- EnsemblePrior(4)
 #' prior_density <- prior_ensemble_model(priors, M = 4)
 #' }
-prior_ensemble_model <- function(priors, M = 1,
+prior_ensemble_model <- function(priors, M = 1, MM = NULL,
                                     full_sample = TRUE, control = list(adapt_delta = 0.95), ...){
   stan_input <- priors@priors_stan_input
   stan_input$M <- M
   stan_input$N <- priors@d
 
   #Using hierarchical priors uses a different model. This speeds up the sampling enormously
-  mod <- stanmodels$ensemble_prior
-  if(stan_input$form_prior_ind_st == 3 || stan_input$form_prior_ind_st == 4){
-    if(full_sample==FALSE){
-      stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+
+  if (!is.null(MM)){
+    stan_input$MM <- MM
+    mod <- stanmodels$ensemble_prior_withdrivers
+    if(stan_input$form_prior_ind_st == 3 || stan_input$form_prior_ind_st == 4){
+      if(full_sample==FALSE){
+        stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+      }
+      mod <- stanmodels$ensemble_prior_hierarchical_withdrivers
     }
-    mod <- stanmodels$ensemble_prior_hierarchical
+  }else{
+    mod <- stanmodels$ensemble_prior
+    if(stan_input$form_prior_ind_st == 3 || stan_input$form_prior_ind_st == 4){
+      if(full_sample==FALSE){
+        stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+      }
+      mod <- stanmodels$ensemble_prior_hierarchical
+    }
   }
 
   samples <- NULL; point_estimate <- NULL
@@ -71,12 +84,23 @@ prior_ensemble_model <- function(priors, M = 1,
 #'              sam_priors = prior_density)
 #' plot(samples) #Plot the prior predictive density.
 #' }
-sample_prior <- function(observations, simulators, priors, sam_priors, num_samples = 1, full_sample = TRUE,...){
+sample_prior <- function(observations, simulators, priors, sam_priors, num_samples = 1, full_sample = TRUE, drivers = FALSE,...){
   if(missing(sam_priors)){
-    sam_priors <- prior_ensemble_model(priors, M=length(simulators),
-                                       full_sample = full_sample, ...)
+    if (drivers == FALSE) {
+      sam_priors <- prior_ensemble_model(priors, M=length(simulators),
+                                         full_sample = full_sample, ...)
+    }
+    else {
+      sam_priors <- prior_ensemble_model(priors, M=length(simulators), MM = max(sapply(simulators, function(x) {length(x[[1]])})),
+                                         full_sample = full_sample, ...)
+    }
   }
-  ens_data <- EnsembleData(observations, simulators, priors)
+  if (drivers == FALSE) {
+    ens_data <- EnsembleData(observations, simulators, priors)
+  }
+  else {
+    ens_data <- EnsembleData(observations, simulators, priors, drivers = TRUE)
+  }
   fit_prior <- EnsembleFit(ens_data, sam_priors$samples, sam_priors$point_estimate)
   return(generate_sample(fit_prior,num_samples = num_samples))
 }

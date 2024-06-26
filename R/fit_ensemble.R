@@ -49,27 +49,33 @@ get_mcmc_ensemble_model <- function(){
 #'                full_sample = FALSE) #Only optimise in this case
 #'}
 fit_ensemble_model <- function(observations, simulators, priors,
-                               full_sample = TRUE, control = list(adapt_delta = 0.95), ...){
+                               full_sample = TRUE, control = list(adapt_delta = 0.95), drivers = FALSE, MMod, ...){
 
-  ens_data <- EnsembleData(observations, simulators, priors)
-  stan_input <- ens_data@stan_input
+  if (drivers == TRUE) {
+    return(fit_ensemble_model_dri(observations, simulators, priors,
+                                  full_sample = full_sample, control = list(adapt_delta = 0.95), MMod, ...))
+  }
+  else {
+    ens_data <- EnsembleData(observations, simulators, priors)
+    stan_input <- ens_data@stan_input
 
-  #Using hierarchical priors uses a different model. This speeds up the sampling enormously
-  mod <- stanmodels$ensemble_model
-  if(stan_input$form_prior_ind_st == 3){
-    mod <- stanmodels$ensemble_model_hierarchical
-    if(!full_sample){
-      stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+    #Using hierarchical priors uses a different model. This speeds up the sampling enormously
+    mod <- stanmodels$ensemble_model
+    if(stan_input$form_prior_ind_st == 3 || stan_input$form_prior_ind_st == 4){
+      mod <- stanmodels$ensemble_model_hierarchical
+      if(!full_sample){
+        stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
+      }
     }
+
+
+    samples <- NULL; point_estimate <- NULL
+    if(full_sample){
+      samples <- rstan::sampling(mod, data=stan_input, control = control, ...)
+    }else{
+      point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
+    }
+
+    return(EnsembleFit(ens_data, samples, point_estimate))
   }
-
-
-  samples <- NULL; point_estimate <- NULL
-  if(full_sample){
-    samples <- rstan::sampling(mod, data=stan_input, control = control, ...)
-  }else{
-    point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
-  }
-
-  return(EnsembleFit(ens_data, samples, point_estimate))
 }

@@ -97,7 +97,7 @@ Constructors for the \code{EnsemblePrior} class and related classes. These funct
 
 There are currently five supported prior distributions on covariance matrices. As in Spence et. al. (2018), the individual and shared short-term discrepancy covariances, \eqn{\Lambda_k} and \eqn{\Lambda_\eta}, as well as the individual long-term discrepancy covariance, \eqn{\Lambda_\gamma},  are decomposed into a vector of variances and a correlation matrix \deqn{\Lambda = \sqrt{\mathrm{diag}(\pi)}  P \sqrt{\mathrm{diag}(\pi)},} where \eqn{\pi} is the vector of variances for each variable of interest (VoI), and \eqn{P} is the correlation matrix.
 
-Selecting \code{'lkj'}, \code{'inv_wishart'}, \code{'beta'}, \code{'hierarchical'} or \code{hierarchical_beta_conjugate} refers to setting LKJ, inverse Wishart, beta or hierarchical (with gamma-distributed hyperparameters or beta-conjugate-distributed hyperparameters) prior distributions on the covariance matrix respectively. The variance parameters should be passed through as the \code{var_params} slot of the object and the correlation parameters should be passed through as the \code{cor_params}. For \code{'lkj'}, \code{'inv_wishart'}, and \code{'beta'} selections, variances are parameterised by gamma distributions, so the \code{var_params} slot should be a \code{list} of length two, where each element gives the shape and rate parameters for each VoI (either as a single value which is the same for each VoI or a \code{numeric} with the same length as the number of VoI). For example, setting \code{var_params  = list(c(5,6,7,8), c(4,3,2,1))} would correspond to a \code{Gamma(5, 4)} prior on the variance of the first VoI, a \code{Gamma(6, 3)} prior on the variance of the second VoI, etc...
+Selecting \code{'lkj'}, \code{'inv_wishart'}, \code{'beta'}, \code{'hierarchical'} or \code{'hierarchical_beta_conjugate'} refers to setting LKJ, inverse Wishart, beta or hierarchical (with gamma-distributed hyperparameters or beta-conjugate-distributed hyperparameters) prior distributions on the covariance matrix respectively. The variance parameters should be passed through as the \code{var_params} slot of the object and the correlation parameters should be passed through as the \code{cor_params}. For \code{'lkj'}, \code{'inv_wishart'}, and \code{'beta'} selections, variances are parameterised by gamma distributions, so the \code{var_params} slot should be a \code{list} of length two, where each element gives the shape and rate parameters for each VoI (either as a single value which is the same for each VoI or a \code{numeric} with the same length as the number of VoI). For example, setting \code{var_params  = list(c(5,6,7,8), c(4,3,2,1))} would correspond to a \code{Gamma(5, 4)} prior on the variance of the first VoI, a \code{Gamma(6, 3)} prior on the variance of the second VoI, etc...
 The correlations should be in the following form:
 \itemize{
 \item If \code{'lkj'} is selected, then \code{cor_params} should be a \code{numeric} \eqn{\eta} giving the LKJ shape parameter, such  that the probability density is given by  (Lewandowski et. al. 2009) \deqn{f(\Sigma | \eta)\propto \mathrm{det} (\Sigma)^{\eta - 1}.} Variances are parameterised by gamma distributions.
@@ -113,7 +113,7 @@ The \code{var_params} slot should then be a \code{numeric} of length 4, giving t
 \deqn{d_{k, i, j} \sim \mathrm{gamma}(\gamma_\rho, \delta_\rho).}
 NOTE: These options is only supported for the individual short-term discrepancy terms.
 \item If \code{'hierarchical'} is selected, then the \code{cor_params} slot should be a \code{numeric} of length 4 giving the \eqn{\alpha_\rho, \beta_\rho, \gamma_\rho, \delta_\rho} hyperparameters. respectively. NOTE: This option is only supported for the individual short-term discrepancy terms.
-\item If \code{'hierarchical_beta_conjugate'} is selected, then the \code{cor_params} slot should be a \code{numeric} of length 3 giving the hyperparameters \eqn{p, q, k} of the beta conjugate distribution, whose density is defined up to a constant of proportionality by
+\item If \code{'hierarchical_beta_conjugate'} is selected, then the \code{cor_params} slot should be a \code{numeric} of length 3. Denoting the values by \eqn{r,s,k}, they map to the hyperparameters \eqn{p, q, k} of the beta conjugate distribution via \eqn{k = k}, \eqn{p^{-1/k} = (1+e^{-s})(1+e^{-r})} and \eqn{q^{1/k} = e^{-r}(1+e^{-s})^{-1}(1+e^{-r})^{-1}}. The density of the beta conjugate distribution is defined up to a constant of proportionality by
 \deqn{p(\alpha_\rho, \beta_\rho\,|\,p, q, k) \propto \frac{\Gamma(\alpha_\rho + \beta_\rho)^{k}p^{\alpha_\rho}q^{\beta_\rho}}{\Gamma(\alpha_\rho)^{k}\Gamma(\beta_\rho)^{k}}\,.}
 NOTE: This option is only supported for the individual short-term discrepancy terms.
 Priors may also be specified for the autoregressive parameters for discrepancies modelled using autoregressive processes (i.e. for \code{IndSTPrior} and \code{ShaSTPrior} objects). These are parametrised via beta distributions such that the autoregressive parameter \eqn{R \in (-1,1)} satisfies \deqn{\frac{R+1}{2} \sim \mathrm{Beta}(\alpha, \beta)}.
@@ -140,8 +140,10 @@ ist_lkj <- IndSTPrior("lkj", list(c(1,23,24,6,87), c(1,1,1,1,5)), 10, AR_params 
 ist_hie <- IndSTPrior("hierarchical", list(1,2,10,1), list(3,4,5,6))
 
 #Hierarchical priors with gamma(1,2) and gamma(10, 1) on the variance hyperparameters and
-#the beta conjugate prior with parameters (p = 0.75, q = 0.75, k = 0.2) on the correlation hyperparameters
-ist_hie_beta_conj <- IndSTPrior("hierarchical_beta_conjugate", list(1,2,10,1), list(0.75, 0.75, 0.2))
+#the beta conjugate prior with parameters (p = 0.75, q = 0.75, k = 0.2) on the
+#correlation hyperparameters
+ist_hie_beta_conj <- IndSTPrior("hierarchical_beta_conjugate",
+list(1,2,10,1), list(0.75,0.75,0.2))
 
 #Inverse Wishart correlation priors. Gamma(2, 1/3) priors are on the variances and
 #inv-Wishart(5, diag(5)) on the correlation matrices.
