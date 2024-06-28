@@ -5,6 +5,7 @@
 #'
 #'@param priors An `EnsemblePrior` object specifying the prior distributions for the ensemble for which the compiled `stanmodel` object will be obtained.
 #'@param likelihood A `logical` that returns the compiled `stanmodel` object including the likelihood (the Kalman filter) for given priors if `TRUE`. If `FALSE` returns the compiled `stanmodel` object without the likelihood for sampling from the prior.
+#'@param drivers A `logical` indicating whether drivers have been used in combination with simulators. Default value is FALSE.
 #'@return The `stanmodel` object encoding the ensemble model.
 #'@export
 #'@examples
@@ -21,21 +22,37 @@
 #'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains = 1)
 #'}
 
-get_mcmc_ensemble_model <- function(priors, likelihood = TRUE){
+get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE){
 
   st_pf <- priors@ind_st_params@parametrisation_form
 
   if (st_pf == "hierarchical") {
     if (likelihood) {
-      return(stanmodels$ensemble_model_hierarchical)
+      if (!drivers){
+        return(stanmodels$ensemble_model_hierarchical)
+      } else {
+        return(stanmodels$ensemble_model_hierarchical_withdrivers)
+      }
     } else {
-      return(stanmodels$ensemble_prior_hierarchical)
+      if (!drivers) {
+        return(stanmodels$ensemble_prior_hierarchical)
+      } else {
+        return(stanmodels$ensemble_prior_hierarchical_withdrivers)
+      }
     }
   } else {
     if (likelihood) {
-      return(stanmodels$ensemble_model)
+      if (!drivers) {
+        return(stanmodels$ensemble_model)
+      } else {
+        return(stanmodels$ensemble_model_withdrivers)
+      }
     } else {
-      return(stanmodels$ensemble_prior)
+      if (!drivers) {
+        return(stanmodels$ensemble_prior)
+      } else {
+        return(stanmodels$ensemble_prior_withdrivers)
+      }
     }
   }
 }
