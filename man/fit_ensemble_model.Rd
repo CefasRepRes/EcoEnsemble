@@ -26,7 +26,7 @@ fit_ensemble_model(
 
 \item{control}{If creating a full sample, this is a named \code{list} of paramaters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
 
-\item{drivers}{A logical indicating whether drivers have been used in combination with models. Default value is FALSE.}
+\item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
 
 \item{MMod}{Not currently implemented.}
 

@@ -13,7 +13,7 @@ EnsembleData(observations, simulators, priors, drivers = FALSE, MMod)
 
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble.}
 
-\item{drivers}{A logical indicating whether drivers have been used in combination with models. Default value is FALSE.}
+\item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
 
 \item{MMod}{Not currently implemented.}
 }
