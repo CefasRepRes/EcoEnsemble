@@ -182,3 +182,23 @@ models: models"<doi:10.1111/faf.12310>.
 # Version 1.0.6
 
 * Extended `get_mcmc_ensemble_model` to return all stanmodels in package
+
+#Version 1.1.0
+
+For the Mac release there were two NOTEs:
+
+* NOTE GNU make is a SystemRequirements.
+
+This is a consequence of using Rstan which requires us to use GNU make to compile the Stan model as per their package usage instructions. 
+
+* NOTE installed size is 219.1Mb
+  sub-directories of 1Mb or more:
+    doc     3.5Mb
+    libs  214.6Mb
+
+This is a consequence of using Rstan which produces quite large binaries when compiled.
+
+From the previous submission I have changed:
+
+Added new prior option and the option to include drivers. Added vignettes 'BetaConjugatePrior' and 'IncludingDrivers'. Also added citation file.
+

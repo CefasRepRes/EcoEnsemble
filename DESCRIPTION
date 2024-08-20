@@ -1,6 +1,6 @@
 Package: EcoEnsemble
 Title: A General Framework for Combining Ecosystem Models
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: 
     c(person(given = "Michael A.",
                 family = "Spence",
@@ -14,7 +14,10 @@ Authors@R:
             person(given = "Michael J.",
                 family = "Thomson",
                 role = c("aut"),
-                comment = c(ORCID = "0000-0003-0284-0129")))
+                comment = c(ORCID = "0000-0003-0284-0129")),
+            person(given "Thomas I. J.",
+                family = "Bartos",
+                role = c("aut")))
 Description: Fit and sample from the ensemble model described in Spence et al (2018): "A general framework for combining ecosystem models"<doi:10.1111/faf.12310>.
 License: GPL (>= 3)
 Encoding: UTF-8
