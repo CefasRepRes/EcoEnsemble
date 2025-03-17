@@ -81,7 +81,7 @@ functions{
    */
 
 
-  int sq_int(int[] model_num_species, int M){
+  int sq_int(array[] int model_num_species, int M){
     int ret = 0;
     for (i in 1:M){
 	    ret += model_num_species[i] * model_num_species[i];
@@ -89,7 +89,7 @@ functions{
 	  return ret;
   }
 
-  int which_fun_subset(int i, int j, int [,] mod_to_dri){
+  int which_fun_subset(int i, int j, array[,] int mod_to_dri){
     int ret = 0;
     int num = 0;
     while (num < j){
