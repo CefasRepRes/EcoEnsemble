@@ -15,3 +15,9 @@ EcoEnsemble 1.0.4
 * Fixed issue with ggplot2 and rstan
 * Added more tests
 * Exported `KF_back'
+
+EcoEnsemble 1.1.1
+=============
+
+* Fixed issue with rstan
+* Added drivers
