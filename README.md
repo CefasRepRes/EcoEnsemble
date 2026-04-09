@@ -71,14 +71,6 @@ fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                             list(SSB_miz, Sigma_miz, "mizer"),
                                             list(SSB_fs,  Sigma_fs,  "FishSUMS")),
                           priors = priors)
-# The Kalman filter implementation remains available with sampler = "kalman"
-fit_kalman <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                                 simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                   list(SSB_lm,  Sigma_lm,  "LeMans"),
-                                                   list(SSB_miz, Sigma_miz, "mizer"),
-                                                   list(SSB_fs,  Sigma_fs,  "FishSUMS")),
-                                 priors = priors,
-                                 sampler = "kalman")
 samples <- generate_sample(fit)
 ```
 This produces an `EnsembleSample` object containing samples of the ensemble model predictions. These can be viewed by calling the `plot()` function on this object. For a full MCMC sample, this includes ribbons giving quantiles of the ensemble outputs. If only maximising the posterior density, then only the single ouput is plotted.

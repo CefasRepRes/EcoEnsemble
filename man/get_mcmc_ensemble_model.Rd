@@ -19,9 +19,9 @@ get_mcmc_ensemble_model(
 \item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
 
 \item{sampler}{A character string selecting which state-space sampler to
-use. Either \code{"explicit"} (the default), which samples latent states
-directly within Stan, or \code{"kalman"}, which keeps the Kalman filter
-implementation.}
+use. Either \code{explicit} (the default), which samples latent states
+directly in the Stan program, or \code{kalman} which retains the Kalman
+filter implementation.}
 }
 \value{
 The \code{stanmodel} object encoding the ensemble model.

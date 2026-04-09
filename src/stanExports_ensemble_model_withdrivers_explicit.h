@@ -84,7 +84,7 @@ static constexpr std::array<const char*, 511> locations_array__ =
   " (in 'string', line 348, column 3 to column 103)",
   " (in 'string', line 345, column 17 to line 349, column 3)",
   " (in 'string', line 345, column 2 to line 349, column 3)",
-  " (in 'string', line 352, column 2 to column 54)",
+  " (in 'string', line 352, column 2 to column 64)",
   " (in 'string', line 353, column 2 to column 99)",
   " (in 'string', line 355, column 4 to column 60)",
   " (in 'string', line 356, column 4 to column 133)",
@@ -116,7 +116,7 @@ static constexpr std::array<const char*, 511> locations_array__ =
   " (in 'string', line 395, column 2 to column 81)",
   " (in 'string', line 397, column 2 to column 28)",
   " (in 'string', line 398, column 2 to column 60)",
-  " (in 'string', line 400, column 2 to column 97)",
+  " (in 'string', line 400, column 2 to column 90)",
   " (in 'string', line 407, column 4 to column 95)",
   " (in 'string', line 406, column 9 to line 408, column 3)",
   " (in 'string', line 405, column 4 to column 87)",
@@ -143,7 +143,7 @@ static constexpr std::array<const char*, 511> locations_array__ =
   " (in 'string', line 424, column 4 to column 55)",
   " (in 'string', line 423, column 28 to line 425, column 3)",
   " (in 'string', line 423, column 2 to line 429, column 3)",
-  " (in 'string', line 432, column 4 to column 102)",
+  " (in 'string', line 432, column 4 to column 94)",
   " (in 'string', line 435, column 4 to column 33)",
   " (in 'string', line 436, column 3 to column 65)",
   " (in 'string', line 444, column 5 to column 99)",
@@ -156,7 +156,7 @@ static constexpr std::array<const char*, 511> locations_array__ =
   " (in 'string', line 439, column 3 to line 445, column 4)",
   " (in 'string', line 430, column 15 to line 446, column 3)",
   " (in 'string', line 430, column 2 to line 446, column 3)",
-  " (in 'string', line 449, column 4 to column 106)",
+  " (in 'string', line 449, column 4 to column 98)",
   " (in 'string', line 452, column 3 to column 36)",
   " (in 'string', line 453, column 3 to column 69)",
   " (in 'string', line 461, column 5 to column 103)",
@@ -3647,7 +3647,7 @@ public:
       }
       current_statement__ = 56;
       stan::model::assign(SIGMA_init,
-        stan::math::diag_matrix(prior_y_init_var),
+        stan::math::add(stan::math::diag_matrix(prior_y_init_var), SIGMA_t),
         "assigning variable SIGMA_init", stan::model::index_min_max(1, N),
         stan::model::index_min_max(1, N));
       current_statement__ = 57;
@@ -3887,9 +3887,7 @@ public:
         lp_accum__.add(stan::math::gamma_lpdf<propto__>(sha_st_var,
                          prior_sha_st_var_a, prior_sha_st_var_b));
         current_statement__ = 88;
-        lp_accum__.add(stan::math::beta_lpdf<false>(
-                         stan::math::divide(
-                           stan::math::add(sha_st_ar_param_raw, 1), 2),
+        lp_accum__.add(stan::math::beta_lpdf<false>(sha_st_ar_param_raw,
                          prior_sha_st_ar_alpha, prior_sha_st_ar_beta));
         current_statement__ = 96;
         if (stan::math::logical_eq(form_prior_sha_st, 0)) {
@@ -3971,11 +3969,8 @@ public:
         for (int i = 1; i <= M; ++i) {
           current_statement__ = 115;
           lp_accum__.add(stan::math::beta_lpdf<false>(
-                           stan::math::divide(
-                             stan::math::add(
-                               stan::model::rvalue(ind_st_ar_param_raw,
-                                 "ind_st_ar_param_raw",
-                                 stan::model::index_uni(i)), 1), 2),
+                           stan::model::rvalue(ind_st_ar_param_raw,
+                             "ind_st_ar_param_raw", stan::model::index_uni(i)),
                            prior_ind_st_ar_alpha, prior_ind_st_ar_beta));
           current_statement__ = 116;
           lp_accum__.add(stan::math::std_normal_lpdf<propto__>(
@@ -4020,11 +4015,9 @@ public:
         for (int i = 1; i <= MM; ++i) {
           current_statement__ = 128;
           lp_accum__.add(stan::math::beta_lpdf<false>(
-                           stan::math::divide(
-                             stan::math::add(
-                               stan::model::rvalue(ind_st_ar_param_dri_raw,
-                                 "ind_st_ar_param_dri_raw",
-                                 stan::model::index_uni(i)), 1), 2),
+                           stan::model::rvalue(ind_st_ar_param_dri_raw,
+                             "ind_st_ar_param_dri_raw",
+                             stan::model::index_uni(i)),
                            prior_ind_st_ar_alpha, prior_ind_st_ar_beta));
           current_statement__ = 129;
           lp_accum__.add(stan::math::std_normal_lpdf<propto__>(
@@ -4556,7 +4549,7 @@ public:
       }
       current_statement__ = 56;
       stan::model::assign(SIGMA_init,
-        stan::math::diag_matrix(prior_y_init_var),
+        stan::math::add(stan::math::diag_matrix(prior_y_init_var), SIGMA_t),
         "assigning variable SIGMA_init", stan::model::index_min_max(1, N),
         stan::model::index_min_max(1, N));
       current_statement__ = 57;

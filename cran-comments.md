@@ -220,3 +220,9 @@ This is a consequence of using Rstan which produces quite large binaries when co
 From the previous submission I have changed:
 
 Added new prior option and the option to include drivers. Added vignettes 'BetaConjugatePrior' and 'IncludingDrivers'. Also added citation file.
+
+#Version 1.2.0
+
+Added alternative sampler. Required new Rstan files, explanation vignettes and tests.
+
+

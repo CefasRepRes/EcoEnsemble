@@ -410,7 +410,7 @@ transformed parameters{
     //
 
   //SIGMA_init
-  SIGMA_init[1:N,1:N] = diag_matrix(prior_y_init_var);
+  SIGMA_init[1:N,1:N] = diag_matrix(prior_y_init_var) + SIGMA_t; // only in the explicit case
   SIGMA_init[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu ./ (1 - sha_st_ar_param * sha_st_ar_param');
   for (i in 1:M){
     ind_st_ar_param[i] = 2.0 * ind_st_ar_param_raw[i] - 1.0;
@@ -466,7 +466,7 @@ model{
   sha_lt_raw ~ std_normal();
   sha_st_var ~ gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
   //JM 22/07: Beta priors on the AR parameters
-  target += beta_lpdf((sha_st_ar_param_raw + 1)/2 | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);  // same
+  target += beta_lpdf(sha_st_ar_param_raw  | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);  // same
 
   // Correlation matrix
   if(form_prior_sha_st == 0){
@@ -504,7 +504,7 @@ model{
 
   for(i in 1:M){
     //AR Parameters
-    target += beta_lpdf((ind_st_ar_param_raw[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
+    target += beta_lpdf(ind_st_ar_param_raw[i] | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
     //ind_lt_raw[i] ~ std_normal();
 
@@ -531,7 +531,7 @@ model{
 
   for(i in 1:MM){
     //AR Parameters
-    target += beta_lpdf((ind_st_ar_param_dri_raw[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
+    target += beta_lpdf(ind_st_ar_param_dri_raw[i] | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
     //ind_lt_raw_dri[i] ~ std_normal();
 

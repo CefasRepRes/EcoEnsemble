@@ -7,8 +7,8 @@
 #'@param likelihood A `logical` that returns the compiled `stanmodel` object including the likelihood (the Kalman filter) for given priors if `TRUE`. If `FALSE` returns the compiled `stanmodel` object without the likelihood for sampling from the prior.
 #'@param drivers A `logical` indicating whether drivers have been used in combination with simulators. Default value is FALSE.
 #'@param sampler A character string selecting which state-space sampler to
-#'  use. Either "explicit" (the default), which samples latent states
-#'  directly in the Stan program, or "kalman" which retains the Kalman
+#'  use. Either `explicit` (the default), which samples latent states
+#'  directly in the Stan program, or `kalman` which retains the Kalman
 #'  filter implementation.
 #'@return The `stanmodel` object encoding the ensemble model.
 #'@export

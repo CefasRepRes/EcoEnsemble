@@ -12,6 +12,7 @@ stan_sampling_with_filter <- function(mod, data, control = NULL, ...) {
   if (length(warn_buf) > 0) {
     # preserve order, drop duplicates
     msgs <- warn_buf[!duplicated(warn_buf)]
+    emit_msgs <- msgs
     # robust match for Stan treedepth warnings
     is_treedepth <- grepl(
       "exceeded the maximum treedepth|maximum\\s+treedepth(.*exceeded)?",
@@ -21,12 +22,21 @@ stan_sampling_with_filter <- function(mod, data, control = NULL, ...) {
       "examine\\s+the\\s+pairs\\(\\)\\s+plot",
       msgs, ignore.case = TRUE, perl = TRUE
     )
+    is_ess <- grepl(
+      "effective\\s+sample\\s+size|\\bESS\\b.*too\\s+low|bulk\\s+effective\\s+sample\\s+size|tail\\s+effective\\s+sample\\s+size",
+      msgs, ignore.case = TRUE, perl = TRUE
+    )
+    emit_msgs[is_ess] <- paste0(
+      emit_msgs[is_ess],
+      ' See vignette("ESS_vignette", package = "EcoEnsemble").'
+    )
 
     suppressible <- is_treedepth | is_pairs
 
     if (!all(suppressible)) {
-      # other warnings present -> print everything (including treedepth/pairs)
-      for (m in msgs) warning(m, call. = FALSE, immediate. = TRUE)
+      for (msg in emit_msgs) {
+        warning(msg, call. = FALSE)
+      }
     }
   }
 

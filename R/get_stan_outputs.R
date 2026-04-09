@@ -229,9 +229,9 @@ gen_sample <- function(x=1, ex.fit, transformed_data, time)
   sam_y <- matrix(0,time,nrow(bigM))
   sam_x <- matrix(0,time,length(params$x_hat))
 
-  sam_x[1,] <- as.matrix(params$x_hat) + chol(params$SIGMA_init)%*%rnorm(length(params$x_hat))
+  sam_x[1,] <- as.matrix(params$x_hat) + t(chol(params$SIGMA_init))%*%rnorm(length(params$x_hat))
   sam_y[1,] <- bigM %*% (sam_x[1,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))
-  ch_sigma <- chol(params$SIGMA)
+  ch_sigma <- t(chol(params$SIGMA))
   for (i in 2:time){
     sam_x[i,] <- as.matrix(params$AR_params * sam_x[i-1,]) + ch_sigma%*%rnorm(length(params$x_hat))
     sam_y[i,] <- bigM %*% (sam_x[i,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))

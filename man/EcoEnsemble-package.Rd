@@ -2,8 +2,8 @@
 % Please edit documentation in R/EcoEnsemble-package.R
 \docType{package}
 \name{EcoEnsemble-package}
-\alias{EcoEnsemble-package}
 \alias{EcoEnsemble}
+\alias{EcoEnsemble-package}
 \title{A general framework for combining ecosystem models}
 \description{
 The \code{EcoEnsemble} package implements the framework for combining ecosystem models laid out in Spence et al (2018).
@@ -36,6 +36,8 @@ Authors:
 \itemize{
   \item James A. Martindale (\href{https://orcid.org/0000-0002-1913-5592}{ORCID})
   \item Michael J. Thomson (\href{https://orcid.org/0000-0003-0284-0129}{ORCID})
+  \item Thomas I. J. Bartos
+  \item Luke E. K. Broadbent
 }
 
 }

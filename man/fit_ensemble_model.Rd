@@ -29,8 +29,8 @@ fit_ensemble_model(
 
 \item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
 
-\item{sampler}{A character string choosing between the \code{"explicit"}
-latent sampler (default) and the legacy \code{"kalman"} implementation.}
+\item{sampler}{A character string choosing between the "explicit" latent
+sampler (default) and the legacy "kalman" implementation.}
 
 \item{MMod}{Not currently implemented.}
 
