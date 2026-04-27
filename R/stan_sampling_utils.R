@@ -28,7 +28,7 @@ stan_sampling_with_filter <- function(mod, data, control = NULL, ...) {
     )
     emit_msgs[is_ess] <- paste0(
       emit_msgs[is_ess],
-      ' See vignette("ESS_vignette", package = "EcoEnsemble").'
+      ' Run - vignette("ESS_vignette", package = "EcoEnsemble").'
     )
 
     suppressible <- is_treedepth | is_pairs

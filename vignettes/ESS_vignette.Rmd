@@ -1,166 +1,102 @@
 ---
-title: "Sampler type and effective sample size"
+title: "Effective sample size"
 author: "Thomas I. J. Bartos, Luke E. K. Broadbent, Michael A. Spence and Michael J. Thomson"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EcoEnsemble}
+  %\VignetteIndexEntry{Effective sample size}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}#
 references:
-- id: rstan
+- id: stan_diagnostics
   author:
   - family: "Stan Development Team"
-  title: "RStan: the R interface to Stan"
-  issued: 
-    year: 2020
-  url: "https://mc-stan.org/"
-  type: article
-- id: durbin_koopman
-  title: A simple and efficient simulation smoother for state space time series analysis.
-  author:
-  - family: Durbin
-    given: J.
-  - family: Koopman
-    given: S. J.
-  container-title: Biometrika
-  volume: 89
-  page: 603-616
-  type: article-journal
-  issued: 
-    year: 2022
+  title: "How to Diagnose and Resolve Convergence Problems"
+  url: "https://mc-stan.org/learn-stan/diagnostics-warnings.html#bulk-and-tail-ess"
+  type: webpage
+  accessed:
+  - year: 2026
+    month: 4
+    day: 15
+
+nocite: |
+  @stan_diagnostics
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Effective Sample Size
+# Summary
 
-Given a univariate, stationary (discrete-time) Markov chain $X(t)$, let $\rho(t)$ denote the lag $t$ autocorrelation function, that is $\rho(t) = \frac{\text{Cov}(X(0),X(t))}{\text{Var}(X(0))}\,.$ Th effective sample size of a sample of $N$ draws of this chain is defined as
-$$
-N_{\text{eff}} = \frac{N}{1 + 2\sum_{t = 1}^{\infty}\rho(t)}\,.
-$$
-In practice, the autocorrelation function is estimated within-sample as $\hat{\rho}(t)$ and the sum appearing in the numerator in the defintion of $N_{\text{eff}}$ is truncated to some level $T \leq N$. In stan (@rstan), where $M$ chains are run, the autocorrelation of each element of the parameter vector $\mathbf{\theta}$ is estimated as a quantity pooled across chains, $\hat{\rho}(t)$. The effective sample size estimator is then given by
-$$
-N_{\text{eff}} = \frac{MN}{1 + 2\sum_{t = 1}^{2m + 1}\widehat{\rho}(t)}\,,
-$$
-for an integer $m$ chosen according to certain technical criteria (see https://mc-stan.org/docs/reference-manual/analysis.html#effective-sample-size.section). Notice that odd lags have been skipped in the sum to to ensure no anticorrelations and thus positivity of the estimate.
+The effective sample size (ESS) is important as it indicates the information gained from your Markov Chain Monte Carlo (MCMC) by accounting for the correlation between your samples. Receiving an ESS warning requires further work to understand if your model is trustworthy for your purposes. If you are only interested in your variable of interest, you should use the `get_ESS_diag` function to find the ESS and check that each satisfies the stan's recommended ESS of 400 (number of chains * 100). This will tell you whether you can ignore this error. If this is not satisfied, you need to use more iterations (by setting the argument `iter`).
 
-## EcoEnsemble warnings
+## What is the warning?
 
-### Sampling the quantity of interest
+The warning `Bulk / Tail Effective Samples Size (ESS) is too low` is printed by the Markov Chain Monte Carlo (MCMC) software stan when it has identified that the model may not have necessary information about the sample for confidence in the results. 
 
-In EcoEnsemble, two sampling options are available in the main fitting function `fit_ensemble_model`. These are `sampler = kalman` and `sampler = explicit`. In each case, a sample of the posterior distribution of the parameters $\mathbf{\phi}$ is produced using the function `generate sample`. Given a fixed time series of length $T$ and a vector $\mathbf{u}^{(t)}$ associated to each time point $1 \leq t \leq T$, let $\mathbf{u}^{(1:T)} = (\mathbf{u}^{(1)\,'},\ldots,\mathbf{u}^{(T)\,'})'$ denote the stacked vector of each of these. To produce posterior samples of the quantity of interest $\mathbf{y}^{(1:T)}$ given the data $\mathbf{w}^{(1:T)}$, we seek
-$$
-p(\mathbf{y}^{(1:T)}\,|\,\mathbf{w}^{(1:T)}) = \int p(\mathbf{y}^{(1:T)}\,|\,\mathbf{w}^{(1:T)},\phi)p(\phi\,|\,\mathbf{w}^{(1:T)})\,.
-$$
-By MCMC we have access to a sample of size $MN$ for each element of $p(\phi\,|\,\mathbf{w}^{(1:T)})$. Then an efficient procedure (see @durbin_koopman) is followed to sample from the distribution of interest. For each sample $\phi_{i}$, sample a sequence of hidden states $\tilde{\mathbf{y}}^{(1:T)}$ from $p(\mathbf{y}^{(1:T)}\,|\,\phi)$ and a sequence of pseudo-observations $\tilde{\mathbf{w}}^{(1:T)}$ from $p(\mathbf{w}^{(1:T)}\,|\,\mathbf{y}^{(1:T)})$. Then $\tilde{\mathbf{y}}^{(1:T)}$ is a sample from the conditional distribution of $\mathbf{y}^{(1:T)}\,|\,\tilde{\mathbf{w}}^{(1:T)}$ and so has a multivariate normal distribution 
-$$\tilde{\mathbf{y}}^{(1:T)} \sim \mathcal{N}(\mathbf{\mu}_{y\,|,\tilde{w}}, \Pi)$$
-for some covariance matrix $\Pi$. Note that the conditional mean $\mathbf{\mu}_{y\,|,\tilde{w}}$ of the hidden state given the pseudo-data can be computed efficiently using a Kalman smoother. Since the joint posterior distribution of $\mathbf{y}^{(1:T)}\,,\,\mathbf{w}^{(1:T)}\,|\,\phi$ is multivariate normal, a standard result implies that the conditional distribution $\mathbf{y}^{(1:T)}\,,\,\mathbf{w}^{(1:T)}\,|\,\phi$ is also multivariate normal with a covariance matrix $\Pi$ that only depends on the size of $\mathbf{w}^{(1:t)}$, not the values. That is, 
-$$\mathbf{y}^{(1:T)}\,,\,\mathbf{w}^{(1:T)}\,|\,\phi \sim \mathcal{N}(\mu_{y\,|,w}, \Pi)\,.$$
-As in the case of the pseudo-observations, the posterior mean $\mu_{y\,|,w}$ can be computed by means of a backward Kalman smoother. As the same procedure was followed in the case of the pseudo-observations, we also have $\tilde{\mathbf{y}}^{(1:T)} - \mu_{y\,|\,\tilde{w}} \sim \mathcal{N}(\mathbf{0},\Pi)$. Hence 
-$$\tilde{\mathbf{y}}^{(1:T)} - \mu_{y\,|\,\tilde{w}} + \mu_{y\,|,w} \sim \mathcal{N}(\mu_{y\,|,w}, \Pi)\,,$$
-which is a sample from the posterior distribution we are interested in.
+The user should check whether this warning is relevant to their model and goal before concluding if the results are reliable. 
 
-### Effective sample size of posterior of interest
+## What to do?
 
-Here we compare the minimal (across parameters) effective sample size per second achieved (excluding the warmup phase) between the two samplers, `sampler = kalman` and `sampler = explicit`. The effective sample size is computed per chain and then added across chains.
+If ESS is too low, you must use more iterations than the default of 1000 per chain. This is changed in the `fit_ensemble` function by the `iter` argument. However, depending on your goal, ESS may only be of concern for certain parameters.
+
+## How to check?
+
+`EcoEnsemble` provides a function to calculate the ESS for each of your parameters, but you may only be interested in the variable of interest.
+
+We compare the ESS across all the parameters so that it is clear why the ESS error is given, and when it can be disregarded.
+
+We run the example given in the documentation.
 
 ```{r, eval=FALSE}
-
 fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                           simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
                                                             list(SSB_lm,  Sigma_lm,  "LeMans"),
                                                             list(SSB_miz, Sigma_miz, "mizer"),
                                                             list(SSB_fs,  Sigma_fs,  "FishSUMS")),
                                           priors = priors,
-                                          sampler = "kalman")
-
-fit_explicit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
-                                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
-                                                            list(SSB_lm,  Sigma_lm,  "LeMans"),
-                                                            list(SSB_miz, Sigma_miz, "mizer"),
-                                                            list(SSB_fs,  Sigma_fs,  "FishSUMS")),
-                                          priors = priors,
                                           sampler = "explicit")
-
-ESS_fit <- get_ESS_diag(fit, only_voi = F)
-ESS_fit_explicit <- get_ESS_diag(fit_explicit, only_voi = F)
-
-plot_df <- rbind(
-    data.frame(
-        value = c(ESS_fit_explicit$ESS_bulk),
-        metric = "Bulk",
-        sampler = "Explicit"
-    ),
-    data.frame(
-        value = c(ESS_fit$ESS_bulk),
-        metric = "Bulk",
-        sampler = "Kalman"
-    ),
-    data.frame(
-        value = c(ESS_fit_explicit$ESS_tail),
-        metric = "Tail",
-        sampler = "Explicit"
-    ),
-    data.frame(
-        value = c(ESS_fit$ESS_tail),
-        metric = "Tail",
-        sampler = "Kalman"
-    )
-)
-
-ggplot(plot_df, aes(x = value, fill = sampler)) +
-    geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
-    facet_wrap(~ metric, scales = "free") +
-    labs(x = "ESS", y = "Count", fill = NULL)+
-    xlim(0,4200)+
-    theme_bw()+ggtitle("ESS of all parameters")
-
-ESS_fit_voi <- get_ESS_diag(fit, only_voi = T)
-ESS_fit_explicit_voi <- get_ESS_diag(fit_explicit, only_voi = T)
-
-plot_df2 <- rbind(
-    data.frame(
-        value = c(ESS_fit_explicit_voi$ESS_bulk),
-        metric = "Bulk",
-        sampler = "Explicit"
-    ),
-    data.frame(
-        value = c(ESS_fit_voi$ESS_bulk),
-        metric = "Bulk",
-        sampler = "Kalman"
-    ),
-    data.frame(
-        value = c(ESS_fit_explicit_voi$ESS_tail),
-        metric = "Tail",
-        sampler = "Explicit"
-    ),
-    data.frame(
-        value = c(ESS_fit_voi$ESS_tail),
-        metric = "Tail",
-        sampler = "Kalman"
-    )
-)
-
-ggplot(plot_df2, aes(x = value, fill = sampler)) +
-    geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
-    facet_wrap(~ metric, scales = "free") +
-    labs(x = "ESS", y = "Count", fill = NULL)+
-    xlim(0,4200)+
-    theme_bw()+ggtitle("ESS of variable of interest parameters")
-
 ```
+
+And, we find the ESS using an `EcoEnsemble` function.
+
+```{r, eval=FALSE}
+ESS_fit <- get_ESS_diag(fit, only_voi = F)
+```
+
+The object contains a list of two matrices, one for the bulk and one for the tail ESS (See stan's guidance for [further information](https://mc-stan.org/learn-stan/diagnostics-warnings.html#bulk-and-tail-ess)). We plot the bulk/tail ESS for each parameter, to see why the error is printed.
 
 ```{r, echo=F}
 knitr::include_graphics("data/ESS_plot.png")
+```
+
+For some parameters, the ESS is too low. Stan recommends an ESS higher than the number of chains * 100, and as we used the default 4 chains, there are parameters that will trigger the warning. However, depending on our goal, it may not influence the utility of our model. If we only wanted to understand the variable of interest we will only want to look at parameters concerning our variable of interest.
+
+To check if the these parameters ESS is too low, we use the `only_voi` argument. The `only_voi` will return in the same structure as before.   
+
+```{r, eval = FALSE}
+
+ESS_fit_voi <- get_ESS_diag(fit, only_voi = T)
+
 ```
 ```{r,echo=F}
 knitr::include_graphics("data/ESS_plot1.png")
 ```
 
-There are ESS warnings for these examples under the `explicit` sampler, but not the `kalman`. But these warnings should be disregarded, as they are concerning the parameters specific to the `explicit` sampling, and not the variable of interest. The first plot shows that the `explicit` sampler contains parameters with lower than the recommended 400 ESS (100 $*$ number of chains), whereas the `kalman` sampler has no ESS issues. When filtering down to the variable of interest, in this example the SSB over time, for all the parameters the ESS is greater than 400. Therefore, even though stan is giving us ESS warnings, we should not concern ourselves. 
+When looking at the parameters used in the variable of interest, their ESS can be considered acceptable (>400). In this case, the user shouldn't concern themselves with the warning message and can continue analysis. However, users may consider values different than 400 to be acceptable and should change the number of iterations to reflect their decision.
+
+## What is effective sample size?
+ 
+Suppose we are interested in the expectation of some function of a random variable $\theta$ with distribution $p(\theta)$, that is
+$$\mathbb{E}(f(\theta))\,.$$
+Given an independent, identically distributed sample $\theta_{1},\theta_{2},\ldots,\theta_{N}$ drawn from $p(\theta)$, the Monte Carlo estimator of the above expectation is
+$$I_{N}(f) = \frac{1}{N}\sum_{i = 1}^{N}f(\theta_{i})\,.$$
+For large $N$, this estimator is approximately normally distributed with mean equal to the true expectation and variance dependent on the sample size $N$:
+$$I_{N}(f) \approx \mathcal{N}\bigg(\mathbb{E}(f(\theta))\,,\,\frac{\text{Var}(f(\theta))}{N}\bigg)\,.$$
+In `EcoEnsemble` we use MCMC to sample the posterior which gives us a correlated sample $\widehat{\theta}_{1},\widehat{\theta}_{2},\ldots,\widehat{\theta}_{N}$ from $p(\theta)$. The correlation in the sample means that the amount of information contained in this sample is lower than that of an independent sample of the same size. Informally, the effective sample size is the size of an independent sample containing the same information about $\mathbb{E}(f(\theta))$ as the correlated sample. Specifically, the effective sample size is the value $N_{\text{eff}}(f)$ such that
+$$\widehat{I}_{N}(f) =\frac{1}{N}\sum_{i = 1}^{N}f(\widehat{\theta}_{i})\, \approx \mathcal{N}\bigg(\mathbb{E}(f(\theta))\,,\,\frac{\text{Var}(f(\theta))}{N_{\text{eff}}(f)}\bigg)\,.$$
+
 
 # References
 

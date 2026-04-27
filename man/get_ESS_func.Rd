@@ -8,7 +8,7 @@
 \alias{gen_sample_array}
 \alias{get_ESS_diag}
 \alias{calc_ess}
-\title{Generate samples from a fitted ensemble model to get MCMC effective sample size diagnostics.}
+\title{Generate samples from a fitted ensemble model to get MCMC effective sample size diagnostics}
 \usage{
 generate_sample_array(fit)
 
@@ -51,8 +51,6 @@ calc_ess(sammy)
 \code{gen_sample_array} gives a \code{list} of two arrays of dimensions \code{time * (MM + M + 2)*N} \eqn{\times} \code{num_samples} \eqn{\times} \code{nchains}
 
 \code{get_ESS_diag} and \code{calc_ess} gives a list of length two containing \code{ESS_bulk} and \code{ESS_tail} which has the bulk effective sample size and the tail effective sample size. Each list is of dimensions \code{time} \eqn{\times} \code{(MM + M + 2)*N}.
-
-gives a list of length two containing \code{ESS_bulk} and \code{ESS_tail} which has the bulk effective sample size and the tail effective sample size.
 }
 \description{
 Methods to generates samples of the latent variables from a fitted ensemble model in the same order as the MCMC and to calculate diagnostics effective sample size for the MCMC.

@@ -1,4 +1,4 @@
-#'Generate samples from a fitted ensemble model to get MCMC effective sample size diagnostics.
+#'Generate samples from a fitted ensemble model to get MCMC effective sample size diagnostics
 #'
 #'Methods to generates samples of the latent variables from a fitted ensemble model in the same order as the MCMC and to calculate diagnostics effective sample size for the MCMC.
 #'@param fit An `EnsembleFit` object.
@@ -23,11 +23,10 @@
 #'
 #'`get_ESS_diag` and `calc_ess` gives a list of length two containing `ESS_bulk` and `ESS_tail` which has the bulk effective sample size and the tail effective sample size. Each list is of dimensions `time` \eqn{\times} `(MM + M + 2)*N`.
 #'
-#' gives a list of length two containing `ESS_bulk` and `ESS_tail` which has the bulk effective sample size and the tail effective sample size.
 #'@importFrom posterior ess_bulk
 #'@importFrom posterior ess_tail
 #'
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@seealso See [generate_sample()] for information about the sampling and \code{\link[posterior]{ess_bulk}} and \code{\link[posterior]{ess_tail}} for information about the effective sample size calculations.
 #'@export
 #'@examples
@@ -85,7 +84,7 @@ generate_sample_array <- function(fit) {
   return(sample_ret)
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 get_mle_array <- function(ex.fit, transformed_data, time) {
   params <- get_parameters_array(ex.fit)
@@ -106,7 +105,7 @@ get_mle_array <- function(ex.fit, transformed_data, time) {
   return(ret)
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 get_parameters_array <- function(ex.fit) {
   ret <- list()
@@ -131,14 +130,14 @@ get_parameters_array <- function(ex.fit) {
   return(ret)
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 get_param_idx <- function(arr, stan_name) {
   pnames <- names(arr)
   grep(paste0("^", stan_name, "(\\[|$)"), pnames)
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 gen_sample_array <- function(ex.fit, transformed_data, time) {
   params <- get_parameters_array(ex.fit)
@@ -180,7 +179,7 @@ gen_sample_array <- function(ex.fit, transformed_data, time) {
   return(list(sam_x = sam_x, sam_x_hat = sam_x_hat))
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 get_ESS_diag <- function(fit,only_voi=TRUE){
   sammy <- generate_sample_array(fit)
@@ -198,7 +197,7 @@ get_ESS_diag <- function(fit,only_voi=TRUE){
   return(ret)
 }
 
-#'@rdname get_stan_outputs_array
+#'@rdname get_ESS_func
 #'@export
 calc_ess <- function(sammy){
   ret <- list(

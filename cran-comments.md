@@ -225,4 +225,19 @@ Added new prior option and the option to include drivers. Added vignettes 'BetaC
 
 Added alternative sampler. Required new Rstan files, explanation vignettes and tests.
 
+Mac check receives WARNING. See below.
+
+Error in dyn.load(file, DLLpath = DLLpath, ...) : 
+  unable to load shared object '/Volumes/Builds/templates/cran-build/sonoma-arm64/Rlib/4.6/QuickJSR/libs/QuickJSR.so':
+  dlopen(/Volumes/Builds/templates/cran-build/sonoma-arm64/Rlib/4.6/QuickJSR/libs/QuickJSR.so, 0x0006): Symbol not found: _R_getRegisteredNamespace
+  Referenced from: <70FA6501-FF39-348D-9485-5F13E9D957C9> /Volumes/Builds/templates/cran-build/sonoma-arm64/Rlib/4.6/QuickJSR/libs/QuickJSR.so
+  Expected in:     <9A4FD863-B5A1-33CC-BDC9-62F15EEC56CE> /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libR.dylib
+Calls:  ... asNamespace -> loadNamespace -> library.dynam -> dyn.load
+Execution halted
+ERROR: configuration failed for package ‘EcoEnsemble’
+* removing ‘/Volumes/PkgBuild/work/1777288809-78f894df3ff947c2/packages/sonoma-arm64/results/4.6/EcoEnsemble.Rcheck/EcoEnsemble’
+
+The warning did not occur for check_mac_release() before R 4.6 release. Since, only minor vignette changes have occurred. Further, checking previous CRAN-accepted versions of EcoEnsemble receive the same warning. 
+Therefore, I think this error does not show an issue with the code. 
+
 

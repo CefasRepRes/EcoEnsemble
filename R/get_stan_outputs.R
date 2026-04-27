@@ -31,7 +31,7 @@
 #'
 #'
 #'@rdname get_stan_outputs
-#' @references J. Durbin, S. J. Koopman (2002) A simple and efficient simulation smoother for state space time series analysis Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616,
+#' @references Durbin, J. and Koopman, S. J. (2002). "A simple and efficient simulation smoother for state space time series analysis." Biometrika, 89(3), 603--616.
 #' @references Chris M.Strickland, Ian. W.Turner, Robert Denhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 #'@export
 #'@examples

@@ -4,7 +4,7 @@ author: "Luke E. K. Broadbent, Thomas I. J. Bartos, Michael J. Thomson and Micha
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EcoEnsemble}
+  %\VignetteIndexEntry{ExplicitSpeedUp}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}#
 references:
@@ -16,19 +16,9 @@ references:
     year: 2020
   url: "https://mc-stan.org/"
   type: article
-- id: durbin_koopman
-  title: A simple and efficient simulation smoother for state space time series analysis.
-  author:
-  - family: Durbin
-    given: J.
-  - family: Koopman
-    given: S. J.
-  container-title: Biometrika
-  volume: 89
-  page: 603-616
-  type: article-journal
-  issued: 
-    year: 2022
+
+nocite: |
+  @rstan
 ---
 
 ```{r, include = FALSE}
@@ -59,10 +49,12 @@ library(EcoEnsemble)
 ```
 
 # Summary
--
-This document describes an option in `EcoEnsemble (V1.2.0)` that samples the latent states ($$ {\boldsymbol{\theta}}^{(t)}={\left({\boldsymbol{y}}^{(t)^{\prime }},{\boldsymbol{\eta}}^{(t)^{\prime }},{\boldsymbol{z}}_1^{(t)^{\prime }},\dots, {\boldsymbol{z}}_m^{(t)^{\prime }}\right)}^{\prime } $$) explicitly alongside the model parameters, hereafter referred to as the `explicit` approach, rather than integrating the latent states out of the likelihood using the [Kalman filter](EcoEnsemble.html).
 
-By default, the `explicit` option is chosen within `fit_ensemble_model`, to retain the `kalman` sampler, the argument may be changed. 
+This document describes an option in `EcoEnsemble V1.2.0` that samples the short term discrepancies and variables of interest explicitly alongside the model parameters, hereafter referred to as the `explicit` approach, rather than viewing them as latent states and then integrating them out of the likelihood using the [Kalman filter](EcoEnsemble.html).
+
+By default, the `explicit` option is chosen within `fit_ensemble_model` by the `sampler` argument, `kalman` is an option to use the Kalman filter.
+
+The argument `sampler` in the `fit_ensemble_model` allows one to decide the fitting algorithm. Currently there are two options, `explicit` and `kalman`, with `explicit` as the default. 
 
 ```{r, eval=F}
 #generate priors
@@ -78,7 +70,7 @@ fit_sample <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
                                  sampler = "kalman")
 ```
 
-The main motivation for this change is improved computational efficiency. Below, bulk and tail effective sample size per second (ESS/s) are compared between the `explicit` and `kalman` options, for the hierarchical model. The ESS shown here is computed for the latent state, `SSB`.
+The main motivation for this change is improved computational efficiency. Below for the hierarchical model, bulk and tail effective sample size per second (ESS/s) are compared between the `explicit` and `kalman` options. The ESS shown here is computed for the variable of interest.
 
 ```{r, echo=F, out.width = "75%",fig.align ='center'}
 
@@ -114,10 +106,15 @@ knitr::include_graphics("data/explicit_plot1.png")
 
 ```
 
-In this example the `explicit` option is much faster while sampling from the same distribution as the `kalman` approach. Using this new option results in faster ESS/s and shorter run-times, but may require more iterations as there is generally lower ESS per run.  
+The `explicit` option is  more efficient while sampling from the same distribution as the `kalman` approach. Resulting in larger ESS/s and may require more iterations as there is generally lower ESS per iteration. 
 
+It does not mean that the `explicit` is more efficient in every model, as there are cases where we identified the `kalman` to be the better approach. The user should evaluate their options prior to running.
 
-# Equivalence of the samplers
+# Overview
+
+This document will describe the new approach and prove its sampling from the same distribution, followed by a description of the computational changes.
+
+## Equivalence of the samplers
 
 Let $\mathbf{\phi}$ be a vector containing the fixed parameters, specifically the (vectorised) covariance matrices, the (vectorised) AR(1) parameter matrices as well as the shared long-term discrepancy $\delta$:
 $$
@@ -145,44 +142,25 @@ $$
 $$
 The integral can be evaluated iteratively using the Kalman filter and the fixed parameters $\mathbf{\phi}$ can be sampled using MCMC. 
 
-#Output
+## Output
 
-The four currently available configurations of a `EcoEnsemble` model are tested with the new `explicit` option against the `kalman` option. The runs used the *non-hierarchical model*, specified by `lkj` priors, the *hierarchical model*, specified by `hierarchical` priors, the *drivers model* and the *hierarchical drivers model*, both specified by `drivers = T`.  Code and data is taken from the vignettes, [IncludingDrivers](IncludingDrivers.html) and [EcoEnsemble](EcoEnsemble.html).
+The four currently available configurations of a `EcoEnsemble` model were tested with the new `explicit` option and compared with the `kalman` option. The runs used the *non-hierarchical model*, specified by `lkj` priors, the *hierarchical model*, specified by `hierarchical` priors, the *drivers model* and the *hierarchical drivers model*, both specified by `drivers = T`.  Code and data is taken from the vignettes, [IncludingDrivers](IncludingDrivers.html) and [EcoEnsemble](EcoEnsemble.html).
 
-## Posterior Comparison
+### Posterior Comparison
 
-The plot below compares posterior summaries between the `explicit` and `kalman` options It shows the difference in posterior means, standardised by the pooled Monte Carlo standard error. The comparison is restricted to the shared state-space parameters used in posterior state reconstruction.
+The plot below compares posterior summaries between the `explicit` and `kalman` options. It shows the difference in posterior means and distributions for the shared state-space parameters used in posterior state reconstruction for 14 chains. As each chain is independent, each chain would have persistent discrepancies between `explicit` and `kalman` if the posterior distributions are different.
 
-```{r, echo=F, out.width = "85%",fig.align ='center'}
-# ggplot(pair_results, aes(x = z_mean)) +
-#   geom_histogram(bins = 50) +
-#   facet_wrap(~ pair, scales = "free_y") +
-#   labs(
-#     x = "Standardised mean difference",
-#     y = "Number of parameters"
-#   )+theme_bw()
-
-knitr::include_graphics("data/explicit_plot2.png")
-
-```
-
-The 15 parameters with the greatest differences are plotted below.
+The parameters with the greatest difference is plotted below. 
 
 ```{r, echo=F, out.width = "85%",fig.align ='center'}
-# ggplot(plot_df2, aes(y = variable, x = mean_n, xmin = q5_n, xmax = q95_n, shape = sampler)) +
-#   geom_pointrange(position = position_dodge(width = 0.5)) +
-#   facet_wrap(~ pair, scales = "free") +
-#   labs(x = "Normalised posterior summary", y = NULL)+theme_bw()
-
-knitr::include_graphics("data/explicit_plot3.png")
-
+knitr::include_graphics("data/explicit_plot4.png")
 ```
 
-There are no considerable differences in the output between the `explicit` or `kalman` sampler.
+There are no considerable differences in the posterior output between the `explicit` or `kalman` sampler.
 
-## Performance
+### Performance
 
-The main difference between is computational efficiency. The table below summarises the speed increase of the `explicit` over the `kalman` option. ESS is per second spent sampling, discarding the burn-in time.  
+The table below summarises the speed increase of the `explicit` over the `kalman` option, for the example models found in the vignettes. ESS is per second spent sampling, discarding the burn-in time.  
 
 ```{r, echo=F}
 table_diag %>%
@@ -227,11 +205,12 @@ table_diag %>%
 
 ```
 
-Between the two options, `explicit` results in a lower ESS for each model configuration, but `kalman` has a lower ESS per second. ESS per run is higher for `kalman` in the non-drivers cases, meaning that it has a higher ESS for a given number of iterations. So in the `explicit` case, further iterations may be necessary to achieve the same ESS. Regardless, the run time for both the sampling and the warm-up is much faster for the `explicit` sampler. The pattern seen is not different between the bulk and tail ESS.
+Between the two options, `explicit` results in a lower ESS for each model configuration, but `kalman` has a lower ESS per second. ESS per run is higher for `kalman` in the non-drivers cases. So in the `explicit` case, further iterations may be necessary to achieve the same ESS. Regardless, the run time for both the sampling and the warm-up is much faster for the `explicit` sampler. The pattern seen is not different between the bulk and tail ESS.
 
-# Sampler Warnings
 
-The two options induce different posterior geometries, so the stan No-U-Turn Sampler's diagnostics can differ. The table below summarises the Stan diagnostics for each model formulation.
+## Sampler Warnings
+
+The two options induce different posterior geometries, so the stan (@rstan) No-U-Turn Sampler's diagnostics can differ. The table below summarises the diagnostics for each model formulation.
 
 ```{r, echo=F}
 diag_table %>%
@@ -256,7 +235,6 @@ diag_table %>%
   kableExtra::column_spec(1, width = "4.2cm") %>%
   kableExtra::column_spec(2:9, width = "1.5cm")
 ```
+In these examples, the `explicit` option frequently reaches the maximum tree depth. This is because FishSUMS, one of the simulators included in the model, does not have estimates for sole, causing a flat posterior geometry. Because this warning primarily reflects sampling efficiency rather than invalid inference, it is suppressed when it occurs in isolation. However, if multiple warnings are given by stan, all warnings are printed. The `explicit` option results in a lower ESS, which may lead to some warnings, but these warnings may not be concerning the variable of interest in your model. Therefore it may not have an influence on your model. See this [vignette](ESS_vignette.html) for further information. 
 
-# Note on Warnings
-
-In these examples, the `explicit` option frequently reaches the maximum tree depth. Because this warning primarily reflects sampling efficiency rather than invalid inference, it is suppressed when it occurs in isolation. However, if multiple warnings are given by stan, all warnings are printed. The `explicit` option results in a lower ESS, which may lead to some warnings, but these warnings may not be concerning the variable of interest in your model. Therefore it may not have an influence on your model. See this [vignette](ESS_vignette.html) for further information. 
+# References

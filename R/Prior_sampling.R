@@ -67,7 +67,7 @@ prior_ensemble_model <- function(priors, M = 1, MM = NULL,
 #'@param ... Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.
 #'@inherit generate_sample details
 #'@return An `EnsembleSample` object.
-#'@references J. Durbin, S. J. Koopman (2002) A simple and efficient simulation smoother for state space time series analysis Biometrika, Volume 89, Issue 3, August 2002, Pages 603-616,
+#'@references Durbin, J. and Koopman, S. J. (2002). "A simple and efficient simulation smoother for state space time series analysis." Biometrika, 89(3), 603--616.
 #'@references Chris M.Strickland, Ian. W.Turner, RobertDenhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 #'@seealso \code{\linkS4class{EnsembleFit}}, \code{\link{EnsembleSample}}, \code{\link{generate_sample}}, \code{\link{prior_ensemble_model}}
 #'@export
