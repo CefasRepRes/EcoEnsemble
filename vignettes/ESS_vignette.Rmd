@@ -1,0 +1,106 @@
+---
+title: "Effective sample size"
+author: "Thomas I. J. Bartos, Luke E. K. Broadbent, Michael A. Spence and Michael J. Thomson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Effective sample size}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}#
+references:
+- id: stan_diagnostics
+  author:
+  - family: "Stan Development Team"
+  title: "How to Diagnose and Resolve Convergence Problems"
+  url: "https://mc-stan.org/learn-stan/diagnostics-warnings.html#bulk-and-tail-ess"
+  type: webpage
+  accessed:
+  - year: 2026
+    month: 4
+    day: 15
+
+nocite: |
+  @stan_diagnostics
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Summary
+
+The effective sample size (ESS) is important as it indicates the information gained from your Markov Chain Monte Carlo (MCMC) by accounting for the correlation between your samples. Receiving an ESS warning requires further work to understand if your model is trustworthy for your purposes. If you are only interested in your variable of interest, you should use the `get_ESS_diag` function to find the ESS and check that each satisfies the stan's recommended ESS of 400 (number of chains * 100). This will tell you whether you can ignore this error. If this is not satisfied, you need to use more iterations (by setting the argument `iter`).
+
+## What is the warning?
+
+The warning `Bulk / Tail Effective Samples Size (ESS) is too low` is printed by the Markov Chain Monte Carlo (MCMC) software stan when it has identified that the model may not have necessary information about the sample for confidence in the results. 
+
+The user should check whether this warning is relevant to their model and goal before concluding if the results are reliable. 
+
+## What to do?
+
+If ESS is too low, you must use more iterations than the default of 1000 per chain. This is changed in the `fit_ensemble` function by the `iter` argument. However, depending on your goal, ESS may only be of concern for certain parameters.
+
+## How to check?
+
+`EcoEnsemble` provides a function to calculate the ESS for each of your parameters, but you may only be interested in the variable of interest.
+
+We compare the ESS across all the parameters so that it is clear why the ESS error is given, and when it can be disregarded.
+
+We run the example given in the documentation.
+
+```{r, eval=FALSE}
+fit <- fit_ensemble_model(observations = list(SSB_obs, Sigma_obs),
+                                          simulators = list(list(SSB_ewe, Sigma_ewe, "EwE"),
+                                                            list(SSB_lm,  Sigma_lm,  "LeMans"),
+                                                            list(SSB_miz, Sigma_miz, "mizer"),
+                                                            list(SSB_fs,  Sigma_fs,  "FishSUMS")),
+                                          priors = priors,
+                                          sampler = "explicit")
+```
+
+And, we find the ESS using an `EcoEnsemble` function.
+
+```{r, eval=FALSE}
+ESS_fit <- get_ESS_diag(fit, only_voi = F)
+```
+
+The object contains a list of two matrices, one for the bulk and one for the tail ESS (See stan's guidance for [further information](https://mc-stan.org/learn-stan/diagnostics-warnings.html#bulk-and-tail-ess)). We plot the bulk/tail ESS for each parameter, to see why the error is printed.
+
+```{r, echo=F}
+knitr::include_graphics("data/ESS_plot.png")
+```
+
+For some parameters, the ESS is too low. Stan recommends an ESS higher than the number of chains * 100, and as we used the default 4 chains, there are parameters that will trigger the warning. However, depending on our goal, it may not influence the utility of our model. If we only wanted to understand the variable of interest we will only want to look at parameters concerning our variable of interest.
+
+To check if the these parameters ESS is too low, we use the `only_voi` argument. The `only_voi` will return in the same structure as before.   
+
+```{r, eval = FALSE}
+
+ESS_fit_voi <- get_ESS_diag(fit, only_voi = T)
+
+```
+```{r,echo=F}
+knitr::include_graphics("data/ESS_plot1.png")
+```
+
+When looking at the parameters used in the variable of interest, their ESS can be considered acceptable (>400). In this case, the user shouldn't concern themselves with the warning message and can continue analysis. However, users may consider values different than 400 to be acceptable and should change the number of iterations to reflect their decision.
+
+## What is effective sample size?
+ 
+Suppose we are interested in the expectation of some function of a random variable $\theta$ with distribution $p(\theta)$, that is
+$$\mathbb{E}(f(\theta))\,.$$
+Given an independent, identically distributed sample $\theta_{1},\theta_{2},\ldots,\theta_{N}$ drawn from $p(\theta)$, the Monte Carlo estimator of the above expectation is
+$$I_{N}(f) = \frac{1}{N}\sum_{i = 1}^{N}f(\theta_{i})\,.$$
+For large $N$, this estimator is approximately normally distributed with mean equal to the true expectation and variance dependent on the sample size $N$:
+$$I_{N}(f) \approx \mathcal{N}\bigg(\mathbb{E}(f(\theta))\,,\,\frac{\text{Var}(f(\theta))}{N}\bigg)\,.$$
+In `EcoEnsemble` we use MCMC to sample the posterior which gives us a correlated sample $\widehat{\theta}_{1},\widehat{\theta}_{2},\ldots,\widehat{\theta}_{N}$ from $p(\theta)$. The correlation in the sample means that the amount of information contained in this sample is lower than that of an independent sample of the same size. Informally, the effective sample size is the size of an independent sample containing the same information about $\mathbb{E}(f(\theta))$ as the correlated sample. Specifically, the effective sample size is the value $N_{\text{eff}}(f)$ such that
+$$\widehat{I}_{N}(f) =\frac{1}{N}\sum_{i = 1}^{N}f(\widehat{\theta}_{i})\, \approx \mathcal{N}\bigg(\mathbb{E}(f(\theta))\,,\,\frac{\text{Var}(f(\theta))}{N_{\text{eff}}(f)}\bigg)\,.$$
+
+
+# References
+
+
+
+
+

@@ -33,9 +33,13 @@ END_RCPP
 }
 
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_explicit_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_hierarchical_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_hierarchical_explicit_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_explicit_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_withdrivers_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_model_withdrivers_explicit_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_withdrivers_mod();
@@ -44,9 +48,13 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4ensemble_prior_withdrivers_mod();
 static const R_CallMethodDef CallEntries[] = {
     {"_EcoEnsemble_KalmanFilter_back", (DL_FUNC) &_EcoEnsemble_KalmanFilter_back, 10},
     {"_rcpp_module_boot_stan_fit4ensemble_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_mod, 0},
+    {"_rcpp_module_boot_stan_fit4ensemble_model_explicit_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_explicit_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_mod, 0},
+    {"_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_explicit_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_explicit_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_mod, 0},
+    {"_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_explicit_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_hierarchical_withdrivers_explicit_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_model_withdrivers_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_withdrivers_mod, 0},
+    {"_rcpp_module_boot_stan_fit4ensemble_model_withdrivers_explicit_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_model_withdrivers_explicit_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_prior_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_prior_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_mod, 0},
     {"_rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_withdrivers_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4ensemble_prior_hierarchical_withdrivers_mod, 0},

@@ -31,7 +31,7 @@
 #'
 #'
 #'@rdname get_stan_outputs
-#' @references J. Durbin, S. J. Koopman (2002) A simple and efficient simulation smoother for state space time series analysis Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616,
+#' @references Durbin, J. and Koopman, S. J. (2002). "A simple and efficient simulation smoother for state space time series analysis." Biometrika, 89(3), 603--616.
 #' @references Chris M.Strickland, Ian. W.Turner, Robert Denhamb, Kerrie L.Mengersena. Efficient Bayesian estimation of multivariate state space models Computational Statistics & Data Analysis Volume 53, Issue 12, 1 October 2009, Pages 4116-4125
 #'@export
 #'@examples
@@ -229,9 +229,9 @@ gen_sample <- function(x=1, ex.fit, transformed_data, time)
   sam_y <- matrix(0,time,nrow(bigM))
   sam_x <- matrix(0,time,length(params$x_hat))
 
-  sam_x[1,] <- as.matrix(params$x_hat) + chol(params$SIGMA_init)%*%rnorm(length(params$x_hat))
+  sam_x[1,] <- as.matrix(params$x_hat) + t(chol(params$SIGMA_init))%*%rnorm(length(params$x_hat))
   sam_y[1,] <- bigM %*% (sam_x[1,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))
-  ch_sigma <- chol(params$SIGMA)
+  ch_sigma <- t(chol(params$SIGMA))
   for (i in 2:time){
     sam_x[i,] <- as.matrix(params$AR_params * sam_x[i-1,]) + ch_sigma%*%rnorm(length(params$x_hat))
     sam_y[i,] <- bigM %*% (sam_x[i,] + params$lt_discrepancies) + rnorm(nrow(bigM),0,sqrt(all_eigenvalues_cov))

@@ -4,7 +4,12 @@
 \alias{get_mcmc_ensemble_model}
 \title{Return the compiled ensemble model Stan object.}
 \usage{
-get_mcmc_ensemble_model(priors, likelihood = TRUE, drivers = FALSE)
+get_mcmc_ensemble_model(
+  priors,
+  likelihood = TRUE,
+  drivers = FALSE,
+  sampler = c("explicit", "kalman")
+)
 }
 \arguments{
 \item{priors}{An \code{EnsemblePrior} object specifying the prior distributions for the ensemble for which the compiled \code{stanmodel} object will be obtained.}
@@ -12,6 +17,11 @@ get_mcmc_ensemble_model(priors, likelihood = TRUE, drivers = FALSE)
 \item{likelihood}{A \code{logical} that returns the compiled \code{stanmodel} object including the likelihood (the Kalman filter) for given priors if \code{TRUE}. If \code{FALSE} returns the compiled \code{stanmodel} object without the likelihood for sampling from the prior.}
 
 \item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
+
+\item{sampler}{A character string selecting which state-space sampler to
+use. Either \code{explicit} (the default), which samples latent states
+directly in the Stan program, or \code{kalman} which retains the Kalman
+filter implementation.}
 }
 \value{
 The \code{stanmodel} object encoding the ensemble model.

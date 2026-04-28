@@ -164,5 +164,7 @@ plot_values_optimised_gg<- function(df, title, ...){
 }
 
 plot_values_sample_gg<- function(df, title, ...){
-    return(plot_values_optimised_gg(df, title, ...) + ggplot2::geom_ribbon(ggplot2::aes(ymin=`Lower`, ymax =`Upper`, fill = `Simulator`), alpha=0.2)) + ggplot2::theme(legend.position = "right")
+    return(plot_values_optimised_gg(df, title, ...) +
+             ggplot2::geom_ribbon(ggplot2::aes(ymin=`Lower`, ymax =`Upper`, fill = `Simulator`), alpha=0.2,na.rm = TRUE)) +
+    ggplot2::theme(legend.position = "right")
 }

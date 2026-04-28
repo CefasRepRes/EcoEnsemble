@@ -28,11 +28,11 @@ test_that("test with simulated data set",{
   dimnames(cov_model_1) <- list(SPECIES_NAMES, SPECIES_NAMES)
   dimnames(cov_model_2) <- list(SPECIES_NAMES, SPECIES_NAMES)
 
-
+  for (sampler in c("kalman", "explicit")){
   suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                            simulators = list(list(val_model_1, cov_model_1, "Model 1"),
                                                              list(val_model_2, cov_model_2, "Model 2")
-                                           ),
+                                           ), sampler = sampler,
                                            priors = EnsemblePrior(d),
                                            control = list(adapt_delta = 0.9),chains=1,iter=4))
   priors2 <- EnsemblePrior(2,
@@ -45,13 +45,14 @@ test_that("test with simulated data set",{
   suppressWarnings(fit.opt <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                                simulators = list(list(val_model_1, cov_model_1, "Model 1"),
                                                                  list(val_model_2, cov_model_2, "Model 2")
-                                               ),
+                                               ), sampler = sampler,
                                                priors = priors2,full_sample = F))
 
+
   samples <- generate_sample(fit)
-  expect_true(ggplot2::is.ggplot(plot(samples,quantiles = c(0.05, 0.95))))
+  expect_true(ggplot2::is_ggplot(plot(samples,quantiles = c(0.05, 0.95))))
   samples.opt <- generate_sample(fit.opt,num_samples = 500)
-  expect_true(ggplot2::is.ggplot(plot(samples.opt,quantiles = c(0.05, 0.95))))
+  expect_true(ggplot2::is_ggplot(plot(samples.opt,quantiles = c(0.05, 0.95))))
   err_mess <- paste0("Invalid variable. This should be the name of a variable or an index less than ",
                      d + 1)
   expect_error(plot(samples.opt,quantiles = c(0.05, 0.95),variable = 4),err_mess)
@@ -203,4 +204,4 @@ test_that("test with simulated data set",{
   expect_equal(back_kalmanFilter_R(params$AR_params, params$lt_discrepancies, transformed_data$all_eigenvalues_cov,
                                    params$SIGMA, transformed_data$bigM, params$SIGMA_init, params$x_hat,time,
                                    transformed_data$new_data, transformed_data$observation_available),ret1)
-})
+}})

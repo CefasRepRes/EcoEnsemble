@@ -445,6 +445,16 @@ fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                              ),
                                              priors = EnsemblePrior(d),
                                              control = list(adapt_delta = 0.9),drivers=T)
+# Switch to the Kalman filter sampler with `sampler = "kalman"` if desired
+fit_kalman <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                 simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                   list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2")),
+                                                   list(val_model_3, cov_model_3, "Simulator 3", c("Driver 1", "Driver 2"))
+                                 ),
+                                 priors = EnsemblePrior(d),
+                                 control = list(adapt_delta = 0.9),
+                                 drivers = TRUE,
+                                 sampler = "kalman")
 samples <- generate_sample(fit)
 ```
 ## Results

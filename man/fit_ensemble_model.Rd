@@ -11,6 +11,7 @@ fit_ensemble_model(
   full_sample = TRUE,
   control = list(adapt_delta = 0.95),
   drivers = FALSE,
+  sampler = c("explicit", "kalman"),
   MMod,
   ...
 )
@@ -27,6 +28,9 @@ fit_ensemble_model(
 \item{control}{If creating a full sample, this is a named \code{list} of paramaters to control Stan's sampling behaviour. See the documentation of the \code{stan()} function in the \code{rstan} package for details. The default value is \code{list(adapt_delta = 0.95)}. If optimizing, this value is ignored.}
 
 \item{drivers}{A \code{logical} indicating whether drivers have been used in combination with simulators. Default value is FALSE.}
+
+\item{sampler}{A character string choosing between the "explicit" latent
+sampler (default) and the legacy "kalman" implementation.}
 
 \item{MMod}{Not currently implemented.}
 

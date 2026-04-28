@@ -29,112 +29,115 @@ test_that("prior combinations",{
   dimnames(cov_model_2) <- list(SPECIES_NAMES, SPECIES_NAMES)
 
 
-priors1 <- EnsemblePrior(2,
-	ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2)),
-	ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
-  ),
-	sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
-
-  set.seed(1234)
-  samples <- sample_prior(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                             list(val_model_2, cov_model_2, "Model 2")
-                                           ),
-                          priors = priors1,
-                          full_sample = FALSE)
-   fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                             list(val_model_2, cov_model_2, "Model 2")
-                                           ),
-                          priors = priors1,
-                          full_sample = FALSE)
-
-
-  priors2 <- EnsemblePrior(2,
-	ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
-  , AR_params = c(2, 2)),
-	ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
-  ),
-	sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))
-  ))
-
-  samples <- sample_prior(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                             list(val_model_2, cov_model_2, "Model 2")
-                                           ),
-                          priors = priors2,
-                          full_sample = FALSE)
-   fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                             list(val_model_2, cov_model_2, "Model 2")
-                                           ),
-                          priors = priors2,
-                          full_sample = FALSE)
-  priors3 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2)))
-  fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                             list(val_model_2, cov_model_2, "Model 2")
-                                           ),
-                          priors = priors3,
-                          full_sample = FALSE)
-
-  #Hierarchical priors
-  priors4 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(7,4,6,5), cor_params = list(0.4, 0.2, 0.7, 0.1), AR_params = c(2, 2)))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                            simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                              list(val_model_2, cov_model_2, "Model 2")
-                            ),
-                            priors = priors4,
-                            control = list(adapt_delta = 0.9), full_sample = TRUE, chains = 1, iter = 4))
-  priors5 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(7,4,6,5), cor_params = list(0.9, 0.9, 0.5), AR_params = c(2, 2)))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                            simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                              list(val_model_2, cov_model_2, "Model 2")
-                            ),
-                            priors = priors5,
-                            control = list(adapt_delta = 0.9), full_sample = TRUE, chains = 1, iter = 4))
-
-
-  #Errors
-  expect_error(EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2))),"Invalid beta parameters for individual short-term correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10), AR_params = c(2, 2))),"Invalid inverse Wishart parameters for individual short-term correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 4.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 3.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "boro", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: boro")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2,2))),"Invalid autoregressive parameters specified. This should be a numeric of length 2 giving the shape parameters of the Beta distribution used as a prior for the AR parameters.")
-  expect_error (EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
-                                           simulators = list(val_model_1, cov_model_1,"Model 1"
-                                           ),
-                          priors = priors1))
-  val_model_1a <- val_model_1
-  names(val_model_1a)[2] <- "Car"
-  expect_error(EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1a,cov_model_1,"Model 1"
-                                           )),
-                          priors = priors1))
-  #Sampling for non-hierarchical options
   priors1 <- EnsemblePrior(2,
+                           ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2)),
                            ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
                            ),
                            sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                               list(val_model_2, cov_model_2, "Model 2")
-                                             ),
-                                             priors = priors1,
-                                             control = list(adapt_delta = 0.9),chains=1,iter=4))
-  priors1 <- EnsemblePrior(2,
+
+  set.seed(1234)
+  samples <- sample_prior(observations = list(val_obs, cov_obs),
+                          simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                            list(val_model_2, cov_model_2, "Model 2")
+                          ),
+                          priors = priors1,
+                          full_sample = FALSE)
+  fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                            simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                              list(val_model_2, cov_model_2, "Model 2")
+                            ),
+                            priors = priors1,
+                            full_sample = FALSE)
+
+
+  priors2 <- EnsemblePrior(2,
+                           ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
+                                                      , AR_params = c(2, 2)),
                            ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
                            ),
-                           sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Model 1"),
-                                                               list(val_model_2, cov_model_2, "Model 2")
-                                             ),
-                                             priors = priors1,
-                                             control = list(adapt_delta = 0.9),chains=1,iter=4))
+                           sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                           ))
+
+  for (sampler in c("kalman", "explicit")){
+
+    samples <- sample_prior(observations = list(val_obs, cov_obs),
+                            simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                              list(val_model_2, cov_model_2, "Model 2")
+                            ),
+                            priors = priors2,
+                            full_sample = FALSE)
+    fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                              simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                list(val_model_2, cov_model_2, "Model 2")
+                              ),
+                              priors = priors2, sampler = sampler,
+                              full_sample = FALSE)
+    priors3 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2)))
+    fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                              simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                list(val_model_2, cov_model_2, "Model 2")
+                              ),
+                              priors = priors3, sampler = sampler,
+                              full_sample = FALSE)
+
+    #Hierarchical priors
+    priors4 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(7,4,6,5), cor_params = list(0.4, 0.2, 0.7, 0.1), AR_params = c(2, 2)))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                                 list(val_model_2, cov_model_2, "Model 2")
+                                               ),
+                                               priors = priors4,sampler = sampler,
+                                               control = list(adapt_delta = 0.9), full_sample = TRUE, chains = 1, iter = 4))
+    priors5 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(7,4,6,5), cor_params = list(0.9, 0.9, 0.5), AR_params = c(2, 2)))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                                 list(val_model_2, cov_model_2, "Model 2")
+                                               ),
+                                               priors = priors5, sampler = sampler,
+                                               control = list(adapt_delta = 0.9), full_sample = TRUE, chains = 1, iter = 4))
+
+
+    #Errors
+    expect_error(EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2))),"Invalid beta parameters for individual short-term correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10), AR_params = c(2, 2))),"Invalid inverse Wishart parameters for individual short-term correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 4.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 3.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "boro", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: boro")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2,2))),"Invalid autoregressive parameters specified. This should be a numeric of length 2 giving the shape parameters of the Beta distribution used as a prior for the AR parameters.")
+    expect_error (EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
+                                              simulators = list(val_model_1, cov_model_1,"Model 1"
+                                              ),
+                                              priors = priors1))
+    val_model_1a <- val_model_1
+    names(val_model_1a)[2] <- "Car"
+    expect_error(EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
+                                             simulators = list(list(val_model_1a,cov_model_1,"Model 1"
+                                             )),
+                                             priors = priors1))
+    #Sampling for non-hierarchical options
+    priors1 <- EnsemblePrior(2,
+                             ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                             ),
+                             sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                                 list(val_model_2, cov_model_2, "Model 2")
+                                               ),
+                                               priors = priors1, sampler = sampler,
+                                               control = list(adapt_delta = 0.9),chains=1,iter=4))
+    priors1 <- EnsemblePrior(2,
+                             ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
+                             ),
+                             sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Model 1"),
+                                                                 list(val_model_2, cov_model_2, "Model 2")
+                                               ),
+                                               priors = priors1,sampler = sampler,
+                                               control = list(adapt_delta = 0.9),chains=1,iter=4))
+  }
 })
 
 
@@ -184,117 +187,120 @@ test_that("prior combinations with drivers",{
   cov_model_2 <- list(cov_model_21, cov_model_22)
 
 
-  priors1 <- EnsemblePrior(2,
-                           ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2)),
-                           ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
-                           ),
-                           sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
+  for (sampler in c("explicit", "kalman")){
 
-  set.seed(5678)
-  samples <- sample_prior(observations = list(val_obs, cov_obs),
-                          simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                            list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                          ),
-                          priors = priors1,
-                          full_sample = FALSE, drivers = TRUE)
-  fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+    priors1 <- EnsemblePrior(2,
+                             ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2)),
+                             ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                             ),
+                             sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
+
+    set.seed(5678)
+    samples <- sample_prior(observations = list(val_obs, cov_obs),
                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
                             ),
                             priors = priors1,
                             full_sample = FALSE, drivers = TRUE)
 
+    fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                              simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                              ),
+                              priors = priors1,sampler = sampler,
+                              full_sample = FALSE, drivers = TRUE)
 
-  priors2 <- EnsemblePrior(2,
-                           ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
-                                                      , AR_params = c(2, 2)),
-                           ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
-                           ),
-                           sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))
-                           ))
 
-  samples <- sample_prior(observations = list(val_obs, cov_obs),
-                          simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                            list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                          ),
-                          priors = priors2,
-                          full_sample = FALSE, drivers = TRUE)
-  fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+    priors2 <- EnsemblePrior(2,
+                             ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
+                                                        , AR_params = c(2, 2)),
+                             ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
+                             ),
+                             sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                             ))
+
+    samples <- sample_prior(observations = list(val_obs, cov_obs),
                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
                             ),
                             priors = priors2,
                             full_sample = FALSE, drivers = TRUE)
-  priors3 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2)))
-  samples <- sample_prior(observations = list(val_obs, cov_obs),
-                          simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                            list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                          ),
-                          priors = priors3,
-                          full_sample = FALSE, drivers = TRUE)
-  fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+    fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                              simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                              ),
+                              priors = priors2,sampler = sampler,
+                              full_sample = FALSE, drivers = TRUE)
+    priors3 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2)))
+    samples <- sample_prior(observations = list(val_obs, cov_obs),
                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
                             ),
                             priors = priors3,
                             full_sample = FALSE, drivers = TRUE)
+    fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                              simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                              ),
+                              priors = priors3,sampler = sampler,
+                              full_sample = FALSE, drivers = TRUE)
 
-  #Hierarchical priors
-  priors4 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(7,4,6,5), cor_params = list(0.4, 0.2, 0.7, 0.1), AR_params = c(2, 2)))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                                             ),
-                                             priors = priors4,
-                                             control = list(adapt_delta = 0.9), full_sample = TRUE, drivers = TRUE, chains = 1, iter = 4))
-  priors5 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(7,4,6,5), cor_params = list(0.9, 0.9, 0.5), AR_params = c(2, 2)))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                                             ),
-                                             priors = priors5,
-                                             control = list(adapt_delta = 0.9), full_sample = TRUE, drivers = TRUE, chains = 1, iter = 4))
+    #Hierarchical priors
+    priors4 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(7,4,6,5), cor_params = list(0.4, 0.2, 0.7, 0.1), AR_params = c(2, 2)))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                                 list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                                               ),
+                                               priors = priors4,sampler = sampler,
+                                               control = list(adapt_delta = 0.9), full_sample = TRUE, drivers = TRUE, chains = 1, iter = 4))
+    priors5 <- EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(7,4,6,5), cor_params = list(0.9, 0.9, 0.5), AR_params = c(2, 2)))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                                 list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                                               ),
+                                               priors = priors5,sampler = sampler,
+                                               control = list(adapt_delta = 0.9), full_sample = TRUE, drivers = TRUE, chains = 1, iter = 4))
 
 
-  #Errors
-  expect_error(EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2))),"Invalid beta parameters for individual short-term correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10), AR_params = c(2, 2))),"Invalid inverse Wishart parameters for individual short-term correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 4.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 3.")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "boro", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: boro")
-  expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2,2))),"Invalid autoregressive parameters specified. This should be a numeric of length 2 giving the shape parameters of the Beta distribution used as a prior for the AR parameters.")
-  expect_error (EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
-                                            simulators = list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")
-                                            ),
-                                            priors = priors1))
-  val_model_1a <- val_model_1
-  names(val_model_1a[[1]])[2] <- "Car"
-  expect_error(EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
-                                           simulators = list(list(val_model_1a,cov_model_1,"Simulator 1", c("Driver 1", "Driver 2")
-                                           )),
-                                           priors = priors1))
-  #Sampling for non-hierarchical options
-  priors1 <- EnsemblePrior(2,
-                           ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
-                           ),
-                           sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                                             ),
-                                             priors = priors1,
-                                             control = list(adapt_delta = 0.9),chains=1,iter=4,drivers=TRUE))
-  priors1 <- EnsemblePrior(2,
-                           ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
-                           ),
-                           sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))))
-  suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
-                                             simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
-                                                               list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
-                                             ),
-                                             priors = priors1,
-                                             control = list(adapt_delta = 0.9),chains=1,iter=4,drivers=TRUE))
+    #Errors
+    expect_error(EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(1,1), cor_params = list(10,diag(2)), AR_params = c(2, 2))),"Invalid beta parameters for individual short-term correlation matrix priors. These should be square, symmetric matrices with the same dimension as the number of model outputs.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "inv_wishart", var_params= list(1,1), cor_params = list(10), AR_params = c(2, 2))),"Invalid inverse Wishart parameters for individual short-term correlation matrix prior. This should be a numeric giving the degrees of freedom and a d x d scale matrix, with degrees of freedom > d-1.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid lkj parameter for individual short-term correlation matrix prior. This should be a list with exactly one real number.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 4.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "hierarchical_beta_conjugate", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parameters for individual short-term correlation matrix priors. This should be a list of length 3.")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "boro", var_params= list(1,1), cor_params = list(10,2), AR_params = c(2, 2))),"Invalid parametrisation choice for priors. Prior parametrisation forms should be one of 'lkj', 'inv_wishart', 'beta', 'hierarchical' or 'hierarchical_beta_conjugate'. The 'hierarchical' and 'hierarchical_beta_conjugate' options are only available for individual short-term discrepancies. Prior choice: boro")
+    expect_error (EnsemblePrior(2,ind_st_params = IndSTPrior(parametrisation_form = "lkj", var_params= list(1,1), cor_params = 10, AR_params = c(2, 2,2))),"Invalid autoregressive parameters specified. This should be a numeric of length 2 giving the shape parameters of the Beta distribution used as a prior for the AR parameters.")
+    expect_error (EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
+                                              simulators = list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")
+                                              ),
+                                              priors = priors1))
+    val_model_1a <- val_model_1
+    names(val_model_1a[[1]])[2] <- "Car"
+    expect_error(EcoEnsemble:::validate_data(observations = list(val_obs, cov_obs),
+                                             simulators = list(list(val_model_1a,cov_model_1,"Simulator 1", c("Driver 1", "Driver 2")
+                                             )),
+                                             priors = priors1))
+    #Sampling for non-hierarchical options
+    priors1 <- EnsemblePrior(2,
+                             ind_lt_params = IndLTPrior("beta",list(10,5),list(matrix(5, 2, 2),matrix(2, 2, 2))
+                             ),
+                             sha_st_params = ShaSTPrior("inv_wishart",list(2, 1/3),list(10, diag(2))))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                                 list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                                               ),
+                                               priors = priors1,sampler = sampler,
+                                               control = list(adapt_delta = 0.9),chains=1,iter=4,drivers=TRUE))
+    priors1 <- EnsemblePrior(2,
+                             ind_lt_params = IndLTPrior("inv_wishart",list(c(1,2),c(1,1)),list(10,diag(2))
+                             ),
+                             sha_st_params = ShaSTPrior("beta",list(c(1,2),c(1,1)),list(matrix(5, 2, 2),matrix(2, 2, 2))))
+    suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
+                                               simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2")),
+                                                                 list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2"))
+                                               ),
+                                               priors = priors1,sampler = sampler,
+                                               control = list(adapt_delta = 0.9),chains=1,iter=4,drivers=TRUE))
+  }
 })
-

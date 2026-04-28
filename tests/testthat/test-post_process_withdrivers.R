@@ -65,12 +65,14 @@ test_that("test including drivers, with simulated data set",{
   cov_model_1 <- list(cov_model_11, cov_model_12, cov_model_13)
   cov_model_2 <- list(cov_model_21, cov_model_22, cov_model_23)
 
+  for (sampler in c("kalman", "explicit")){
   suppressWarnings(fit <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                              simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2", "Driver 3")),
                                                                list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2", "Driver 3"))
                                              ),
-                                             priors = EnsemblePrior(d),
+                                             priors = EnsemblePrior(d), sampler = sampler,
                                              control = list(adapt_delta = 0.9),chains=1,iter=4,drivers=T))
+
   priors2 <- EnsemblePrior(2,
                            ind_st_params = IndSTPrior(parametrisation_form = "beta", var_params= list(c(1,2),c(1,1)), cor_params = list(matrix(50, 2, 2),matrix(50, 2, 2))
                                                       , AR_params = c(2, 2)),
@@ -81,13 +83,14 @@ test_that("test including drivers, with simulated data set",{
   suppressWarnings(fit.opt <- fit_ensemble_model(observations = list(val_obs, cov_obs),
                                                  simulators = list(list(val_model_1, cov_model_1, "Simulator 1", c("Driver 1", "Driver 2", "Driver 3")),
                                                                    list(val_model_2, cov_model_2, "Simulator 2", c("Driver 1", "Driver 2", "Driver 3"))
-                                                 ),
+                                                 ), sampler = sampler,
                                                  priors = priors2,full_sample = F, drivers = T))
 
+  }
   samples <- generate_sample(fit)
-  expect_true(ggplot2::is.ggplot(plot(samples,quantiles = c(0.05, 0.95))))
+  expect_true(ggplot2::is_ggplot(plot(samples,quantiles = c(0.05, 0.95))))
   samples.opt <- generate_sample(fit.opt,num_samples = 500)
-  expect_true(ggplot2::is.ggplot(plot(samples.opt,quantiles = c(0.05, 0.95))))
+  expect_true(ggplot2::is_ggplot(plot(samples.opt,quantiles = c(0.05, 0.95))))
   err_mess <- paste0("Invalid variable. This should be the name of a variable or an index less than ",
                      d + 1)
   expect_error(plot(samples.opt,quantiles = c(0.05, 0.95),variable = 4),err_mess)

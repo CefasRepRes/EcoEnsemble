@@ -6,6 +6,10 @@
 #'@param priors An `EnsemblePrior` object specifying the prior distributions for the ensemble for which the compiled `stanmodel` object will be obtained.
 #'@param likelihood A `logical` that returns the compiled `stanmodel` object including the likelihood (the Kalman filter) for given priors if `TRUE`. If `FALSE` returns the compiled `stanmodel` object without the likelihood for sampling from the prior.
 #'@param drivers A `logical` indicating whether drivers have been used in combination with simulators. Default value is FALSE.
+#'@param sampler A character string selecting which state-space sampler to
+#'  use. Either `explicit` (the default), which samples latent states
+#'  directly in the Stan program, or `kalman` which retains the Kalman
+#'  filter implementation.
 #'@return The `stanmodel` object encoding the ensemble model.
 #'@export
 #'@examples
@@ -22,15 +26,24 @@
 #'out <- rstan::sampling(mod, ensemble_data@@stan_input, chains = 1)
 #'}
 
-get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE){
+get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE,
+                                    sampler = c("explicit", "kalman")){
+
+  sampler <- match.arg(sampler)
+  use_explicit <- identical(sampler, "explicit")
 
   st_pf <- priors@ind_st_params@parametrisation_form
-
   if (st_pf == "hierarchical") {
     if (likelihood) {
       if (!drivers){
+        if (use_explicit) {
+          return(stanmodels$ensemble_model_hierarchical_explicit)
+        }
         return(stanmodels$ensemble_model_hierarchical)
       } else {
+        if (use_explicit) {
+          return(stanmodels$ensemble_model_hierarchical_withdrivers_explicit)
+        }
         return(stanmodels$ensemble_model_hierarchical_withdrivers)
       }
     } else {
@@ -43,8 +56,14 @@ get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE){
   } else {
     if (likelihood) {
       if (!drivers) {
+        if (use_explicit) {
+          return(stanmodels$ensemble_model_explicit)
+        }
         return(stanmodels$ensemble_model)
       } else {
+        if (use_explicit) {
+          return(stanmodels$ensemble_model_withdrivers_explicit)
+        }
         return(stanmodels$ensemble_model_withdrivers)
       }
     } else {
@@ -64,6 +83,8 @@ get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE){
 #'@inheritParams EnsembleData
 #'@param full_sample A `logical` that runs a full sampling of the posterior density of the ensemble model if `TRUE`. If `FALSE`, returns the point estimate which maximises the posterior density of the ensemble model.
 #'@param control If creating a full sample, this is a named `list` of paramaters to control Stan's sampling behaviour. See the documentation of the `stan()` function in the `rstan` package for details. The default value is `list(adapt_delta = 0.95)`. If optimizing, this value is ignored.
+#'@param sampler A character string choosing between the "explicit" latent
+#'  sampler (default) and the legacy "kalman" implementation.
 #'@param ... Additional arguments passed to the function \code{rstan::sampling} or  \code{rstan::optimizing}.
 #'@inherit EnsembleData details
 #'@return An `EnsembleFit` object.
@@ -84,20 +105,36 @@ get_mcmc_ensemble_model <- function(priors, likelihood = TRUE, drivers = FALSE){
 #'                full_sample = FALSE) #Only optimise in this case
 #'}
 fit_ensemble_model <- function(observations, simulators, priors,
-                               full_sample = TRUE, control = list(adapt_delta = 0.95), drivers = FALSE, MMod, ...){
+                               full_sample = TRUE, control = list(adapt_delta = 0.95),
+                               drivers = FALSE, sampler = c("explicit", "kalman"),
+                               MMod, ...){
+
+  sampler <- match.arg(sampler)
 
   if (drivers == TRUE) {
     return(fit_ensemble_model_dri(observations, simulators, priors,
-                                  full_sample = full_sample, control = list(adapt_delta = 0.95), MMod, ...))
+                                  full_sample = full_sample,
+                                  control = control,
+                                  sampler = sampler,
+                                  MMod, ...))
   }
   else {
     ens_data <- EnsembleData(observations, simulators, priors)
     stan_input <- ens_data@stan_input
 
     #Using hierarchical priors uses a different model. This speeds up the sampling enormously
+    if (sampler == "explicit"){
+    mod <- stanmodels$ensemble_model_explicit
+    } else {
     mod <- stanmodels$ensemble_model
+    }
+
     if(stan_input$form_prior_ind_st == 3 || stan_input$form_prior_ind_st == 4){
-      mod <- stanmodels$ensemble_model_hierarchical
+      if (sampler == "explicit"){
+        mod <- stanmodels$ensemble_model_hierarchical_explicit
+      } else {
+        mod <- stanmodels$ensemble_model_hierarchical
+      }
       if(!full_sample){
         stop("It is possible to generate a point estimate for the prior if the individual short-term discrepancy prior follows a hierarchical parameterisation. Please generate a full sample using 'full_sample=TRUE'.")
       }
@@ -106,7 +143,9 @@ fit_ensemble_model <- function(observations, simulators, priors,
 
     samples <- NULL; point_estimate <- NULL
     if(full_sample){
-      samples <- rstan::sampling(mod, data=stan_input, control = control, ...)
+      samples <- stan_sampling_with_filter(mod, data = stan_input,
+                                           control = control,
+                                           ...)
     }else{
       point_estimate <- rstan::optimizing(mod, data=stan_input,as_vector=FALSE, ...)
     }

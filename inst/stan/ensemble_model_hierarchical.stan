@@ -243,14 +243,14 @@ parameters{
    * Simulator discrepancies
    */
   // Individual
-  array[M] vector <lower=-1,upper=1>[N] ind_st_ar_param;
+  array[M] vector <lower=0,upper=1>[N] ind_st_ar_param_raw;
   array[M] vector [N] log_ind_st_var;
   array[M] corr_matrix [N] ind_st_cor;
   array[M] vector[N] ind_lt_raw;
   vector <lower=0> [N] ind_lt_var;
   corr_matrix [N] ind_lt_cor;
   // Shared
-  vector <lower=-1,upper=1>[N] sha_st_ar_param;
+  vector <lower=0,upper=1>[N] sha_st_ar_param_raw;
   vector <lower=0> [N] sha_st_var;
   corr_matrix [N] sha_st_cor;
   vector [N] sha_lt_raw;
@@ -290,6 +290,8 @@ transformed parameters{
   vector [N] sha_st_sd = sqrt(sha_st_var);
   matrix [N,N] SIGMA_mu = diag_post_multiply(diag_pre_multiply(sha_st_sd, sha_st_cor), sha_st_sd);
 
+  vector <lower=-1,upper=1>[N] sha_st_ar_param = 2.0 * sha_st_ar_param_raw - 1.0;
+
   /**
   *  Kalman filter parameters:
   *  In each case, the ordering to be passed through to the Kalman Filter is:
@@ -300,11 +302,14 @@ transformed parameters{
   matrix[(M+2) * N , (M+2) * N] SIGMA = rep_matrix(0,(M+2) * N,(M+2) * N );
   vector[(M+2) * N ] lt_discrepancies;
   vector[(M+2) * N] AR_params;
+  array [M] vector <lower=-1,upper=1>[N] ind_st_ar_param;
 
   //SIGMA
   SIGMA[1:N, 1:N ] = SIGMA_t;
   SIGMA[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu;
   for (i in 1:M){
+
+    ind_st_ar_param[i] = 2.0 * ind_st_ar_param_raw[i] - 1.0;
 
 	  ind_st_var_2[i] = exp(prior_ind_st_var_hierarchical_mu_params + sqrt(diagonal(prior_ind_st_cor_hierarchical_beta_params)) .* log_ind_st_var[i]);
 
@@ -315,7 +320,7 @@ transformed parameters{
 
   //SIGMA_init
   SIGMA_init[1:N,1:N] = diag_matrix(prior_y_init_var);
-  SIGMA_init[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu ./ (1 - sha_st_ar_param * sha_st_ar_param');;
+  SIGMA_init[(N + 1):(2*N), (N + 1):(2*N) ] = SIGMA_mu ./ (1 - sha_st_ar_param * sha_st_ar_param');
   for (i in 1:M){
     SIGMA_init[((i+1) * N + 1):((i+2)*N ),((i+1) * N + 1):((i+2)*N )] = SIGMA_x[i] ./ (1 - ind_st_ar_param[i] * ind_st_ar_param[i]');
 
@@ -342,7 +347,7 @@ model{
   sha_lt_raw ~ std_normal();
   sha_st_var ~ gamma(prior_sha_st_var_a,prior_sha_st_var_b); // Variance
   //JM 22/07: Beta priors on the AR parameters
-  target += beta_lpdf((sha_st_ar_param + 1)/2 | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);
+  target += beta_lpdf(sha_st_ar_param_raw | prior_sha_st_ar_alpha, prior_sha_st_ar_beta);
 
   // Correlation matrix
   if(form_prior_sha_st == 0){
@@ -393,7 +398,7 @@ model{
 
   for(i in 1:M){
     //AR Parameters
-    target += beta_lpdf((ind_st_ar_param[i] + 1)/2 | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
+    target += beta_lpdf(ind_st_ar_param_raw[i] | prior_ind_st_ar_alpha, prior_ind_st_ar_beta);
 
     ind_lt_raw[i] ~ std_normal();
 

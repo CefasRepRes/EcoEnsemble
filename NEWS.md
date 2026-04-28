@@ -21,3 +21,8 @@ EcoEnsemble 1.1.1
 
 * Fixed issue with rstan
 * Added drivers
+
+EcoEnsemble 1.2.0
+=============
+* Added alternative sampler 
+* Added tests and vignettes

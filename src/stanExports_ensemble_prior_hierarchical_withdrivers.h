@@ -350,7 +350,7 @@ static constexpr std::array<const char*, 333> locations_array__ =
   " (in 'string', line 46, column 18 to line 48, column 4)",
   " (in 'string', line 46, column 4 to line 48, column 4)",
   " (in 'string', line 49, column 3 to column 14)",
-  " (in 'string', line 44, column 44 to line 50, column 3)",
+  " (in 'string', line 44, column 50 to line 50, column 3)",
   " (in 'string', line 52, column 4 to column 16)",
   " (in 'string', line 53, column 4 to column 16)",
   " (in 'string', line 55, column 6 to column 15)",
@@ -360,7 +360,7 @@ static constexpr std::array<const char*, 333> locations_array__ =
   " (in 'string', line 54, column 19 to line 59, column 5)",
   " (in 'string', line 54, column 4 to line 59, column 5)",
   " (in 'string', line 60, column 4 to column 15)",
-  " (in 'string', line 51, column 56 to line 61, column 3)"};
+  " (in 'string', line 51, column 61 to line 61, column 3)"};
 template <typename T0__,
           stan::require_all_t<stan::is_stan_scalar<T0__>>* = nullptr>
 stan::promote_args_t<T0__> As(const T0__& Rho, std::ostream* pstream__);
